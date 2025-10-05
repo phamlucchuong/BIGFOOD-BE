@@ -29,20 +29,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINT = {
-    "/auth"     , "/auth/introspect" , "/auth/logout" , 
-    "/user"  , "/otp/send/email"    , "/otp/verify" 
+    "api/auth"     , "api/auth/introspect" , "api/auth/logout" , 
+    "api/users"  , "api/otp/send/email"    
     };
-
     @Autowired 
     private CustomerJwtDecoder customerJwtDecoder;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
        
         httpSecurity
         .csrf(csrf -> csrf.disable())
         .cors(Customizer.withDefaults())
-        .authorizeHttpRequests( request-> request.requestMatchers(HttpMethod.POST , PUBLIC_ENDPOINT).permitAll()
+        .authorizeHttpRequests( request-> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+                                                .requestMatchers(HttpMethod.GET,"api/users/verify-email/{email}" ,"api/otp/verify" ).permitAll()
+                                                .requestMatchers(HttpMethod.PUT,"api/users/{email}" ).permitAll()
          .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oauth2 -> 
             oauth2.jwt(jwtConfiguer -> jwtConfiguer.decoder(customerJwtDecoder)

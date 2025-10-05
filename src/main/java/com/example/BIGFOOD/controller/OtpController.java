@@ -7,7 +7,7 @@ import com.example.BIGFOOD.dto.response.ApiResponse;
 import com.example.BIGFOOD.service.OtpService;
 
 @RestController
-@RequestMapping("/otp")
+@RequestMapping("api/otp")
 public class OtpController {
 
     @Autowired
@@ -22,7 +22,7 @@ public class OtpController {
                 .build();
     }
 
-    @PostMapping("/verify")
+    @GetMapping("/verify")
     public ApiResponse<Boolean> verifyOtp(@RequestParam String key, @RequestParam String otp) {
         boolean verified = otpService.validateOtp(key, otp);
         return ApiResponse.<Boolean>builder()

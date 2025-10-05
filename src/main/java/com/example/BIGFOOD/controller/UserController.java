@@ -4,13 +4,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.BIGFOOD.dto.request.UserCreateRequest;
 import com.example.BIGFOOD.dto.request.UserUpdateRequest;
-import com.example.BIGFOOD.dto.request.VerifyEmailRequest;
 import com.example.BIGFOOD.dto.response.UserResponse;
 import com.example.BIGFOOD.dto.response.ApiResponse;
 
 import com.example.BIGFOOD.service.UserService;
 
-import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -27,16 +25,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/users")
 @Slf4j
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/verify-email")
-    public ApiResponse<Boolean> verifyEmail(@RequestBody VerifyEmailRequest request){
+    
+    @GetMapping("/verify-email/{email}")
+    public ApiResponse<Boolean> verifyEmail(@PathVariable String email){
         return ApiResponse.<Boolean>builder()
-        .results(userService.verifyEmail(request))
+        .results(userService.verifyEmail(email))
         .build();
     }
 
@@ -54,17 +53,17 @@ public class UserController {
         return response;
     }
 
-    @PutMapping("/{username}")
-    public ApiResponse<UserResponse> updateUser(@PathVariable String username , @RequestBody UserUpdateRequest request){
+    @PutMapping("/{email}")
+    public ApiResponse<UserResponse> updateUser(@PathVariable String email , @RequestBody UserUpdateRequest request){
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        response.setResults(userService.updateUser(username, request));
+        response.setResults(userService.updateUser(email, request));
         return response;
     }
     
-    @DeleteMapping("/{username}")
-    public ApiResponse<Void> deleteUser(@PathVariable String username){
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteUser(@PathVariable String id){
         ApiResponse<Void> response = new ApiResponse<>();
-        userService.deleteUser(username);
+        userService.deleteUser(id);
         return response;
     }
     

@@ -28,14 +28,14 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @NonFinal
-    static final String ADMIN_USER_NAME ="admin";
+    static final String ADMIN_EAMIL ="hoa1312004@gmail.com";
     @NonFinal
-    static final String ADMIN_PASSWORD = "admin";
+    static final String ADMIN_PASSWORD = "123@#@";
 
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository , RoleRepository roleRepository){
         return args ->{
-            if(userRepository.findById("ADMIN").isEmpty()){
+            if(userRepository.findByEmail(ADMIN_EAMIL).isEmpty()){
 
                 roleRepository.save(Role.builder()
                 .name(PredefinedRole.USER_ROLE)
@@ -50,7 +50,7 @@ public class ApplicationInitConfig {
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
             User user = User.builder()
-            .name(ADMIN_USER_NAME)
+            .email(ADMIN_EAMIL)
             .password(passwordEncoder.encode(ADMIN_PASSWORD))
             .roles(roles)
             .build();

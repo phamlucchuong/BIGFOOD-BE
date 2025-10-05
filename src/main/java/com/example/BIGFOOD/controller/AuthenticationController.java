@@ -21,7 +21,7 @@ import com.nimbusds.jose.JOSEException;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 
 public class AuthenticationController {
     @Autowired

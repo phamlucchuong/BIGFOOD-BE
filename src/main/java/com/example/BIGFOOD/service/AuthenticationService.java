@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthenticationService {
         @Autowired
-        UserRepository accountRepository;
+        UserRepository userRepository;
         @Autowired
         InvalidatedTokenRepository invalidatedTokenRepository;
      
@@ -54,14 +54,14 @@ public class AuthenticationService {
     
         public AuthenticationRespone authenticated (AuthenticationRequest request){
           PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-            var account = accountRepository.findById(request.getUsername())
+            var user = userRepository.findByEmail(request.getEmail())
                             .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
        
-            boolean authencated = passwordEncoder.matches(request.getPassword(), account.getPassword() );
+            boolean authencated = passwordEncoder.matches(request.getPassword(), user.getPassword() );
             if(!authencated){
                 throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
             }
-            String token = generatedToken(account);
+            String token = generatedToken(user);
             return AuthenticationRespone.builder()
                     .token(token)
                     .Authencationed(authencated)

@@ -17,7 +17,6 @@ import com.example.BIGFOOD.repository.UserRepository;
 import com.example.BIGFOOD.repository.RoleRepository;
 import com.example.BIGFOOD.dto.request.UserCreateRequest;
 import com.example.BIGFOOD.dto.request.UserUpdateRequest;
-import com.example.BIGFOOD.dto.request.VerifyEmailRequest;
 import com.example.BIGFOOD.dto.response.UserResponse;
 
 @Service
@@ -40,12 +39,12 @@ public class UserService {
          return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public Boolean verifyEmail(VerifyEmailRequest emailRequest){
-         return userRepository.findByEmail(emailRequest.getEmail());
+    public Boolean verifyEmail(String emailRequest){
+         return userRepository.existsByEmail(emailRequest);
     }
 
-    public UserResponse updateUser(String username , UserUpdateRequest request) {
-        User user = userRepository.findById(username)
+    public UserResponse updateUser(String email , UserUpdateRequest request) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
             userMapper.toUpdate(user, request);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -58,7 +57,7 @@ public class UserService {
          return  users;
     }
 
-    public void deleteUser(String username){
-        userRepository.deleteById(username);
+    public void deleteUser(String id){
+        userRepository.deleteById(id);
     }
 }

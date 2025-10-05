@@ -1,6 +1,5 @@
 package com.example.BIGFOOD.dto.request;
 
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserUpdateRequest {
+    String name;
     String password;
     String phone;
-    String email;
 }

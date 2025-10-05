@@ -1,7 +1,6 @@
 package com.example.BIGFOOD.entity;
 
 import java.util.Set;
-import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

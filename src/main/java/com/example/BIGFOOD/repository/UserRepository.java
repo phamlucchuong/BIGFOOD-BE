@@ -10,10 +10,9 @@ import org.springframework.stereotype.Repository;
 import com.example.BIGFOOD.entity.User;
 
 
-
-
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findById(String username);
-    boolean findByEmail(String email);
+    Optional<User> findByName(String name);
+    Optional<User> findByEmail(String email);
+    Boolean existsByEmail(String email);
 }

@@ -19,7 +19,7 @@ import com.example.BIGFOOD.dto.response.RoleResponse;
 import com.example.BIGFOOD.service.RoleService;
 
 @RestController
-@RequestMapping("/role")
+@RequestMapping("api/role")
 public class RoleController {
     @Autowired
     RoleService roleService;
