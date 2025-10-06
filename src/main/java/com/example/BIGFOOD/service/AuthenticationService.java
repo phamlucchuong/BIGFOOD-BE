@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.service;
+package com.example.bigfood.service;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -14,17 +14,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.example.BIGFOOD.dto.request.AuthenticationRequest;
-import com.example.BIGFOOD.dto.request.IntrospectRequest;
-import com.example.BIGFOOD.dto.request.LogoutRequest;
-import com.example.BIGFOOD.dto.response.AuthenticationRespone;
-import com.example.BIGFOOD.dto.response.IntrospectRespone;
-import com.example.BIGFOOD.entity.InvalidatedToken;
-import com.example.BIGFOOD.entity.User;
-import com.example.BIGFOOD.enums.ErrorCode;
-import com.example.BIGFOOD.exception.AppException;
-import com.example.BIGFOOD.repository.InvalidatedTokenRepository;
-import com.example.BIGFOOD.repository.UserRepository;
+import com.example.bigfood.dto.request.AuthenticationRequest;
+import com.example.bigfood.dto.request.IntrospectRequest;
+import com.example.bigfood.dto.request.LogoutRequest;
+import com.example.bigfood.dto.response.AuthenticationRespone;
+import com.example.bigfood.dto.response.IntrospectRespone;
+import com.example.bigfood.entity.InvalidatedToken;
+import com.example.bigfood.entity.User;
+import com.example.bigfood.enums.ErrorCode;
+import com.example.bigfood.exception.AppException;
+import com.example.bigfood.repository.InvalidatedTokenRepository;
+import com.example.bigfood.repository.UserRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;

@@ -1,6 +1,6 @@
-package com.example.BIGFOOD.exception;
+package com.example.bigfood.exception;
 
-import com.example.BIGFOOD.enums.ErrorCode;
+import com.example.bigfood.enums.ErrorCode;
 
 
 import lombok.Getter;

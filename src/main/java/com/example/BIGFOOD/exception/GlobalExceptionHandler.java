@@ -1,11 +1,11 @@
-package com.example.BIGFOOD.exception;
+package com.example.bigfood.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.example.BIGFOOD.dto.response.ApiResponse;
-import com.example.BIGFOOD.enums.ErrorCode;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.enums.ErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 

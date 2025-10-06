@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.controller;
+package com.example.bigfood.controller;
 
 import java.util.List;
 
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.BIGFOOD.dto.request.RoleCreateRequest;
-import com.example.BIGFOOD.dto.request.RoleUpdateRequest;
-import com.example.BIGFOOD.dto.response.ApiResponse;
-import com.example.BIGFOOD.dto.response.RoleResponse;
-import com.example.BIGFOOD.service.RoleService;
+import com.example.bigfood.dto.request.RoleCreateRequest;
+import com.example.bigfood.dto.request.RoleUpdateRequest;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.RoleResponse;
+import com.example.bigfood.service.RoleService;
 
 @RestController
 @RequestMapping("api/role")

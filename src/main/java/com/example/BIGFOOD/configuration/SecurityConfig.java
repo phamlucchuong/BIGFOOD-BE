@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.configuration;
+package com.example.bigfood.configuration;
 
 
 

@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.dto.response;
+package com.example.bigfood.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

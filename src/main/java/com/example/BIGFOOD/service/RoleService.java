@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.service;
+package com.example.bigfood.service;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.BIGFOOD.dto.request.RoleCreateRequest;
-import com.example.BIGFOOD.dto.request.RoleUpdateRequest;
-import com.example.BIGFOOD.dto.response.RoleResponse;
-import com.example.BIGFOOD.entity.Role;
-import com.example.BIGFOOD.enums.ErrorCode;
-import com.example.BIGFOOD.exception.AppException;
-import com.example.BIGFOOD.mapper.RoleMapper;
-import com.example.BIGFOOD.repository.PermissionRepository;
-import com.example.BIGFOOD.repository.RoleRepository;
+import com.example.bigfood.dto.request.RoleCreateRequest;
+import com.example.bigfood.dto.request.RoleUpdateRequest;
+import com.example.bigfood.dto.response.RoleResponse;
+import com.example.bigfood.entity.Role;
+import com.example.bigfood.enums.ErrorCode;
+import com.example.bigfood.exception.AppException;
+import com.example.bigfood.mapper.RoleMapper;
+import com.example.bigfood.repository.PermissionRepository;
+import com.example.bigfood.repository.RoleRepository;
 
 @Service
 public class RoleService {

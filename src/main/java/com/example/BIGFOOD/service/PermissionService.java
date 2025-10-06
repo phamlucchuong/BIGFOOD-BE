@@ -1,16 +1,16 @@
-package com.example.BIGFOOD.service;
+package com.example.bigfood.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.BIGFOOD.dto.request.PermissionCreateRequest;
-import com.example.BIGFOOD.dto.response.PermissionResponse;
-import com.example.BIGFOOD.enums.ErrorCode;
-import com.example.BIGFOOD.exception.AppException;
-import com.example.BIGFOOD.mapper.PermissionMapper;
-import com.example.BIGFOOD.repository.PermissionRepository;
+import com.example.bigfood.dto.request.PermissionCreateRequest;
+import com.example.bigfood.dto.response.PermissionResponse;
+import com.example.bigfood.enums.ErrorCode;
+import com.example.bigfood.exception.AppException;
+import com.example.bigfood.mapper.PermissionMapper;
+import com.example.bigfood.repository.PermissionRepository;
 
 @Service
 public class PermissionService {

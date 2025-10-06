@@ -1,13 +1,13 @@
-package com.example.BIGFOOD.controller;
+package com.example.bigfood.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.BIGFOOD.dto.request.UserCreateRequest;
-import com.example.BIGFOOD.dto.request.UserUpdateRequest;
-import com.example.BIGFOOD.dto.response.UserResponse;
-import com.example.BIGFOOD.dto.response.ApiResponse;
+import com.example.bigfood.dto.request.UserCreateRequest;
+import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.UserResponse;
+import com.example.bigfood.dto.response.ApiResponse;
 
-import com.example.BIGFOOD.service.UserService;
+import com.example.bigfood.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 

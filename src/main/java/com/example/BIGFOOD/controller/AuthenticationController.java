@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.controller;
+package com.example.bigfood.controller;
 
 import java.text.ParseException;
 
@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.BIGFOOD.dto.request.AuthenticationRequest;
-import com.example.BIGFOOD.dto.request.IntrospectRequest;
-import com.example.BIGFOOD.dto.request.LogoutRequest;
-import com.example.BIGFOOD.dto.response.ApiResponse;
-import com.example.BIGFOOD.dto.response.AuthenticationRespone;
-import com.example.BIGFOOD.dto.response.IntrospectRespone;
-import com.example.BIGFOOD.service.AuthenticationService;
+import com.example.bigfood.dto.request.AuthenticationRequest;
+import com.example.bigfood.dto.request.IntrospectRequest;
+import com.example.bigfood.dto.request.LogoutRequest;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.AuthenticationRespone;
+import com.example.bigfood.dto.response.IntrospectRespone;
+import com.example.bigfood.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 
 

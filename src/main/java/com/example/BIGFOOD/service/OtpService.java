@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.service;
+package com.example.bigfood.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

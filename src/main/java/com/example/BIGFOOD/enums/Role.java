@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.enums;
+package com.example.bigfood.enums;
 
 import lombok.Getter;
 

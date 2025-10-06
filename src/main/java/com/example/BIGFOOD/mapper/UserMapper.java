@@ -1,13 +1,13 @@
-package com.example.BIGFOOD.mapper;
+package com.example.bigfood.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.example.BIGFOOD.dto.request.UserCreateRequest;
-import com.example.BIGFOOD.dto.request.UserUpdateRequest;
-import com.example.BIGFOOD.dto.response.UserResponse;
-import com.example.BIGFOOD.entity.User;
+import com.example.bigfood.dto.request.UserCreateRequest;
+import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.UserResponse;
+import com.example.bigfood.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

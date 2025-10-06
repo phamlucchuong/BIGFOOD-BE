@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.service;
+package com.example.bigfood.service;
 
 import java.util.HashSet;
 import java.util.List;
@@ -8,16 +8,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import com.example.BIGFOOD.entity.User;
-import com.example.BIGFOOD.entity.Role;
-import com.example.BIGFOOD.enums.ErrorCode;
-import com.example.BIGFOOD.exception.AppException;
-import com.example.BIGFOOD.mapper.UserMapper;
-import com.example.BIGFOOD.repository.UserRepository;
-import com.example.BIGFOOD.repository.RoleRepository;
-import com.example.BIGFOOD.dto.request.UserCreateRequest;
-import com.example.BIGFOOD.dto.request.UserUpdateRequest;
-import com.example.BIGFOOD.dto.response.UserResponse;
+import com.example.bigfood.entity.User;
+import com.example.bigfood.entity.Role;
+import com.example.bigfood.enums.ErrorCode;
+import com.example.bigfood.exception.AppException;
+import com.example.bigfood.mapper.UserMapper;
+import com.example.bigfood.repository.UserRepository;
+import com.example.bigfood.repository.RoleRepository;
+import com.example.bigfood.dto.request.UserCreateRequest;
+import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.UserResponse;
 
 @Service
 public class UserService {

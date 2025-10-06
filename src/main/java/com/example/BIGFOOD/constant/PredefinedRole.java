@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.constant;
+package com.example.bigfood.constant;
 
 public class PredefinedRole {
     public static final String USER_ROLE = "USER";

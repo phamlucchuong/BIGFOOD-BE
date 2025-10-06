@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.controller;
+package com.example.bigfood.controller;
 
 import java.util.List;
 
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.BIGFOOD.dto.request.PermissionCreateRequest;
-import com.example.BIGFOOD.dto.response.ApiResponse;
-import com.example.BIGFOOD.dto.response.PermissionResponse;
-import com.example.BIGFOOD.service.PermissionService;
+import com.example.bigfood.dto.request.PermissionCreateRequest;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.PermissionResponse;
+import com.example.bigfood.service.PermissionService;
 
 @RestController
 @RequestMapping("api/permission")

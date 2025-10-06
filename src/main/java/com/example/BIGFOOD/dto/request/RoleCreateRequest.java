@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.dto.request;
+package com.example.bigfood.dto.request;
 
 
 import java.util.Set;

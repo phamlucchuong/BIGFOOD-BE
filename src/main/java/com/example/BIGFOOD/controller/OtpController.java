@@ -1,10 +1,10 @@
-package com.example.BIGFOOD.controller;
+package com.example.bigfood.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.BIGFOOD.dto.response.ApiResponse;
-import com.example.BIGFOOD.service.OtpService;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.service.OtpService;
 
 @RestController
 @RequestMapping("api/otp")

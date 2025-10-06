@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.dto.request;
+package com.example.bigfood.dto.request;
 
 
 
@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.example.BIGFOOD.entity.Permission;
+import com.example.bigfood.entity.Permission;
 @Data
 @Builder
 @NoArgsConstructor

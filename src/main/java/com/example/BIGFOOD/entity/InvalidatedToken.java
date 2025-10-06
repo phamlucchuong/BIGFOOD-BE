@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.entity;
+package com.example.bigfood.entity;
 
 
 
