@@ -1,4 +1,4 @@
-package com.example.BIGFOOD.configuration;
+package com.example.bigfood.configuration;
 
 import java.util.HashSet;
 
@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.BIGFOOD.constant.PredefinedRole;
-import com.example.BIGFOOD.entity.Role;
-import com.example.BIGFOOD.entity.User;
-import com.example.BIGFOOD.repository.RoleRepository;
-import com.example.BIGFOOD.repository.UserRepository;
+import com.example.bigfood.constant.PredefinedRole;
+import com.example.bigfood.entity.Role;
+import com.example.bigfood.entity.User;
+import com.example.bigfood.repository.RoleRepository;
+import com.example.bigfood.repository.UserRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
