@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name ="invalidatedToken")
+@Table(name ="invalidated_tokens")
 public class InvalidatedToken {
     @Id
     String id;

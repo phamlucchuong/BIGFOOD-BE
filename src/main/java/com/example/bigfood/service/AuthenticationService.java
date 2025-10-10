@@ -51,7 +51,7 @@ public class AuthenticationService {
         @NonFinal
         @Value("${jwt.signerKey}")
         protected String SIGN_KEY  ;
-    
+
         public AuthenticationRespone authenticated (AuthenticationRequest request){
           PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             var user = userRepository.findByEmail(request.getEmail())

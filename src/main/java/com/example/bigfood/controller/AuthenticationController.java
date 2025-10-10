@@ -17,33 +17,33 @@ import com.example.bigfood.dto.response.IntrospectRespone;
 import com.example.bigfood.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 
-
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 
 public class AuthenticationController {
     @Autowired
-    AuthenticationService authenticationService ;
+    AuthenticationService authenticationService;
 
     @PostMapping
-    public ApiResponse<AuthenticationRespone> authenticated(@RequestBody AuthenticationRequest request){
-           ApiResponse<AuthenticationRespone> apiResponse = new ApiResponse<>();
-           apiResponse.setResults(authenticationService.authenticated(request));
-         return apiResponse;
+    public ApiResponse<AuthenticationRespone> authenticated(@RequestBody AuthenticationRequest request) {
+        ApiResponse<AuthenticationRespone> apiResponse = new ApiResponse<>();
+        apiResponse.setResults(authenticationService.authenticated(request));
+        return apiResponse;
     }
+
     @PostMapping("/introspect")
-    public ApiResponse<IntrospectRespone> authenticate(@RequestBody IntrospectRequest request) throws ParseException , JOSEException{
+    public ApiResponse<IntrospectRespone> authenticate(@RequestBody IntrospectRequest request)
+            throws ParseException, JOSEException {
         return ApiResponse.<IntrospectRespone>builder()
-        .results(authenticationService.introspect(request))
-        .build();
+                .results(authenticationService.introspect(request))
+                .build();
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException , JOSEException{
+    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
-        .build();
+                .build();
     }
-
 
 }
