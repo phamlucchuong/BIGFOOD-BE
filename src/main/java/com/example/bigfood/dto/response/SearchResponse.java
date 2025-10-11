@@ -1,25 +1,24 @@
 package com.example.bigfood.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ApiResponse<T> {
-    @Builder.Default
-    boolean ok = true;
-    @Builder.Default
-    int code = 1000;
-    String message;
-    T results;
+public class SearchResponse {
+    String id;
+    String content;
+    int count;
+    LocalDateTime lastSearchedAt;
 }

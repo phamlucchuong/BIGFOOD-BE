@@ -1,23 +1,21 @@
- package com.example.bigfood.enums;
+package com.example.bigfood.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
- public enum ErrorCode {
-   UNCATEGORIZED_EXCEPTION(9999 , "Uncategorized error"),
-   ACCOUNT_NOT_FIND (1000 , "No account yet !"),
-   AUTHENTICATION_FAILED (1001 , "Your password is incorrect !"),
-   UNAUTHENTICATED(1004 , "Bạn không có quyền truy cập"),
-   PERMISSION_EXITED (1009 , "Permission exited"),
-   Role_EXITED (1009 , "Role exited"),
-   Role_NOT_FIND (1009 , "Role exited")
-    ;
-    private int code;
-    private String message;
- }
+public enum ErrorCode {
+  UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
+  ACCOUNT_NOT_FIND(1000, "No account yet !"),
+  AUTHENTICATION_FAILED(1001, "Your password is incorrect !"),
+  UNAUTHENTICATED(1004, "Bạn không có quyền truy cập"),
+  PERMISSION_EXITED(1009, "Permission exited"),
+  Role_EXITED(1009, "Role exited"),
+  Role_NOT_FIND(1009, "Role exited");
+
+  private int code;
+  private String message;
+}
