@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "permission")
+@Table(name = "permissions")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Permission {
     @Id
     private String name ;
-    private String decription;
+    private String description;
 }

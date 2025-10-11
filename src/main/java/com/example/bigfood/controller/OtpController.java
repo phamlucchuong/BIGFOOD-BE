@@ -7,7 +7,7 @@ import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.service.OtpService;
 
 @RestController
-@RequestMapping("api/otp")
+@RequestMapping("/api/otp")
 public class OtpController {
 
     @Autowired

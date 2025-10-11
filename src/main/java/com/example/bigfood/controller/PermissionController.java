@@ -17,7 +17,7 @@ import com.example.bigfood.dto.response.PermissionResponse;
 import com.example.bigfood.service.PermissionService;
 
 @RestController
-@RequestMapping("api/permission")
+@RequestMapping("/api/permission")
 public class PermissionController {
     @Autowired
     private PermissionService permissionService;
