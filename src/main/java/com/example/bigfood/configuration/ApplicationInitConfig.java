@@ -39,7 +39,10 @@ public class ApplicationInitConfig {
         return args -> {
             if (userRepository.findByEmail(ADMIN_EAMIL).isEmpty()) {
                 var roles = new HashSet<Role>();
-                Role role = roleRepository.findByName("ADMIN").orElseThrow(() -> new AppException(ErrorCode.Role_NOT_FIND));
+                // Thay vì findByName, dùng findById để chắc chắn hơn.
+                // Giả sử bạn đã có file migration để chèn role 'ADMIN'.
+                // Nếu không, logic này vẫn có thể thất bại.
+                Role role = roleRepository.findById("ADMIN").orElseThrow(() -> new AppException(ErrorCode.Role_NOT_FIND));
                 roles.add(role);
                 
                 User user = User.builder()
