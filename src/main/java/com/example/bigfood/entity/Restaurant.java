@@ -5,6 +5,7 @@ import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -29,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Restaurant {
     @Id
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @Column(name = "user_id", columnDefinition = "CHAR(36)")
     String userId;
     

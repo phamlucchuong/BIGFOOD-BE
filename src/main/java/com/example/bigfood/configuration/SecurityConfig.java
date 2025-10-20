@@ -41,7 +41,8 @@ public class SecurityConfig {
     private final String[] PUBLIC_GET_ENDPOINT = {
             "api/users/verify-email/{email}",
             "api/otp/verify",
-            "api/search"
+            "api/search",
+            "api/restaurant-categories",
     };
 
     @Autowired
