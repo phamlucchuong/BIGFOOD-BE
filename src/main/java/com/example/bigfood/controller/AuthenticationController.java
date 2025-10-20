@@ -12,8 +12,8 @@ import com.example.bigfood.dto.request.AuthenticationRequest;
 import com.example.bigfood.dto.request.IntrospectRequest;
 import com.example.bigfood.dto.request.LogoutRequest;
 import com.example.bigfood.dto.response.ApiResponse;
-import com.example.bigfood.dto.response.AuthenticationRespone;
-import com.example.bigfood.dto.response.IntrospectRespone;
+import com.example.bigfood.dto.response.AuthenticationResponse;
+import com.example.bigfood.dto.response.IntrospectResponse;
 import com.example.bigfood.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 
@@ -25,16 +25,16 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping
-    public ApiResponse<AuthenticationRespone> authenticated(@RequestBody AuthenticationRequest request) {
-        ApiResponse<AuthenticationRespone> apiResponse = new ApiResponse<>();
+    public ApiResponse<AuthenticationResponse> authenticated(@RequestBody AuthenticationRequest request) {
+        ApiResponse<AuthenticationResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResults(authenticationService.authenticated(request));
         return apiResponse;
     }
 
     @PostMapping("/introspect")
-    public ApiResponse<IntrospectRespone> authenticate(@RequestBody IntrospectRequest request)
+    public ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
             throws ParseException, JOSEException {
-        return ApiResponse.<IntrospectRespone>builder()
+        return ApiResponse.<IntrospectResponse>builder()
                 .results(authenticationService.introspect(request))
                 .build();
     }

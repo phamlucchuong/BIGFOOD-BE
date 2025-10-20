@@ -1,4 +1,4 @@
-package com.example.bigfood.dto.response;
+package com.example.bigfood.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IntrospectRespone {
-   private boolean authenticated;
+public class RestaurantCategoryCreateRequest {
+    String name;
 }

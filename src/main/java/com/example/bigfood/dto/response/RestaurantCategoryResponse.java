@@ -1,5 +1,9 @@
 package com.example.bigfood.dto.response;
 
+import java.util.Set;
+
+import com.example.bigfood.entity.Restaurant;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthenticationRespone {
-    private String token;
-    private boolean Authencationed;
+public class RestaurantCategoryResponse {
+    String id;
+    String name;
+    Set<Restaurant> restaurants;
 }

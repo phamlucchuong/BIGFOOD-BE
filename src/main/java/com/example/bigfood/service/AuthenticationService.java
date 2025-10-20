@@ -17,8 +17,8 @@ import org.springframework.util.CollectionUtils;
 import com.example.bigfood.dto.request.AuthenticationRequest;
 import com.example.bigfood.dto.request.IntrospectRequest;
 import com.example.bigfood.dto.request.LogoutRequest;
-import com.example.bigfood.dto.response.AuthenticationRespone;
-import com.example.bigfood.dto.response.IntrospectRespone;
+import com.example.bigfood.dto.response.AuthenticationResponse;
+import com.example.bigfood.dto.response.IntrospectResponse;
 import com.example.bigfood.entity.InvalidatedToken;
 import com.example.bigfood.entity.User;
 import com.example.bigfood.enums.ErrorCode;
@@ -52,7 +52,7 @@ public class AuthenticationService {
         @Value("${jwt.signerKey}")
         protected String SIGN_KEY  ;
 
-        public AuthenticationRespone authenticated (AuthenticationRequest request){
+        public AuthenticationResponse authenticated (AuthenticationRequest request){
           PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             var user = userRepository.findByEmail(request.getEmail())
                             .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
@@ -62,13 +62,13 @@ public class AuthenticationService {
                 throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
             }
             String token = generatedToken(user);
-            return AuthenticationRespone.builder()
+            return AuthenticationResponse.builder()
                     .token(token)
                     .Authencationed(authencated)
                     .build();
         }
 
-        public IntrospectRespone introspect (IntrospectRequest request)  throws JOSEException , ParseException  {
+        public IntrospectResponse introspect (IntrospectRequest request)  throws JOSEException , ParseException  {
               var token = request.getToken();
               boolean isValid = true;
               try {
@@ -76,7 +76,7 @@ public class AuthenticationService {
               } catch (Exception e) {
                   isValid = false;
               }
-              return IntrospectRespone.builder()
+              return IntrospectResponse.builder()
                     .authenticated(isValid)
                     .build();
 

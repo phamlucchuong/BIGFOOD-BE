@@ -35,12 +35,7 @@ public class PermissionService {
                                 .toList();  
         return listPResponses;
     }
-
     public void deletePermission(String name){
          permissionRepository.deleteById(name);
-    }
-
-
-
-    
+    }  
 }
