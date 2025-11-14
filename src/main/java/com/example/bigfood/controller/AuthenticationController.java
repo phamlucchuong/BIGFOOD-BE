@@ -3,6 +3,8 @@ package com.example.bigfood.controller;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,10 +42,18 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
-        authenticationService.logout(request);
+    public ApiResponse<Void> logout(@AuthenticationPrincipal Jwt jwt) throws ParseException, JOSEException {
+        String token = jwt.getTokenValue();
+        authenticationService.logout(token);
         return ApiResponse.<Void>builder()
                 .build();
     }
+    
+    // @PostMapping("/logout")
+    // public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    //     authenticationService.logout(request);
+    //     return ApiResponse.<Void>builder()
+    //             .build();
+    // }
 
 }

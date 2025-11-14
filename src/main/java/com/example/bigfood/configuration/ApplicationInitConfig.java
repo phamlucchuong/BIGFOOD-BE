@@ -1,5 +1,6 @@
 package com.example.bigfood.configuration;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import org.springframework.boot.ApplicationRunner;
@@ -29,15 +30,15 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @NonFinal
-    static final String ADMIN_EAMIL = "hoa1312004@gmail.com";
+    static final String ADMIN_EMAIL = "lucchuongg@gmail.com";
     @NonFinal
-    static final String ADMIN_PASSWORD = "123@#@";
+    static final String ADMIN_PASSWORD = "123456@";
 
     @Bean
     @Transactional
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
         return args -> {
-            if (userRepository.findByEmail(ADMIN_EAMIL).isEmpty()) {
+            if (userRepository.findByEmail(ADMIN_EMAIL).isEmpty()) {
                 var roles = new HashSet<Role>();
                 // Thay vì findByName, dùng findById để chắc chắn hơn.
                 // Giả sử bạn đã có file migration để chèn role 'ADMIN'.
@@ -46,10 +47,12 @@ public class ApplicationInitConfig {
                 roles.add(role);
                 
                 User user = User.builder()
-                        .email(ADMIN_EAMIL)
-                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
-                        .roles(roles)
                         .name("admin")
+                        .email(ADMIN_EMAIL)
+                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                        .phone("0377948504")
+                        .roles(roles)
+                        .createdAt(LocalDateTime.now())
                         .build();
 
                 userRepository.save(user);

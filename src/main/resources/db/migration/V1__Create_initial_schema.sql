@@ -6,6 +6,11 @@ CREATE TABLE users (
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    image_url VARCHAR(255),
+    address VARCHAR(255),
+    latitude DOUBLE,
+    longitude DOUBLE,
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
