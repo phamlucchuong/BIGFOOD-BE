@@ -82,8 +82,10 @@ public class AuthenticationService {
 
         }
 
-         public void logout (LogoutRequest request) throws JOSEException, ParseException  {
-             var signToken = verifySignedJWT(request.getToken());
+         public void logout (String token) throws JOSEException, ParseException  {
+        //  public void logout (LogoutRequest request) throws JOSEException, ParseException  {
+             var signToken = verifySignedJWT(token);
+            //  var signToken = verifySignedJWT(request.getToken());
              var jwtID = signToken.getJWTClaimsSet().getJWTID();
              var expriryDate = signToken.getJWTClaimsSet().getExpirationTime();
             InvalidatedToken  invalidatedToken = new InvalidatedToken().builder()

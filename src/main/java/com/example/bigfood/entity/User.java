@@ -1,5 +1,6 @@
 package com.example.bigfood.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +38,14 @@ public class User {
     String email;
     String password;
     String phone;
+    String address;
+    double latitude;
+    double longitude;
+    String image_url;
+
+
+    @Column(name = "created_at", updatable = false)
+    LocalDateTime createdAt;
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     boolean isDeleted;

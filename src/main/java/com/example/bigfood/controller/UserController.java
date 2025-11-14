@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
+import com.example.bigfood.entity.User;
 import com.example.bigfood.dto.response.ApiResponse;
 
 import com.example.bigfood.service.UserService;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,5 +69,15 @@ public class UserController {
         userService.deleteUser(id);
         return response;
     }
+
+    @PostMapping("/admin-role")
+    public ApiResponse<UserResponse> addAdminRole(@AuthenticationPrincipal Jwt jwt) {
+        //TODO: process POST request
+        String id = jwt.getId();
+        return ApiResponse.<UserResponse>builder()
+                .results(userService.addAdminRole(id))
+                .build();
+    }
+    
     
 }
