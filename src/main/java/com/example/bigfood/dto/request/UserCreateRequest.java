@@ -15,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 public class UserCreateRequest {
     String name;
     String phone;
-    String password;
     String email;
+    String password;
 }
