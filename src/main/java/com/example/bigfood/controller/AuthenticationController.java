@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.AuthenticationRequest;
 import com.example.bigfood.dto.request.IntrospectRequest;
-import com.example.bigfood.dto.request.LogoutRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.AuthenticationResponse;
 import com.example.bigfood.dto.response.IntrospectResponse;

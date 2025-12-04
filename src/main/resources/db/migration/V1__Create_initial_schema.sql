@@ -6,11 +6,8 @@ CREATE TABLE users (
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
+    image_id VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    image_url VARCHAR(255),
-    address VARCHAR(255),
-    latitude DOUBLE,
-    longitude DOUBLE,
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
@@ -65,9 +62,13 @@ create table restaurant_categories (
 
 CREATE TABLE restaurants (
     user_id CHAR(36) NOT NULL,
-    name VARCHAR(255) NOT NULL unique,
+    restaurant_name VARCHAR(255) NOT NULL unique,
     address VARCHAR(255) NOT NULL,
-    image_url VARCHAR(255) NOT NULL,
+    latitude DOUBLE NOT NULL,
+    longitude DOUBLE NOT NULL,
+    banner_id VARCHAR(255),
+    license_id VARCHAR(255) NOT NULL,
+    is_approved BOOLEAN DEFAULT FALSE,
     
     PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id)

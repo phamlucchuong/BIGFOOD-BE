@@ -18,12 +18,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,10 +40,8 @@ public class User {
     String email;
     String password;
     String phone;
-    String address;
-    double latitude;
-    double longitude;
-    String image_url;
+    @Column(name = "image_id")
+    String imageId;
 
 
     @Column(name = "created_at", updatable = false)

@@ -1,5 +1,7 @@
 package com.example.bigfood.dto.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,13 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@FieldDefaults(level =  AccessLevel.PRIVATE)
-public class UserCreateRequest {
-    String name;
-    String phone;
-    String email;
-    String password;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class CreateRestaurantRequest {
+    String restaurantName;
+    String address;
+    MultipartFile licenseFile;
 }

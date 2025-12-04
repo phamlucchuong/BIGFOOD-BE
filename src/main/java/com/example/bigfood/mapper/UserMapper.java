@@ -12,6 +12,8 @@ import com.example.bigfood.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User toUser(UserCreateRequest request);
+
+    @Mapping(target = "isDeleted", expression = "java(user.isDeleted())")
     UserResponse toUserResponse(User user);
     
     @Mapping(target = "roles" , ignore = true)

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
-import com.example.bigfood.entity.User;
+import com.example.bigfood.dto.response.UserSummaryResponse;
 import com.example.bigfood.dto.response.ApiResponse;
 
 import com.example.bigfood.service.UserService;
@@ -15,10 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,6 +55,15 @@ public class UserController {
         return response;
     }
 
+    @GetMapping("/summary")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<UserSummaryResponse> getUserSummary() {
+        return ApiResponse.<UserSummaryResponse>builder()
+                .results(userService.getUserSummary())
+                .build();
+    }
+    
+
     @PutMapping("/{email}")
     public ApiResponse<UserResponse> updateUser(@PathVariable String email , @RequestBody UserUpdateRequest request){
         ApiResponse<UserResponse> response = new ApiResponse<>();
@@ -63,17 +71,16 @@ public class UserController {
         return response;
     }
     
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN') and #id != principal.id")
     public ApiResponse<Void> deleteUser(@PathVariable String id){
-        ApiResponse<Void> response = new ApiResponse<>();
         userService.deleteUser(id);
-        return response;
+        return ApiResponse.<Void>builder().build();
     }
 
-    @PostMapping("/admin-role")
-    public ApiResponse<UserResponse> addAdminRole(@AuthenticationPrincipal Jwt jwt) {
-        //TODO: process POST request
-        String id = jwt.getId();
+    @PatchMapping("/{id}/admin-role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<UserResponse> addAdminRole(@PathVariable String id) {
         return ApiResponse.<UserResponse>builder()
                 .results(userService.addAdminRole(id))
                 .build();

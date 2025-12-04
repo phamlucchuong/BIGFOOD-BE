@@ -2,6 +2,7 @@ package com.example.bigfood.repository;
 
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByName(String name);
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
+
+    // Chỉ cần khai báo dòng này là đủ
+    long countByCreatedAtBetweenAndIsDeletedFalse(LocalDateTime startTime, LocalDateTime endTime);
 }
