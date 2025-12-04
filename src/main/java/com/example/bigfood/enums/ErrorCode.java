@@ -2,10 +2,8 @@ package com.example.bigfood.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public enum ErrorCode {
   UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),

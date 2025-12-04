@@ -34,14 +34,24 @@ public class Restaurant {
     @Column(name = "user_id", columnDefinition = "CHAR(36)")
     String userId;
     
-    @Column(name = "name")
-    String name;
+    @Column(name = "restaurant_name")
+    String restaurantName;
     
     @Column(name = "address")
     String address;
+
+    double latitude;
+    double longitude;
     
-    @Column(name = "image_url")
-    String imageUrl;
+    @Column(name = "banner_id")
+    String bannerId;
+    
+    @Column(name = "license_id")
+    String licenseId;
+    
+    @Column(name = "is_approved")
+    Boolean isApproved;
+
 
     @ManyToMany
     @JoinTable(
