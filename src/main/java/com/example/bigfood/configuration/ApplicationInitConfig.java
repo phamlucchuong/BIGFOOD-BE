@@ -43,7 +43,7 @@ public class ApplicationInitConfig {
                 // Thay vì findByName, dùng findById để chắc chắn hơn.
                 // Giả sử bạn đã có file migration để chèn role 'ADMIN'.
                 // Nếu không, logic này vẫn có thể thất bại.
-                Role role = roleRepository.findById("ADMIN").orElseThrow(() -> new AppException(ErrorCode.Role_NOT_FIND));
+                Role role = roleRepository.findById("ADMIN").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
                 roles.add(role);
                 
                 User user = User.builder()

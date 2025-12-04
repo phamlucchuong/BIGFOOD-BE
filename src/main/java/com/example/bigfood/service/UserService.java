@@ -32,6 +32,16 @@ public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+
+    User getUserById(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+    }
+
+    boolean existById(String id) {
+        return userRepository.existsById(id);
+    }
+
     public UserResponse createUser(UserCreateRequest request) {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -73,7 +83,7 @@ public class UserService {
         HashSet<Role> roles = new HashSet<>(user.getRoles());
 
         Role adminRole = roleRepository.findById("ADMIN")
-                .orElseThrow(() -> new AppException(ErrorCode.Role_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         roles.add(adminRole);
         user.setRoles(roles);

@@ -66,7 +66,7 @@ CREATE TABLE restaurants (
     address VARCHAR(255) NOT NULL,
     latitude DOUBLE NOT NULL,
     longitude DOUBLE NOT NULL,
-    banner_id VARCHAR(255) NOT NULL,
+    banner_id VARCHAR(255),
     license_id VARCHAR(255) NOT NULL,
     is_approved BOOLEAN DEFAULT FALSE,
     

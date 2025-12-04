@@ -20,4 +20,5 @@ public class RestaurantResponse {
     double latitude;
     double longitude;
     String bannerId;
+    String licenseId;
 }

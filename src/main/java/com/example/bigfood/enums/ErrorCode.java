@@ -11,11 +11,13 @@ public enum ErrorCode {
   AUTHENTICATION_FAILED(1001, "Your password is incorrect !"),
   UNAUTHENTICATED(1004, "Bạn không có quyền truy cập"),
   PERMISSION_EXITED(1009, "Permission exited"),
-  Role_EXITED(1009, "Role exited"),
-  Role_NOT_FIND(1009, "Role exited"),
+  ROLE_ALREADY_EXISTS(1009, "Role exited"),
+  ROLE_NOT_FOUND(1009, "Role exited"),
+  RESTAURANT_CATEGORY_NOT_EXISTS(1008, "Restaurant category not exists"),
   RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Restaurant category already exists"),
-  RESTAURANT_CATEGORY_NOT_EXISTS(1005, "Restaurant category not exists");
-
+  RESTAURANT_NOT_EXISTS(1006, "Restaurant category not exists"),
+  RESTAURANT_ALREADY_EXISTS(1007, "Restaurant already exists"),
+  ;
 
   private int code;
   private String message;

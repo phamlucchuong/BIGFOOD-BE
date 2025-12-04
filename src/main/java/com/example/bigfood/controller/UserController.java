@@ -6,7 +6,6 @@ import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.UserSummaryResponse;
-import com.example.bigfood.entity.User;
 import com.example.bigfood.dto.response.ApiResponse;
 
 import com.example.bigfood.service.UserService;
@@ -17,9 +16,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;

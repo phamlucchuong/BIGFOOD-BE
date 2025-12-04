@@ -30,7 +30,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Restaurant {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @Column(name = "user_id", columnDefinition = "CHAR(36)")
     String userId;
     
@@ -49,7 +48,7 @@ public class Restaurant {
     @Column(name = "license_id")
     String licenseId;
     
-    @Column(name = "is_approved")
+    @Column(name = "is_approved", columnDefinition = "BOOLEAN DEFAULT FALSE")
     Boolean isApproved;
 
 
