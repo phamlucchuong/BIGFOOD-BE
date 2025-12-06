@@ -1,6 +1,7 @@
 package com.example.bigfood.controller;
 
 import java.io.IOException;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,11 +17,11 @@ import com.example.bigfood.service.UserService;
 public class MediaController {
 
     private final CloudinaryService cloudinaryService;
-    private final UserService userService; // Dịch vụ để lưu URL vào DB
+    // private final UserService userService; // Dịch vụ để lưu URL vào DB
 
     public MediaController(CloudinaryService cloudinaryService, UserService userService) {
         this.cloudinaryService = cloudinaryService;
-        this.userService = userService;
+        // this.userService = userService;
     }
 
     @PostMapping("/profile-picture")

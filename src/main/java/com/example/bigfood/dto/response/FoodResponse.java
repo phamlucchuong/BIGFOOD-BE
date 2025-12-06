@@ -1,11 +1,5 @@
 package com.example.bigfood.dto.response;
 
-
-import java.time.LocalDateTime;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,14 +11,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserResponse {
+public class FoodResponse {
     String id;
     String name;
-    String phone;
-    String email;
-    Set<RoleResponse> roles;
-    LocalDateTime createdAt;
-
-    @JsonProperty("isDeleted")
+    String description;
+    String imageId;
+    double price;
+    int count;
+    boolean isAvailable;
     boolean isDeleted;
+    String categoryName;
 }

@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +14,10 @@ import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.UserMapper;
 import com.example.bigfood.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import com.example.bigfood.repository.RoleRepository;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
@@ -22,15 +25,13 @@ import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.UserSummaryResponse;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
+    RoleRepository roleRepository;
+    UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    UserMapper userMapper;
 
 
     User getUserById(String id) {

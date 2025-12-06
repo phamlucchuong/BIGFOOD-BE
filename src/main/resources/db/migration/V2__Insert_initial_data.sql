@@ -21,3 +21,11 @@ INSERT INTO role_permissions (role_name, permission_name) VALUES
 ('ADMIN', 'UPDATE_DATA'),
 ('ADMIN', 'GET_DATA'),
 ('ADMIN', 'DELETE_DATA');
+
+
+
+INSERT INTO restaurant_categories ( id ,name) VALUES
+(UUID(), 'Đồ Uống'),
+(UUID(), 'Thức Ăn Nhanh'),
+(UUID(), 'Món Á-Âu'),
+(UUID(), 'Cơm');

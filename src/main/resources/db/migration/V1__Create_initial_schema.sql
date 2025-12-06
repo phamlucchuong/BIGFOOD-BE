@@ -3,7 +3,7 @@
 CREATE TABLE users (
     id CHAR(36) PRIMARY KEY,          -- UUID lưu dạng chuỗi
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
+    email VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     image_id VARCHAR(255),
@@ -100,6 +100,8 @@ create table ratings (
 create table food_categories (
     id char(36) primary key,
     name varchar(255) not null,
+    icon_index int check (icon_index >= 0),
+    is_deleted boolean default false,
     restaurant_id char(36),
     
     foreign key (restaurant_id) references restaurants(user_id)
@@ -109,10 +111,11 @@ create table foods (
     id char(36) primary key,
     name varchar(255) not null,
     description text,
-    image_url varchar(255),
+    image_id varchar(255),
     price decimal(10, 2) not null check (price >= 0),
     count int default 0,
     is_deleted boolean default false,
+    is_available boolean default true,
     food_category_id char(36),
 
     foreign key (food_category_id) references food_categories(id)

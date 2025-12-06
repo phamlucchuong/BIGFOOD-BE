@@ -15,8 +15,12 @@ public enum ErrorCode {
   ROLE_NOT_FOUND(1009, "Role exited"),
   RESTAURANT_CATEGORY_NOT_EXISTS(1008, "Restaurant category not exists"),
   RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Restaurant category already exists"),
-  RESTAURANT_NOT_EXISTS(1006, "Restaurant category not exists"),
+  RESTAURANT_NOT_EXISTS(1006, "Restaurant not exists"),
   RESTAURANT_ALREADY_EXISTS(1007, "Restaurant already exists"),
+  FOOD_CATEGORY_ALREADY_EXISTS(1008, "Food category already exists"), 
+  FOOD_CATEGORY_NOT_EXISTS(1009, "Food category not exists"), 
+  FOOD_CATEGORY_HAS_FOODS(1010, "Food category has foods"), 
+  FOOD_NOT_EXISTS(1011, "Food not exists")
   ;
 
   private int code;

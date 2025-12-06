@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
-@EntityScan(basePackages = "com.example.bigfood")
+@EntityScan(basePackages = "com.example.bigfood") 
 public class BigfoodBeApplication {
 
 	public static void main(String[] args) {
