@@ -23,6 +23,10 @@ public class FoodService {
     CloudinaryService cloudinaryService;
     FoodMapper foodMapper;
 
+    public Food getFoodById(String itemId) {
+        return foodRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Food not found"));
+    }
 
     public boolean hasAvailableFood(String categoryId) {
         return foodRepository.countByCategory_IdAndIsAvailableTrue(categoryId) > 0;
@@ -32,21 +36,28 @@ public class FoodService {
         return foodRepository.countByCategoryId(categoryId) > 0;
     }
 
-    public Food createNewFood(FoodCategory category, CreateFoodRequest request) throws IOException {
-        String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
-        
-        return foodRepository.save(
-            Food.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .price(request.getPrice())
-                .imageId(imageId)
-                .category(category)
-                .build()
-        );
+    public void increaseCount(int amount, String foodId) {
+        foodRepository.increaseCountById(foodId, amount);
     }
 
-	public List<FoodResponse> getAllByUserId(String userId) {
-		return foodMapper.toListFoodResponses(foodRepository.findAllByRestaurantUserId(userId));
-	}
+    public Food createNewFood(FoodCategory category, CreateFoodRequest request) throws IOException {
+        String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
+
+        return foodRepository.save(
+                Food.builder()
+                        .name(request.getName())
+                        .description(request.getDescription())
+                        .price(request.getPrice())
+                        .imageId(imageId)
+                        .category(category)
+                        .build());
+    }
+
+    public List<FoodResponse> getAllByUserId(String userId) {
+        return foodMapper.toListFoodResponses(foodRepository.findAllByRestaurantUserId(userId));
+    }
+
+    public void deleteFoodById(String itemId) {
+        foodRepository.deleteById(itemId);
+    }
 }

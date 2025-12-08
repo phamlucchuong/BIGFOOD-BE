@@ -24,17 +24,18 @@ public class SearchService {
 
     public void addSearch(SearchRequest request) {
         String searchContent = request.getContent().toLowerCase().trim();
-        if(searchContent == "") return;
+        if (searchContent == "")
+            return;
 
         var existingSearch = historySearchRepository.findByContent(searchContent);
-        if(existingSearch.isPresent()) {
+        if (existingSearch.isPresent()) {
             HistorySearch historySearch = existingSearch.get();
             historySearch.setCount(historySearch.getCount() + 1);
             historySearchRepository.save(historySearch);
         } else {
             HistorySearch newSearch = HistorySearch.builder()
                     .content(searchContent)
-                    .count(1) 
+                    .count(1)
                     .build();
             historySearchRepository.save(newSearch);
         }

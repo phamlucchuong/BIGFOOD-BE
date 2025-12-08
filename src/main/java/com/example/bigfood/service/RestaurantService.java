@@ -12,6 +12,7 @@ import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateFoodCategoryRequest;
 import com.example.bigfood.dto.response.FoodCategoryResponse;
 import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.entity.Food;
 import com.example.bigfood.entity.FoodCategory;
@@ -23,7 +24,6 @@ import com.example.bigfood.mapper.FoodCategoryMapper;
 import com.example.bigfood.mapper.FoodMapper;
 import com.example.bigfood.mapper.RestaurantMapper;
 import com.example.bigfood.repository.RestaurantRepository;
-import com.example.bigfood.service.GoongService.GoongLocation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,6 +41,11 @@ public class RestaurantService {
     FoodMapper foodMapper;
     FoodCategoryService foodCategoryService;
     FoodService foodService;
+
+    public Restaurant getRestaurantById(String restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_EXISTS));
+    }
 
     public boolean existsByUserId(String userId) {
         return restaurantRepository.existsByUserId(userId);

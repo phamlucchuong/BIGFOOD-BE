@@ -45,14 +45,8 @@ public class AuthenticationController {
         String token = jwt.getTokenValue();
         authenticationService.logout(token);
         return ApiResponse.<Void>builder()
+                .message("Logout successfully")
                 .build();
     }
-    
-    // @PostMapping("/logout")
-    // public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
-    //     authenticationService.logout(request);
-    //     return ApiResponse.<Void>builder()
-    //             .build();
-    // }
 
 }

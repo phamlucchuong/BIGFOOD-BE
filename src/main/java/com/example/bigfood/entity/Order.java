@@ -1,7 +1,9 @@
 package com.example.bigfood.entity;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,19 +11,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"orderDetails", "user", "restaurant"})
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Order {
     @Id
@@ -31,13 +38,16 @@ public class Order {
 
     @Column(name = "status", nullable = false, 
     columnDefinition = "VARCHAR(15) default 'PENDING' check (status in ('PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED', 'REJECTED'))")
-    String status;
+    @Builder.Default
+    String status = "PENDING";
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP default current_timestamp")
-    LocalDateTime createdAt;
+    @Builder.Default
+    LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP default current_timestamp on update current_timestamp")
-    LocalDateTime updatedAt;
+    @Builder.Default
+    LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "delivery_address", nullable = false, columnDefinition = "VARCHAR(255)")
     String deliveryAddress;
@@ -70,4 +80,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", columnDefinition = "VARCHAR(36)", nullable = false)
     Restaurant restaurant;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    Set<OrderDetail> orderDetails;
 }
