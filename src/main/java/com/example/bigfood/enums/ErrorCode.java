@@ -6,25 +6,22 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-UNCATEGORIZED_EXCEPTION(9999, "Lỗi không xác định"),
-ACCOUNT_NOT_FIND(1000, "Không tìm thấy tài khoản!"),
-ACCOUNT_DELETED(1003, "Tài khoản đã bị xóa!"),
-AUTHENTICATION_FAILED(1001, "Mật khẩu của bạn không đúng!"),
-UNAUTHENTICATED(1004, "Bạn không có quyền truy cập"),
-PERMISSION_EXITED(1009, "Quyền đã tồn tại"),
-ROLE_ALREADY_EXISTS(1009, "Vai trò đã tồn tại"),
-ROLE_NOT_FOUND(1009, "Không tìm thấy vai trò"),
-CATEGORY_REQUIRED(1002, "Phải chọn ít nhất một lĩnh vực kinh doanh"),
-CATEGORY_NOT_FOUND(1003, "Một số lĩnh vực kinh doanh không tồn tại"),
-GEOCODING_FAILED(1004, "Không thể chuyển đổi địa chỉ thành tọa độ"),
-FILE_UPLOAD_FAILED(1005, "Tải tệp lên thất bại"),
-
-RESTAURANT_CATEGORY_NOT_EXISTS(1008, "Danh mục nhà hàng không tồn tại"),
-RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Danh mục nhà hàng đã tồn tại"),
-RESTAURANT_NOT_EXISTS(1006, "Nhà hàng không tồn tại"),
-RESTAURANT_ALREADY_EXISTS(1007, "Nhà hàng đã tồn tại"),
-RESTAURANT_UNAUTHENTICATED(1010, "Nhà hàng của bạn đang chờ phê duyệt"), 
-EMAIL_EXISTED (1011, "Email đã tồn tại"), 
+  UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
+  ACCOUNT_NOT_FIND(1000, "No account yet !"),
+  AUTHENTICATION_FAILED(1001, "Your password is incorrect !"),
+  UNAUTHENTICATED(1004, "Bạn không có quyền truy cập"),
+  PERMISSION_EXITED(1009, "Permission exited"),
+  ROLE_ALREADY_EXISTS(1009, "Role exited"),
+  ROLE_NOT_FOUND(1009, "Role exited"),
+  RESTAURANT_CATEGORY_NOT_EXISTS(1008, "Restaurant category not exists"),
+  RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Restaurant category already exists"),
+  RESTAURANT_NOT_EXISTS(1006, "Restaurant category not exists"),
+  RESTAURANT_ALREADY_EXISTS(1007, "Restaurant already exists"),
+  CATEGORY_REQUIRED(1002, "Phải chọn ít nhất 1 lĩnh vực kinh doanh"),
+  CATEGORY_NOT_FOUND(1003, "Một số lĩnh vực kinh doanh không tồn tại"),
+  GEOCODING_FAILED(1004, "Không thể chuyển đổi địa chỉ thành tọa độ"),
+  FILE_UPLOAD_FAILED(1005, "Upload file thất bại");
+    
   ;
 
   private int code;
