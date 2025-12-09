@@ -37,12 +37,12 @@ public class CloudinaryService {
         Map result = cloudinary.uploader().upload(file.getBytes(), params);
 
         // Lấy URL an toàn (HTTPS) từ kết quả
-        String secureUrl = (String) result.get("secure_url");
+        // String secureUrl = (String) result.get("secure_url");
         
         // Trong trường hợp Production, bạn nên lưu lại public_id thay vì toàn bộ URL
-        // String publicId = (String) result.get("public_id"); 
+        String publicId = (String) result.get("public_id"); 
         
-        return secureUrl;
+        return publicId;
     }
 
     /**

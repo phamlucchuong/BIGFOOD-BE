@@ -32,7 +32,7 @@ public class ApplicationInitConfig {
     @NonFinal
     static final String ADMIN_EMAIL = "lucchuongg@gmail.com";
     @NonFinal
-    static final String ADMIN_PASSWORD = "123456@";
+    static final String ADMIN_PASSWORD = "123456";
 
     @Bean
     @Transactional

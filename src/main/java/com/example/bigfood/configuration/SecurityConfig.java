@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -45,6 +44,15 @@ public class SecurityConfig {
             "api/restaurant-categories",
     };
 
+    private final String[] SWAGGER_ENDPOINT = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
+
+
     @Autowired
     private CustomerJwtDecoder customerJwtDecoder;
 
@@ -54,13 +62,14 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINT).permitAll()
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(SWAGGER_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINT).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINT).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINT).permitAll()
-                        .anyRequest().authenticated());
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfiguer -> jwtConfiguer.decoder(customerJwtDecoder)
-                .jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfiguer -> jwtConfiguer.decoder(customerJwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return httpSecurity.build();
     }
 

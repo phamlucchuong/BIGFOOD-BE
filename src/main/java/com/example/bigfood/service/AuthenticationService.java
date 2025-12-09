@@ -53,16 +53,15 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticated(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
         
-        if(user.isDeleted()){
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
+        var user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         Restaurant restaurant = user.getRestaurant();
-        if(restaurant != null && !restaurant.getIsApproved()){
-            throw new AppException(ErrorCode.RESTAURANT_UNAUTHENTICATED);
-        }
+                if(restaurant != null && !restaurant.getIsApproved()){
+                    throw new AppException(ErrorCode.RESTAURANT_UNAUTHENTICATED);
+                }
+
         boolean authencated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!authencated) {
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);

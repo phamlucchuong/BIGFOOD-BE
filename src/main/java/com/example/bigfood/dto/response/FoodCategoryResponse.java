@@ -1,30 +1,23 @@
 package com.example.bigfood.dto.response;
 
-
-import java.time.LocalDateTime;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserResponse {
+public class FoodCategoryResponse {
     String id;
     String name;
-    String phone;
-    String email;
-    Set<RoleResponse> roles;
-    LocalDateTime createdAt;
-
-    @JsonProperty("isDeleted")
-    boolean isDeleted;
+    int iconIndex;
+    Set<FoodResponse> foods;
 }
