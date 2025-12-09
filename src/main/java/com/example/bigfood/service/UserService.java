@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,10 @@ import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.UserMapper;
 import com.example.bigfood.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import com.example.bigfood.repository.RoleRepository;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
@@ -22,20 +26,18 @@ import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.UserSummaryResponse;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
+    RoleRepository roleRepository;
+    UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    UserMapper userMapper;
 
 
     User getUserById(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     boolean existById(String id) {
@@ -43,6 +45,9 @@ public class UserService {
     }
 
     public UserResponse createUser(UserCreateRequest request) {
+        if(!verifyEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
@@ -52,12 +57,13 @@ public class UserService {
     }
 
     public Boolean verifyEmail(String emailRequest) {
-        return userRepository.existsByEmail(emailRequest);
+        Optional<User> user = userRepository.findByEmailAndIsDeletedFalse(emailRequest);
+        return !user.isPresent();
     }
 
     public UserResponse updateUser(String email, UserUpdateRequest request) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         userMapper.toUpdate(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userMapper.toUserResponse(userRepository.save(user));
@@ -70,15 +76,15 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
-        boolean isDeleted = user.isDeleted();
-        user.setDeleted(!isDeleted);
+        User user = userRepository.findByIdAndIsDeletedFalse(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        user.setDeleted(!user.isDeleted());
         userRepository.save(user);
     }
 
     public UserResponse addAdminRole(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         HashSet<Role> roles = new HashSet<>(user.getRoles());
 
@@ -150,5 +156,10 @@ public class UserService {
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 }

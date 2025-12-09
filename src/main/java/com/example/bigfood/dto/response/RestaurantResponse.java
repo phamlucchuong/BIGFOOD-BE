@@ -1,5 +1,7 @@
 package com.example.bigfood.dto.response;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +23,7 @@ public class RestaurantResponse {
     double longitude;
     String bannerId;
     String licenseId;
+    Set<RestaurantCategoryResponse> restaurantCategories;
+    Set<FoodCategoryResponse> foodCategories;
+    Boolean isApproved;
 }

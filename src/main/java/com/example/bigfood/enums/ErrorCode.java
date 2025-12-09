@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
   UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
-  ACCOUNT_NOT_FIND(1000, "No account yet !"),
+  ACCOUNT_NOT_FOUND(1004, "Account not found !"),
   AUTHENTICATION_FAILED(1001, "Your password is incorrect !"),
   UNAUTHENTICATED(1004, "Bạn không có quyền truy cập"),
   PERMISSION_EXITED(1009, "Permission exited"),
@@ -15,8 +15,14 @@ public enum ErrorCode {
   ROLE_NOT_FOUND(1009, "Role exited"),
   RESTAURANT_CATEGORY_NOT_EXISTS(1008, "Restaurant category not exists"),
   RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Restaurant category already exists"),
-  RESTAURANT_NOT_EXISTS(1006, "Restaurant category not exists"),
+  RESTAURANT_NOT_EXISTS(1006, "Restaurant not exists"),
   RESTAURANT_ALREADY_EXISTS(1007, "Restaurant already exists"),
+  FOOD_CATEGORY_ALREADY_EXISTS(1008, "Food category already exists"), 
+  FOOD_CATEGORY_NOT_EXISTS(1009, "Food category not exists"), 
+  FOOD_CATEGORY_HAS_FOODS(1010, "Food category has foods"), 
+  FOOD_NOT_EXISTS(1011, "Food not exists"), 
+  ORDER_DETAIL_NOT_FOUND(1012, "Order detail not found"), 
+  EMAIL_EXISTED(1013, "Email already exists")
   ;
 
   private int code;

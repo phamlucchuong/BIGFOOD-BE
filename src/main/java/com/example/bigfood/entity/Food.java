@@ -1,5 +1,7 @@
 package com.example.bigfood.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,19 +38,30 @@ public class Food {
 
     String name;
     String description;
-    String image_url;
+
+    @Column(name = "image_id")
+    String imageId;
 
     @Column(name = "price", columnDefinition = "decimal(10, 2) not null check (price >= 0)")
     double price;
 
     @Column(name = "count", columnDefinition = "int default 0")
-    int count;
+    @Builder.Default
+    int count = 0;
     
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    boolean isDeleted;
+    @Builder.Default
+    boolean isDeleted = false;
+    
+    @Column(name = "is_available", columnDefinition = "boolean default true")
+    @Builder.Default
+    boolean isAvailable = true;
 
     // Quan hệ N:1 với FoodCategory (Sở hữu Khóa ngoại)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(columnDefinition = "CHAR(36)", name = "food_category_id", nullable = false)
     FoodCategory category;
+
+    @OneToMany(mappedBy = "food", fetch = FetchType.LAZY)
+    Set<OrderDetail> orderDetails;
 }

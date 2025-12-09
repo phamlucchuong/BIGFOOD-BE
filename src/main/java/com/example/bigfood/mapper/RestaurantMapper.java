@@ -8,7 +8,7 @@ import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.entity.Restaurant;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {FoodCategoryMapper.class, RestaurantCategoryMapper.class})
 public interface RestaurantMapper {
     @Mapping(target = "isApproved", constant = "false")
     @Mapping(target = "user", ignore = true)
@@ -22,4 +22,4 @@ public interface RestaurantMapper {
     @Mapping(target = "licenseId", ignore = true)
     Restaurant toRestaurant(CreateRestaurantRequest request);
     RestaurantResponse toRestaurantResponse(Restaurant restaurant);
-} 
+}

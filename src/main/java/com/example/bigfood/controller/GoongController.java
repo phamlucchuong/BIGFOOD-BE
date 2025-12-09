@@ -1,16 +1,13 @@
 package com.example.bigfood.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cloudinary.Api;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.service.GoongService;
-import com.example.bigfood.service.GoongService.GeocodingResponse;
-import com.example.bigfood.service.GoongService.GoongLocation;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -31,8 +28,8 @@ public class GoongController {
 
 
     @PostMapping("/reverse-geocoding")
-    public ApiResponse<?> reverseGeocoding(@RequestBody GoongLocation geocoding) {
-        return ApiResponse.builder()
+    public ApiResponse<String> reverseGeocoding(@RequestBody GoongLocation geocoding) {
+        return ApiResponse.<String>builder()
             .results(goongService.getReverseGeocoding(geocoding))
             .build();
     }

@@ -1,7 +1,6 @@
 package com.example.bigfood.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -47,8 +46,9 @@ public class User {
     @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;
 
+    @Builder.Default
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    boolean isDeleted;
+    boolean isDeleted = false;
 
     @ManyToMany
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_name"))
@@ -58,5 +58,10 @@ public class User {
     Restaurant restaurant;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Rating> ratings;
+    Set<Rating> ratings;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    Set<Order> orders;
+    
 }

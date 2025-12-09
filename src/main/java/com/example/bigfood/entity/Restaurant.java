@@ -5,7 +5,6 @@ import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -52,7 +51,7 @@ public class Restaurant {
     Boolean isApproved;
 
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
         name = "restaurant_has_categories", 
         joinColumns = @JoinColumn(name = "restaurant_id", columnDefinition = "CHAR(36)"),
@@ -60,7 +59,7 @@ public class Restaurant {
     )
     Set<RestaurantCategory> restaurantCategories;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<FoodCategory> foodCategories;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
@@ -70,4 +69,8 @@ public class Restaurant {
     @MapsId
     @JoinColumn(name = "user_id", columnDefinition = "CHAR(36)")
     User user;
+
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    Set<Order> orders;
 }
