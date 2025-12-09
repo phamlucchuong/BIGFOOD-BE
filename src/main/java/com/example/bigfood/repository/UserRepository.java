@@ -19,4 +19,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     // Chỉ cần khai báo dòng này là đủ
     long countByCreatedAtBetweenAndIsDeletedFalse(LocalDateTime startTime, LocalDateTime endTime);
+    Optional<User> findByEmailAndIsDeletedFalse(String emailRequest);
 }

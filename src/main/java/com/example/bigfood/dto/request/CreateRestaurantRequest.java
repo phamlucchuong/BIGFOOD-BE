@@ -1,5 +1,7 @@
 package com.example.bigfood.dto.request;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
@@ -15,7 +17,11 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateRestaurantRequest {
+    List<String> categoryIds;
     String restaurantName;
     String address;
+    String nameBank;
+    String bankNumber;
+    String bankAccountName;
     MultipartFile licenseFile;
 }

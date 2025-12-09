@@ -2,6 +2,8 @@ package com.example.bigfood.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +41,15 @@ public class Restaurant {
     @Column(name = "address")
     String address;
 
+    @Column(name="name_bank")
+    String nameBank;
+    
+    @Column(name="bank_number")
+    String bankNumber;
+
+    @Column(name="bank_account_name")
+    String bankAccountName;
+    
     double latitude;
     double longitude;
     

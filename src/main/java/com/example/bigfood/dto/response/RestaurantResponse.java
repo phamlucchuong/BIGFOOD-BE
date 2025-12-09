@@ -17,6 +17,9 @@ public class RestaurantResponse {
     String userId;
     String restaurantName;
     String address;
+    String nameBank;
+    String bankNumber;
+    String bankAccountName;
     double latitude;
     double longitude;
     String bannerId;

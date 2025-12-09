@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("/verify-email/{email}")
     public ApiResponse<Boolean> verifyEmail(@PathVariable String email){
         return ApiResponse.<Boolean>builder()
-        .results(userService.verifyEmail(email))
+        // .results(userService.verifyEmail(email))
         .build();
     }
 

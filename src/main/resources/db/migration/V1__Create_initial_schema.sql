@@ -3,7 +3,7 @@
 CREATE TABLE users (
     id CHAR(36) PRIMARY KEY,          -- UUID lưu dạng chuỗi
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
+    email VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     image_id VARCHAR(255),
@@ -66,6 +66,9 @@ CREATE TABLE restaurants (
     address VARCHAR(255) NOT NULL,
     latitude DOUBLE NOT NULL,
     longitude DOUBLE NOT NULL,
+    name_bank VARCHAR(255),
+    bank_number VARCHAR(255),
+    bank_account_name VARCHAR(255),
     banner_id VARCHAR(255),
     license_id VARCHAR(255) NOT NULL,
     is_approved BOOLEAN DEFAULT FALSE,

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,9 @@ public class UserService {
     }
 
     public UserResponse createUser(UserCreateRequest request) {
+         if(!verifyByEmail(request.getEmail())){
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
@@ -51,8 +55,9 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public Boolean verifyEmail(String emailRequest) {
-        return userRepository.existsByEmail(emailRequest);
+    public Boolean verifyByEmail(String emailRequest) {
+          Optional<User> user = userRepository.findByEmailAndIsDeletedFalse(emailRequest);
+        return user.isPresent();
     }
 
     public UserResponse updateUser(String email, UserUpdateRequest request) {

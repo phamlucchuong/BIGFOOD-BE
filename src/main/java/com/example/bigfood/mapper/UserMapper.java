@@ -13,7 +13,7 @@ import com.example.bigfood.entity.User;
 public interface UserMapper {
     User toUser(UserCreateRequest request);
 
-    @Mapping(target = "isDeleted", expression = "java(user.isDeleted())")
+    @Mapping(target = "deleted", expression = "java(user.isDeleted())")
     UserResponse toUserResponse(User user);
     
     @Mapping(target = "roles" , ignore = true)
