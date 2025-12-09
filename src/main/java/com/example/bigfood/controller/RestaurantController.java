@@ -22,6 +22,7 @@ import com.example.bigfood.dto.request.UpdateFoodCategoryRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.FoodCategoryResponse;
 import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.service.RestaurantService;
 
@@ -65,10 +66,17 @@ public class RestaurantController {
             .results(restaurantService.getRestaurant(userId))
             .build();
     }
-    
-    
 
-
+    @GetMapping("/detail")
+    public ApiResponse<?> getRestaurantDetail(
+        @AuthenticationPrincipal Jwt jwt) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<RestaurantDetailResponse>builder()
+            .results(restaurantService.getRestaurantDetail(userId))
+            .build();
+    }
+    
 
     //#region handle cate
 

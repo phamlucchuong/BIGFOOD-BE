@@ -37,7 +37,6 @@ public class UserController {
     public ApiResponse<Boolean> verifyEmail(@PathVariable String email) {
         return ApiResponse.<Boolean>builder()
         .message("Email verification checked successfully")
-        .build();
         .results(userService.verifyEmail(email))
         .build();
 

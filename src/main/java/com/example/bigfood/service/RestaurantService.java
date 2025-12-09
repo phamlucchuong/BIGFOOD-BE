@@ -15,6 +15,7 @@ import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateFoodCategoryRequest;
 import com.example.bigfood.dto.response.FoodCategoryResponse;
 import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.entity.Food;
@@ -27,7 +28,6 @@ import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.FoodCategoryMapper;
 import com.example.bigfood.mapper.FoodMapper;
 import com.example.bigfood.mapper.RestaurantMapper;
-import com.example.bigfood.repository.RestaurantCategoryRepository;
 import com.example.bigfood.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class RestaurantService {
    
-    RestaurantCategoryRepository restaurantCategoryRepository; 
+    RestaurantCategoryService restaurantCategoryService;
     RestaurantRepository restaurantRepository;
     UserService userService;
     RestaurantMapper restaurantMapper;
@@ -85,7 +85,7 @@ public class RestaurantService {
         String licenseId = cloudinaryService.uploadFile(request.getLicenseFile(), "licenses");
         restaurant.setLicenseId(licenseId);
 
-        Set<RestaurantCategory> categories = getCategoriesByIds(request.getCategoryIds());
+        Set<RestaurantCategory> categories = restaurantCategoryService.getCategoriesByIds(request.getCategoryIds());
         restaurant.setRestaurantCategories(categories);
         
         restaurant = restaurantRepository.save(restaurant);
@@ -98,29 +98,23 @@ public class RestaurantService {
             .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_EXISTS));
     }
 
-    private Set<RestaurantCategory> getCategoriesByIds(List<String> categoryIds) 
-        throws AppException {
-        
-        if (categoryIds == null || categoryIds.isEmpty()) {
-            throw new AppException(ErrorCode.CATEGORY_REQUIRED);
-        }
-        
-        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllById(categoryIds);
-     
-        if (categories.size() != categoryIds.size()) {
-            Set<String> foundIds = categories.stream()
-                .map(RestaurantCategory::getId)
-                .collect(Collectors.toSet());
-            List<String> invalidIds = categoryIds.stream()
-                .filter(id -> !foundIds.contains(id))
-                .collect(Collectors.toList());
-            
-            log.error("Invalid category IDs: {}", invalidIds);
-            throw new AppException(ErrorCode.CATEGORY_NOT_FOUND);
-        }
-        
-        return new HashSet<>(categories);
+    public RestaurantDetailResponse getRestaurantDetail(String restaurantId) {
+        Restaurant restaurant = getRestaurantByUserId(restaurantId);
+        return  RestaurantDetailResponse.builder()
+                .id(restaurant.getUserId())
+                .restaurantName(restaurant.getRestaurantName())
+                .address(restaurant.getAddress())
+                .phone(restaurant.getUser().getPhone())
+                .email(restaurant.getUser().getEmail())
+                .nameBank(restaurant.getNameBank())
+                .bankNumber(restaurant.getBankNumber())
+                .bankAccountName(restaurant.getBankAccountName())
+                .avatar(restaurant.getUser().getImageId())
+                .bannerId(restaurant.getBannerId())
+                .isApproved(restaurant.getIsApproved())
+                .build();
     }
+  
     public FoodCategoryResponse createFoodCategory(String userId, CreateFoodCategoryRequest request) {
         Restaurant restaurant = getRestaurantByUserId(userId);
         
