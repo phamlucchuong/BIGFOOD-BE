@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserService {
 
     User getUserById(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     boolean existById(String id) {
@@ -44,6 +45,9 @@ public class UserService {
     }
 
     public UserResponse createUser(UserCreateRequest request) {
+        if(!verifyEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
@@ -53,12 +57,13 @@ public class UserService {
     }
 
     public Boolean verifyEmail(String emailRequest) {
-        return userRepository.existsByEmail(emailRequest);
+        Optional<User> user = userRepository.findByEmailAndIsDeletedFalse(emailRequest);
+        return !user.isPresent();
     }
 
     public UserResponse updateUser(String email, UserUpdateRequest request) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         userMapper.toUpdate(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userMapper.toUserResponse(userRepository.save(user));
@@ -71,15 +76,15 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
-        boolean isDeleted = user.isDeleted();
-        user.setDeleted(!isDeleted);
+        User user = userRepository.findByIdAndIsDeletedFalse(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        user.setDeleted(!user.isDeleted());
         userRepository.save(user);
     }
 
     public UserResponse addAdminRole(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FIND));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         HashSet<Role> roles = new HashSet<>(user.getRoles());
 
@@ -151,5 +156,10 @@ public class UserService {
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 }
