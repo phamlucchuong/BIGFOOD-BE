@@ -22,7 +22,9 @@ public enum ErrorCode {
   FOOD_CATEGORY_HAS_FOODS(1010, "Food category has foods"), 
   FOOD_NOT_EXISTS(1011, "Food not exists"), 
   ORDER_DETAIL_NOT_FOUND(1012, "Order detail not found"), 
-  EMAIL_EXISTED(1013, "Email already exists")
+  EMAIL_EXISTED(1013, "Email already exists"), 
+  ORDER_NOT_FOUND(1014, "Order not found"), 
+  STATUS_SAME_AS_BEFORE(1015, "Status is the same as before"), 
   ;
 
   private int code;

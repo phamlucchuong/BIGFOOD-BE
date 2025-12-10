@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderResponse {
-    String id;
+    String orderId;
     String status;
     String createdAt;
     String updatedAt;
