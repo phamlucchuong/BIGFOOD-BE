@@ -9,6 +9,9 @@ import com.example.bigfood.dto.request.CreateFoodRequest;
 import com.example.bigfood.dto.response.FoodResponse;
 import com.example.bigfood.entity.Food;
 import com.example.bigfood.entity.FoodCategory;
+import com.example.bigfood.entity.Restaurant;
+import com.example.bigfood.enums.ErrorCode;
+import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.FoodMapper;
 import com.example.bigfood.repository.FoodRepository;
 
@@ -22,6 +25,7 @@ public class FoodService {
     FoodRepository foodRepository;
     CloudinaryService cloudinaryService;
     FoodMapper foodMapper;
+    RestaurantService restaurantService;
 
     public Food getFoodById(String itemId) {
         return foodRepository.findById(itemId)
@@ -59,5 +63,51 @@ public class FoodService {
 
     public void deleteFoodById(String itemId) {
         foodRepository.deleteById(itemId);
+    }
+
+
+    public FoodResponse createFood(String userId, String categoryId, CreateFoodRequest request) throws IOException {
+        Restaurant restaurant = restaurantService.getRestaurantByUserId(userId);
+        FoodCategory category = restaurant.getFoodCategories().stream()
+            .filter(cat -> cat.getId().equals(categoryId))
+            .findFirst()
+            .orElseThrow(() -> new AppException(ErrorCode.FOOD_CATEGORY_NOT_EXISTS));
+
+        Food food = createNewFood(category, request);
+       
+        category.getFoods().add(food);
+        restaurantService.saveRestaurant(restaurant);
+        return foodMapper.toFoodResponse(food);
+    }
+
+    public List<FoodResponse> getAllFood(String userId) {
+        return getAllByUserId(userId);
+    }
+
+    public void deleteFood(String userId, String foodId) throws IOException {
+        Restaurant restaurant = restaurantService.getRestaurantByUserId(userId);
+        List<Food> foods = restaurant.getFoodCategories().stream()
+            .flatMap(cat -> cat.getFoods().stream())
+            .toList();
+
+        Food food = foods.stream()
+            .filter(f -> f.getId().equals(foodId))
+            .findFirst()
+            .orElseThrow(() -> new AppException(ErrorCode.FOOD_NOT_EXISTS));
+
+
+        // xóa file ảnh món ăn trên Cloudinary
+        cloudinaryService.deleteFile(food.getImageId());
+
+        // nếu đã có đơn hàng liên quan đến món ăn thì chỉ đánh dấu xóa mềm
+        if(food.getCount() > 0) {
+            food.setDeleted(true);
+            return;
+        }
+
+        // xóa món ăn khỏi danh mục và nhà hàng
+        FoodCategory category = food.getCategory();
+        category.getFoods().remove(food);
+        restaurantService.saveRestaurant(restaurant);
     }
 }

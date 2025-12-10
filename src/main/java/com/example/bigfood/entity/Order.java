@@ -3,9 +3,17 @@ package com.example.bigfood.entity;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+
+import com.example.bigfood.enums.OrderStatus;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,26 +36,27 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"orderDetails", "user", "restaurant"})
+@ToString(exclude = { "orderDetails", "user", "restaurant" })
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+    @DynamicInsert
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "VARCHAR(36)")
     String id;
 
-    @Column(name = "status", nullable = false, 
-    columnDefinition = "VARCHAR(15) default 'PENDING' check (status in ('PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED', 'REJECTED'))")
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(15) default 'PENDING' check (status in ('PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED', 'REJECTED'))")
     @Builder.Default
-    String status = "PENDING";
+    @Enumerated(EnumType.STRING)
+    OrderStatus status = OrderStatus.PENDING;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP default current_timestamp")
-    @Builder.Default
-    LocalDateTime createdAt = LocalDateTime.now();
+    @Generated(GenerationTime.INSERT)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP default current_timestamp on update current_timestamp")
-    @Builder.Default
-    LocalDateTime updatedAt = LocalDateTime.now();
+    @Generated(GenerationTime.ALWAYS)
+    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+    LocalDateTime updatedAt;
 
     @Column(name = "delivery_address", nullable = false, columnDefinition = "VARCHAR(255)")
     String deliveryAddress;
@@ -64,8 +73,7 @@ public class Order {
     @Column(name = "total_amount", nullable = false, columnDefinition = "decimal(10,2)")
     double totalAmount;
 
-    @Column(name = "payment_method", nullable = false, 
-    columnDefinition = "VARCHAR(50) check (payment_method in ('MOMO', 'BANK', 'CASH_ON_DELIVERY'))")
+    @Column(name = "payment_method", nullable = false, columnDefinition = "VARCHAR(50) check (payment_method in ('MOMO', 'BANK', 'CASH_ON_DELIVERY'))")
     String paymentMethod;
 
     String notes;
@@ -75,7 +83,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id", columnDefinition = "VARCHAR(36)", nullable = false)
     User user;
-
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", columnDefinition = "VARCHAR(36)", nullable = false)

@@ -12,5 +12,7 @@ import com.example.bigfood.entity.Order;
 public interface OrderRepository extends JpaRepository<Order, String> {
 
     List<Order> findByUser_Id(String userId);
+
+    List<Order> findByRestaurant_UserId(String restaurantId);
     
 }

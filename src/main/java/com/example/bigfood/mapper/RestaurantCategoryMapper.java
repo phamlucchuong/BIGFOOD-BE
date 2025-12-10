@@ -9,6 +9,7 @@ import com.example.bigfood.entity.RestaurantCategory;
 
 @Mapper(componentModel = "spring")
 public interface RestaurantCategoryMapper {
+   @Mapping(target = "id" , ignore = true)
    @Mapping(target = "restaurants" , ignore = true)
    RestaurantCategory toRestaurantCategory(RestaurantCategoryCreateRequest request);
    RestaurantCategoryResponse toRestaurantCategoryResponse(RestaurantCategory restaurant);
