@@ -14,13 +14,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderResponse {
-    String orderId;
+    String id;
     String status;
     String createdAt;
     String updatedAt;
     String deliveryAddress;
     double deliveryLatitude;
     double deliveryLongitude;
+    double deliveryDistance;
     double deliveryFee;
     double totalAmount;
     String paymentMethod;

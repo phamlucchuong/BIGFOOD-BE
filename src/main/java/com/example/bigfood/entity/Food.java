@@ -2,6 +2,9 @@ package com.example.bigfood.entity;
 
 import java.util.Set;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,6 +33,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@DynamicInsert
 public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,13 +53,13 @@ public class Food {
     @Builder.Default
     int count = 0;
     
-    @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    @Builder.Default
-    boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    boolean deleted;
     
-    @Column(name = "is_available", columnDefinition = "boolean default true")
-    @Builder.Default
-    boolean isAvailable = true;
+    @Column(name = "is_available")
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    boolean available;
 
     // Quan hệ N:1 với FoodCategory (Sở hữu Khóa ngoại)
     @ManyToOne(fetch = FetchType.LAZY)

@@ -62,9 +62,6 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<FoodCategory> foodCategories;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    Set<Rating> ratings;
-
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id", columnDefinition = "CHAR(36)")

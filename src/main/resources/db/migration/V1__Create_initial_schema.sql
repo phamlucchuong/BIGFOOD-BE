@@ -83,19 +83,6 @@ create table restaurant_has_categories (
     foreign key (restaurant_category_id) references restaurant_categories(id)
 );
 
-create table ratings (
-    id char(36) primary key,
-    score int check (score >= 1 and score <= 5),
-    comment text,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp,
-    is_deleted boolean default false,
-    user_id char(36) not null,
-    restaurant_id char(36) not null,
-
-    foreign key (user_id) references users(id),
-    foreign key (restaurant_id) references restaurants(user_id)
-);
 
 create table food_categories (
     id char(36) primary key,
@@ -106,6 +93,7 @@ create table food_categories (
     
     foreign key (restaurant_id) references restaurants(user_id)
 );
+
 
 create table foods (
     id char(36) primary key,
@@ -119,4 +107,56 @@ create table foods (
     food_category_id char(36),
 
     foreign key (food_category_id) references food_categories(id)
+);
+
+
+create table orders (
+    id varchar(36) primary key,
+    user_id varchar(36) not null,
+    restaurant_id varchar(36) not null,
+    status varchar(15) default 'PENDING' check (status in ('PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED', 'REJECTED')),
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp on update current_timestamp,
+    delivery_address varchar(255) not null,
+    delivery_latitude decimal(10,8) not null,
+    delivery_longitude decimal(11,8) not null,
+    delivery_distance decimal(10,2) not null check (delivery_distance >= 0),
+    delivery_fee decimal(10,2) not null check (delivery_fee >= 0),
+    total_amount decimal(10,2) not null check (total_amount >= 0),
+    payment_method varchar(50) not null check (payment_method in ('MOMO', 'BANK', 'CASH_ON_DELIVERY')),
+    notes text,
+    cancell_reason text,
+    reject_reason text,
+
+    foreign key (user_id) references users(id),
+    foreign key (restaurant_id) references restaurants(user_id)
+);
+
+
+create table order_details (
+    id varchar(36) primary key,
+    order_id varchar(36) not null,
+    food_id varchar(36) not null,
+    food_name varchar(100) not null,
+    quantity int not null check (quantity > 0),
+    unit_price decimal(10,2) not null check (unit_price >= 0),
+    total_price decimal(10,2) not null check (total_price >= 0),
+    notes text,
+
+    foreign key (order_id) references orders(id),
+    foreign key (food_id) references foods(id)
+);
+
+
+create table reviews (
+    id varchar(36) primary key,
+    rating int check (rating >= 1 and rating <= 5),
+    review_text text,
+    last_update_at timestamp default current_timestamp,
+    reply_text text,
+    reply_at timestamp,
+    is_deleted boolean default false,
+    order_id varchar(36),
+
+    foreign key (order_id) references orders(id)
 );

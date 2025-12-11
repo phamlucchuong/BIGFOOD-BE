@@ -16,11 +16,11 @@ public interface FoodRepository extends JpaRepository<Food, String> {
                 SELECT f
                 FROM Food f
                 JOIN f.category fc
-                WHERE fc.restaurant.userId = :userId AND f.isDeleted = false
+                WHERE fc.restaurant.userId = :userId AND f.deleted = false
             """)
     List<Food> findAllByRestaurantUserId(@Param("userId") String userId);
 
-    long countByCategory_IdAndIsAvailableTrue(String categoryId);
+    long countByCategory_IdAndAvailableTrue(String categoryId);
     long countByCategoryId(String categoryId);
 
     @Modifying

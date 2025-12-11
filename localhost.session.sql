@@ -1,5 +1,5 @@
 
 
+drop DATABASE IF EXISTS bigfood;
 create DATABASE if not exists bigfood;
-
--- drop DATABASE IF EXISTS bigfood;
+use bigfood;

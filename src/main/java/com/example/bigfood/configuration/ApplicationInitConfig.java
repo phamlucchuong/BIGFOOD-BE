@@ -40,9 +40,6 @@ public class ApplicationInitConfig {
         return args -> {
             if (userRepository.findByEmail(ADMIN_EMAIL).isEmpty()) {
                 var roles = new HashSet<Role>();
-                // Thay vì findByName, dùng findById để chắc chắn hơn.
-                // Giả sử bạn đã có file migration để chèn role 'ADMIN'.
-                // Nếu không, logic này vẫn có thể thất bại.
                 Role role = roleRepository.findById("ADMIN").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
                 roles.add(role);
                 
@@ -55,8 +52,7 @@ public class ApplicationInitConfig {
                         .createdAt(LocalDateTime.now())
                         .build();
 
-                userRepository.save(user);
-                log.warn("admin user has been created with default password: admin, please change it");
+                if(user != null) userRepository.save(user);
             }
         };
     }

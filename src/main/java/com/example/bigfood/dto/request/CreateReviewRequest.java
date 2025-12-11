@@ -1,8 +1,4 @@
-package com.example.bigfood.dto.response;
-
-
-import java.time.LocalDateTime;
-import java.util.Set;
+package com.example.bigfood.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +13,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String name;
-    String phone;
-    String email;
-    Set<RoleResponse> roles;
-    LocalDateTime createdAt;
-    boolean deleted;
+public class CreateReviewRequest {
+    int rating;
+    String reviewText;
 }
