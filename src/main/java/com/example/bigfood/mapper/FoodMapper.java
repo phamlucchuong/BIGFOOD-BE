@@ -17,9 +17,10 @@ public interface FoodMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imageId", ignore = true)
     @Mapping(target = "category", ignore = true)
-    @Mapping(target = "isDeleted", ignore = true)
-    @Mapping(target = "isAvailable", ignore = true)
+    @Mapping(target = "available", ignore = true)
     @Mapping(target = "count", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "orderDetails", ignore = true)
     Food toFood(CreateFoodRequest request);
 
     List<FoodResponse> toListFoodResponses(List<Food> foods);

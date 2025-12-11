@@ -30,7 +30,16 @@ public enum ErrorCode {
   FOOD_CATEGORY_HAS_FOODS(1010, "Food category has foods"), 
   FOOD_NOT_EXISTS(1011, "Food not exists"), 
   ORDER_DETAIL_NOT_FOUND(1012, "Order detail not found"), 
-  EMAIL_EXISTED(1013, "Email already exists")
+  EMAIL_EXISTED(1013, "Email already exists"), 
+  ORDER_NOT_FOUND(1014, "Order not found"), 
+  STATUS_SAME_AS_BEFORE(1015, "Status is the same as before"), 
+  REVIEW_NOT_FOUND(1016, "Review not found"), 
+  REVIEW_ALREADY_EXISTS(1017, "Review already exists"), 
+  FOOD_CREATION_FAILED(1018, "Food creation failed"), 
+  ORDER_DETAIL_ID_EMPTY(1019, "Order detail ID is empty"), 
+  ORDER_NOT_COMPLETED(1020, "Order not completed"), 
+  REVIEW_ALREADY_REPLIED(1021, "Review already replied"), 
+  REVIEW_ALREADY_DELETED(1022, "Review already deleted")
   ;
 
   private int code;

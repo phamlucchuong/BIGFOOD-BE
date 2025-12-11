@@ -3,21 +3,19 @@ package com.example.BIGFOOD;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
-import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
-import com.example.bigfood.service.GoongService;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class BigfoodBeApplicationTests {
 	@Autowired
-	GoongService goongService;
+	PasswordEncoder passwordEncoder;
+	
 	@Test
 	void contextLoads() {
-		double distances = goongService.getDrivingDistance(10.762622, 106.660172, 10.762895, 106.682301);
-		System.out.println("Distance: " + distances);
-
-		// GoongLocation location = goongService.getGeocoding("450-451 Lê Văn Việt, Phường Tăng Nhơn Phú, Tp. Hồ Chí Minh");
-		// System.out.println("Location: " + location.getLat() + ", " + location.getLng());
+		System.out.println(passwordEncoder.encode("123456"));
 	}
 
 }

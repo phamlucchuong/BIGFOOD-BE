@@ -3,6 +3,9 @@ package com.example.bigfood.entity;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +33,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@DynamicInsert
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,11 +48,12 @@ public class User {
 
 
     @Column(name = "created_at", updatable = false)
+    @Generated(org.hibernate.annotations.GenerationTime.INSERT)
     LocalDateTime createdAt;
 
-    @Builder.Default
-    @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    boolean deleted;
 
     @ManyToMany
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_name"))
@@ -56,10 +61,6 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Restaurant restaurant;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    Set<Rating> ratings;
-
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     Set<Order> orders;

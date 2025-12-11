@@ -19,6 +19,6 @@ public class FoodResponse {
     double price;
     int count;
     boolean available;
-    boolean isDeleted;
+    boolean deleted;
     String categoryName;
 }

@@ -2,6 +2,9 @@ package com.example.bigfood.entity;
 
 import java.util.List;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +34,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@DynamicInsert
 public class FoodCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,9 +47,9 @@ public class FoodCategory {
     @Column(name = "icon_index", columnDefinition = "INT check (icon_index >= 0)")
     int iconIndex;
 
-    @Builder.Default
-    @Column(name = "is_deleted", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    boolean deleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", columnDefinition = "CHAR(36)", nullable = false)

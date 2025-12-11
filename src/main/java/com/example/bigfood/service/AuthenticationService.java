@@ -53,8 +53,12 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticated(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+<<<<<<< HEAD
         
         var user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+=======
+        var user = userRepository.findByEmailAndDeletedFalse(request.getEmail())
+>>>>>>> develop
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Restaurant restaurant = user.getRestaurant();

@@ -21,6 +21,7 @@ public class OrderResponse {
     String deliveryAddress;
     double deliveryLatitude;
     double deliveryLongitude;
+    double deliveryDistance;
     double deliveryFee;
     double totalAmount;
     String paymentMethod;

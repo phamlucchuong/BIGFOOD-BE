@@ -36,7 +36,7 @@ public class UserService {
     UserMapper userMapper;
 
 
-    User getUserById(String id) {
+    protected User getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
@@ -61,7 +61,7 @@ public class UserService {
 
 
     public Boolean verifyEmail(String emailRequest) {
-        Optional<User> user = userRepository.findByEmailAndIsDeletedFalse(emailRequest);
+        Optional<User> user = userRepository.findByEmailAndDeletedFalse(emailRequest);
         return !user.isPresent();
 
     }
@@ -81,7 +81,7 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        User user = userRepository.findByIdAndIsDeletedFalse(id)
+        User user = userRepository.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         user.setDeleted(!user.isDeleted());
         userRepository.save(user);
@@ -127,8 +127,8 @@ public class UserService {
 
         
         // Lấy số lượng của 2 kì
-        long currentPeriodCount = userRepository.countByCreatedAtBetweenAndIsDeletedFalse(startTimeCurrent, endTimeCurrent);
-        long previousPeriodCount = userRepository.countByCreatedAtBetweenAndIsDeletedFalse(startTimePrevious, endTimePrevious);
+        long currentPeriodCount = userRepository.countByCreatedAtBetweenAndDeletedFalse(startTimeCurrent, endTimeCurrent);
+        long previousPeriodCount = userRepository.countByCreatedAtBetweenAndDeletedFalse(startTimePrevious, endTimePrevious);
 
         
         // Tính toán phần trăm thay đổi (Rất quan trọng: Xử lý chia cho 0)
@@ -166,5 +166,14 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    public UserResponse getUserResponseById(String id) {
+        if(id == null || id.isEmpty()) {
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        return userMapper.toUserResponse(user);
     }
 }

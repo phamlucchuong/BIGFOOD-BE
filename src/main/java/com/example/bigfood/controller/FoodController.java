@@ -1,0 +1,61 @@
+package com.example.bigfood.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.bigfood.dto.request.CreateFoodRequest;
+import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.service.FoodService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@RestController
+@RequestMapping("/api/foods")
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+public class FoodController {
+    FoodService foodService;
+
+    @PostMapping("/{categoryId}")
+    public ApiResponse<FoodResponse> createFood(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String categoryId,
+        @ModelAttribute CreateFoodRequest request) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<FoodResponse>builder()
+            .results(foodService.createFood(userId, categoryId, request))
+            .build();
+    }
+    
+    @GetMapping("/all")
+    public ApiResponse<List<FoodResponse>> getAllFood(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        return ApiResponse.<List<FoodResponse>>builder()
+            .results(foodService.getAllFood(userId))
+            .build();
+    }
+
+
+    @DeleteMapping("/{foodId}")
+    public ApiResponse<Void> deleteFood(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String foodId)
+        throws IOException {
+        String userId = jwt.getSubject();
+        foodService.deleteFood(userId, foodId);
+        return ApiResponse.<Void>builder().message("Delete food successfully!").build();
+    }
+}
