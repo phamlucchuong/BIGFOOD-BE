@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @ToString(exclude = { "orderDetails", "user", "restaurant" })
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-    @DynamicInsert
+@DynamicInsert
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -51,11 +52,11 @@ public class Order {
     OrderStatus status = OrderStatus.PENDING;
 
     @Generated(GenerationTime.INSERT)
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;
 
     @Generated(GenerationTime.ALWAYS)
-    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
     @Column(name = "delivery_address", nullable = false, columnDefinition = "VARCHAR(255)")
@@ -66,6 +67,9 @@ public class Order {
 
     @Column(name = "delivery_longitude", nullable = false, columnDefinition = "decimal(11,8)")
     double deliveryLongitude;
+
+    @Column(name = "delivery_distance", nullable = false, columnDefinition = "decimal(10,2)")
+    double deliveryDistance;
 
     @Column(name = "delivery_fee", nullable = false, columnDefinition = "decimal(10,2)")
     double deliveryFee;
@@ -88,6 +92,9 @@ public class Order {
     @JoinColumn(name = "restaurant_id", columnDefinition = "VARCHAR(36)", nullable = false)
     Restaurant restaurant;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<OrderDetail> orderDetails;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    Review review;
 }

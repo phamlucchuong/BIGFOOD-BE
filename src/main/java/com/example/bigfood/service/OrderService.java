@@ -32,33 +32,60 @@ public class OrderService {
     OrderDetailService orderDetailService;
     OrderMapper orderMapper;
 
+    /**
+     * Creates a new order with order details.
+     * 
+     * Production Best Practices implemented:
+     * 1. @Transactional: Ensures atomicity - all operations succeed or rollback together
+     * 2. Cascade persistence: OrderDetails auto-saved via CascadeType.ALL + orphanRemoval
+     * 3. Bidirectional relationship: Parent-child properly linked before persistence
+     * 4. Single save operation: Only save Order, OrderDetails cascade automatically
+     * 
+     * Transaction scope ensures:
+     * - If any operation fails (geocoding, distance calc, validation), entire order is rolled back
+     * - Database consistency is maintained
+     * - No orphaned OrderDetails if Order creation fails
+     * 
+     * @param userId User creating the order
+     * @param request Order creation request containing order details
+     * @return OrderResponse with order and order details
+     */
     @Transactional
     public OrderResponse createOrder(String userId, CreateOrderRequest request) {
+        // Validate and fetch related entities
         Restaurant restaurant = restaurantService.getRestaurantByUserId(request.getRestaurantId());
         User user = userService.getUserById(userId);
 
+        // Get delivery location coordinates
         GoongLocation location = goongService.getGeocoding(request.getDeliveryAddress());
 
+        // Calculate delivery distance and fee
         double deliveryDistance = goongService.getDrivingDistance(
                 restaurant.getLatitude(), restaurant.getLongitude(),
                 location.getLat(), location.getLng());
 
+        // Build Order entity (parent)
         Order order = Order.builder()
                 .user(user)
                 .restaurant(restaurant)
                 .deliveryAddress(request.getDeliveryAddress())
                 .deliveryLatitude(location.getLat())
                 .deliveryLongitude(location.getLng())
-                .deliveryFee(deliveryDistance * 0.1)
-                .totalAmount(deliveryDistance * 0.1)
+                .deliveryDistance(deliveryDistance)
+                .deliveryFee(deliveryDistance * 3000)
                 .paymentMethod(request.getPaymentMethod())
                 .notes(request.getNotes())
                 .build();
 
+        // Create OrderDetails (children) and establish bidirectional relationship
+        // OrderDetails are not yet persisted, just linked to Order
         double totalPrice = orderDetailService.createSetOrderDetails(order, request.getOrderDetails());
         order.setTotalAmount(totalPrice + order.getDeliveryFee());
 
+        // Single save operation - Order and OrderDetails cascade automatically
+        // CascadeType.ALL ensures OrderDetails are persisted with Order
         orderRepository.save(order);
+        
         return orderMapper.toResponse(order);
     }
 
@@ -100,6 +127,14 @@ public class OrderService {
     public List<OrderResponse> getAllOrdersByRestaurantId(String restaurantId) {
         return orderMapper.toResponseList(
                 orderRepository.findByRestaurant_UserId(restaurantId));
+    }
+
+    public Order getOrderById(String orderId) {
+        if(orderId == null || orderId.isEmpty()) {
+            throw new AppException(ErrorCode.ORDER_NOT_FOUND);
+        }
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
     }
 
 }

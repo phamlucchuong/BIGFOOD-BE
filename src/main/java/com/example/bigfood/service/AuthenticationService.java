@@ -52,7 +52,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticated(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+        var user = userRepository.findByEmailAndDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         boolean authencated = passwordEncoder.matches(request.getPassword(), user.getPassword());

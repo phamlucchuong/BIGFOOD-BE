@@ -70,12 +70,13 @@ public class UserController {
         return response;
     }
 
-    // @PatchMapping("/{id}/status")
-    // @PreAuthorize("hasRole('ADMIN') and #id != principal.id")
-    // public ApiResponse<Void> deleteUser(@PathVariable String id){
-    // userService.deleteUser(id);
-    // return ApiResponse.<Void>builder().build();
-    // }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<UserResponse> getUserById(@PathVariable String id) {
+        return ApiResponse.<UserResponse>builder()
+            .results(userService.getUserResponseById(id))
+            .build();
+    }
 
     @PatchMapping("/{id}/admin-role")
     @PreAuthorize("hasRole('ADMIN')")
@@ -90,7 +91,7 @@ public class UserController {
     public ApiResponse<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return ApiResponse.<Void>builder()
-            .message("Delete user successfully!")
-            .build();
+                .message("Delete user successfully!")
+                .build();
     }
 }

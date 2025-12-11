@@ -28,33 +28,34 @@ public class FoodService {
     RestaurantService restaurantService;
 
     public Food getFoodById(String itemId) {
+        if(itemId == null) throw new AppException(ErrorCode.FOOD_NOT_EXISTS);
         return foodRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Food not found"));
     }
 
     public boolean hasAvailableFood(String categoryId) {
-        return foodRepository.countByCategory_IdAndIsAvailableTrue(categoryId) > 0;
+        return foodRepository.countByCategory_IdAndAvailableTrue(categoryId) > 0;
     }
 
     public boolean hasFoods(String categoryId) {
         return foodRepository.countByCategoryId(categoryId) > 0;
     }
 
-    public void increaseCount(int amount, String foodId) {
+    public void increaseCount(String foodId, int amount) {
         foodRepository.increaseCountById(foodId, amount);
     }
 
     public Food createNewFood(FoodCategory category, CreateFoodRequest request) throws IOException {
         String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
-
-        return foodRepository.save(
-                Food.builder()
+        Food food = Food.builder()
                         .name(request.getName())
                         .description(request.getDescription())
                         .price(request.getPrice())
                         .imageId(imageId)
                         .category(category)
-                        .build());
+                        .build();
+        if(food == null) throw new AppException(ErrorCode.FOOD_CREATION_FAILED);
+        return foodRepository.save(food);
     }
 
     public List<FoodResponse> getAllByUserId(String userId) {
@@ -62,6 +63,7 @@ public class FoodService {
     }
 
     public void deleteFoodById(String itemId) {
+        if(itemId == null) return;
         foodRepository.deleteById(itemId);
     }
 
