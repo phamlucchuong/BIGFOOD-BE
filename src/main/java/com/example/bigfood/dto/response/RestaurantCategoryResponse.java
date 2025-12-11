@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class RestaurantCategoryResponse {
     String id;
     String name;
-    Set<RestaurantResponse> restaurants;
+     Set<RestaurantResponse> restaurants;
 }

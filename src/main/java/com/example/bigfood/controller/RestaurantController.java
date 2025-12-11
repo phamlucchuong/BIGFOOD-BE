@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,7 @@ import com.example.bigfood.dto.request.CreateFoodCategoryRequest;
 import com.example.bigfood.dto.request.CreateFoodRequest;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateFoodCategoryRequest;
+import com.example.bigfood.dto.request.UpdateFoodRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.FoodCategoryResponse;
 import com.example.bigfood.dto.response.FoodResponse;
@@ -55,8 +57,6 @@ public class RestaurantController {
             .build();
     }
 
-
-
     @GetMapping
     public ApiResponse<RestaurantResponse> getRestaurantById(
         @AuthenticationPrincipal Jwt jwt) 
@@ -80,7 +80,6 @@ public class RestaurantController {
 
     //#region handle cate
 
-
     @PostMapping("/food-category")
     public ApiResponse<FoodCategoryResponse> createNewFoodCategory(
         @AuthenticationPrincipal Jwt jwt,
@@ -101,10 +100,12 @@ public class RestaurantController {
             .build();
     }
 
-    @GetMapping("/{categoryId}/food-category/all")
-    public ApiResponse<Set<FoodCategoryResponse>> getAllByUserId(@PathVariable String categoryId) {
+    @GetMapping("/food-category/all")
+    public ApiResponse<Set<FoodCategoryResponse>> getAllByUserId(@AuthenticationPrincipal Jwt jwt) 
+        throws IOException {
+        String userId = jwt.getSubject();
         return  ApiResponse.<Set<FoodCategoryResponse>>builder()
-            .results(restaurantService.getAllFoodCategories(categoryId))
+            .results(restaurantService.getAllFoodCategories(userId))
             .build();
     }
 
@@ -135,6 +136,17 @@ public class RestaurantController {
             .results(restaurantService.createFood(userId, categoryId, request))
             .build();
     }
+    @PutMapping("/food/update")
+    public ApiResponse<FoodResponse> updateFood(
+        @AuthenticationPrincipal Jwt jwt,
+        @ModelAttribute UpdateFoodRequest request) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<FoodResponse>builder()
+            .results(restaurantService.updateFood(userId, request))
+            .build();
+    }
+    
     
     @GetMapping("/food/all")
     public ApiResponse<List<FoodResponse>> getAllFood(@AuthenticationPrincipal Jwt jwt) {
@@ -143,7 +155,6 @@ public class RestaurantController {
             .results(restaurantService.getAllFood(userId))
             .build();
     }
-
 
     @DeleteMapping("/food/{foodId}")
     public ApiResponse<Void> deleteFood(

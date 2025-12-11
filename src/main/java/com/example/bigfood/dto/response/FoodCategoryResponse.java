@@ -19,5 +19,6 @@ public class FoodCategoryResponse {
     String id;
     String name;
     int iconIndex;
+    int numberFood;
     Set<FoodResponse> foods;
 }

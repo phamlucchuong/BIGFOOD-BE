@@ -26,7 +26,7 @@ public class RestaurantResponse {
     double longitude;
     String bannerId;
     String licenseId;
-    Set<RestaurantCategoryResponse> restaurantCategories;
+    //  Set<RestaurantCategoryResponse> restaurantCategories;
     Set<FoodCategoryResponse> foodCategories;
     Boolean isApproved;
 }

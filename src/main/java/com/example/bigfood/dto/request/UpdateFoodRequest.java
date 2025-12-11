@@ -1,7 +1,8 @@
-package com.example.bigfood.dto.response;
+package com.example.bigfood.dto.request;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,16 +10,13 @@ import lombok.experimental.FieldDefaults;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class FoodResponse {
-    String id;
+public class UpdateFoodRequest {
+    String foodId;
     String name;
+    String categoryId;
     String description;
-    String imageId;
+    MultipartFile image;
     double price;
-    int count;
     boolean available;
-    boolean isDeleted;
-    String categoryName;
 }

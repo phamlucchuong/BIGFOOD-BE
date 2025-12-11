@@ -2,6 +2,7 @@ package com.example.bigfood.service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public class UserService {
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById("USER").ifPresent(roles::add);
         user.setRoles(roles);
+        user.setCreatedAt(LocalDateTime.now());
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

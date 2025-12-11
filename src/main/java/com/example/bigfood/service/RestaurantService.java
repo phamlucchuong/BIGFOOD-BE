@@ -1,7 +1,6 @@
 package com.example.bigfood.service;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,6 +12,7 @@ import com.example.bigfood.dto.request.CreateFoodCategoryRequest;
 import com.example.bigfood.dto.request.CreateFoodRequest;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateFoodCategoryRequest;
+import com.example.bigfood.dto.request.UpdateFoodRequest;
 import com.example.bigfood.dto.response.FoodCategoryResponse;
 import com.example.bigfood.dto.response.FoodResponse;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
@@ -152,10 +152,20 @@ public class RestaurantService {
         return foodCategoryMapper.toResponse(category);
     }
 
-    public Set<FoodCategoryResponse> getAllFoodCategories(String id) {
-        Restaurant restaurant = getRestaurantByUserId(id);
+    public Set<FoodCategoryResponse> getAllFoodCategories(String userId) {
+        Restaurant restaurant = getRestaurantByUserId(userId);
         Set<FoodCategory> categories = restaurant.getFoodCategories();
-        return foodCategoryMapper.toResponseSet(categories);
+        
+        return categories.stream()
+                .filter(category -> !category.isDeleted())
+                .map(category -> {
+                    FoodCategoryResponse response = foodCategoryMapper.toResponse(category);
+                    response.setNumberFood(
+                        category.getFoods() != null ? category.getFoods().size() : 0
+                    );
+                    return response;
+                })
+                .collect(Collectors.toSet());
     }
 
     public void deleteFoodCategory(String userId, String categoryId) {
@@ -198,6 +208,25 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
         return foodMapper.toFoodResponse(food);
     }
+
+  public FoodResponse updateFood(String userId, UpdateFoodRequest request) throws IOException {
+    Restaurant restaurant = getRestaurantByUserId(userId);
+    FoodCategory category = null;
+    if (request.getCategoryId() != null && !request.getCategoryId().isEmpty()) {
+        category = restaurant.getFoodCategories().stream()
+            .filter(cat -> cat.getId().equals(request.getCategoryId()))
+            .findFirst()
+            .orElseThrow(() -> new AppException(ErrorCode.FOOD_CATEGORY_NOT_EXISTS));
+    }
+
+    Food updatedFood = foodService.updateFood(request);
+    if (category != null) {
+        category.getFoods().add(updatedFood);
+        restaurantRepository.save(restaurant);
+    }
+    return foodMapper.toFoodResponse(updatedFood);
+}
+
 
     public List<FoodResponse> getAllFood(String userId) {
         return foodService.getAllByUserId(userId);
