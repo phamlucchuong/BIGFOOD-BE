@@ -158,7 +158,9 @@ public class OrderService {
                     .id(orderData.getId())
                     .status(orderData.getStatus().name())
                     .createdAt(orderData.getCreatedAt().toString())
-                    .updatedAt(orderData.getUpdatedAt().toString())
+                    .updatedAt(orderData.getUpdatedAt() != null
+                            ? orderData.getUpdatedAt().toString()
+                            : "")
                     .deliveryAddress(orderData.getDeliveryAddress())
                     .deliveryDistance(orderData.getDeliveryDistance())
                     .deliveryFee(orderData.getDeliveryFee())

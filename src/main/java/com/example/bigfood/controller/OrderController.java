@@ -86,7 +86,7 @@ public class OrderController {
     }
 
     @GetMapping("/restaurant/all")
-    @PostAuthorize("hasRole('RESTAURANT')")
+    // @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@AuthenticationPrincipal Jwt jwt) {
         String restaurantId = jwt.getSubject();
         return ApiResponse.<List<OrderResponse>>builder()
@@ -97,7 +97,7 @@ public class OrderController {
 
     
     @GetMapping("/restaurant")
-    @PostAuthorize("hasRole('RESTAURANT')")
+    // @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<List<OrderResponse>> getOrdersRestaurantByStatus(@AuthenticationPrincipal Jwt jwt,
                                          @PathParam("status") String status) {
         String restaurantId = jwt.getSubject();
@@ -108,7 +108,7 @@ public class OrderController {
     }
 
     @GetMapping("/restaurant/detail/{orderId}")
-     @PostAuthorize("hasRole('RESTAURANT')")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<OrderDetailResponse> getOrdersDetailByOrderId(@PathVariable String orderId) {
         return ApiResponse.<OrderDetailResponse>builder()
             .results(orderService.getOrderDetailByOrderId(orderId))

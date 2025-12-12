@@ -63,7 +63,6 @@ public class UserService {
     public Boolean verifyEmail(String emailRequest) {
         Optional<User> user = userRepository.findByEmailAndDeletedFalse(emailRequest);
         return !user.isPresent();
-
     }
 
     public UserResponse updateUser(String email, UserUpdateRequest request) {

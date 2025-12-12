@@ -25,6 +25,7 @@ public interface FoodMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "orderDetails", ignore = true)
     Food toFood(CreateFoodRequest request);
-
+    
+    @Mapping(target = "categoryName", expression = "java(food.getCategory() != null ? food.getCategory().getName() : null)")
     List<FoodResponse> toListFoodResponses(List<Food> foods , @Context CloudinaryService cloudinaryService);
 }
