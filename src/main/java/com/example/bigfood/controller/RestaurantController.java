@@ -2,17 +2,23 @@ package com.example.bigfood.controller;
 
 import java.io.IOException;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
+import com.example.bigfood.dto.request.IDRequest;
 import com.example.bigfood.dto.response.ApiResponse;
-import com.example.bigfood.dto.response.RestaurantResponse;
+import com.example.bigfood.dto.response.RestaurantDetailResponse;
+import com.example.bigfood.dto.response.RestaurantsResponseSet;
+import com.example.bigfood.dto.response.RestaurantFullResponse;
 import com.example.bigfood.service.RestaurantService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,23 +32,45 @@ public class RestaurantController {
     RestaurantService restaurantService;
 
     @PostMapping
-    public ApiResponse<RestaurantResponse> createRestaurant(
+    public ApiResponse<RestaurantFullResponse> createRestaurant(
             @AuthenticationPrincipal Jwt jwt,
             @ModelAttribute CreateRestaurantRequest request)
             throws IOException {
         String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantResponse>builder()
+        return ApiResponse.<RestaurantFullResponse>builder()
                 .results(restaurantService.createNewRestaurant(userId, request))
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<RestaurantResponse> getRestaurantById(
+    @GetMapping("/myInnfo")
+    @PreAuthorize("hasRole('RESTAURANT') and returnedObject.userId == principal.subject")
+    public ApiResponse<RestaurantFullResponse> getRestaurantById(
             @AuthenticationPrincipal Jwt jwt)
             throws IOException {
         String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantResponse>builder()
+        return ApiResponse.<RestaurantFullResponse>builder()
                 .results(restaurantService.getRestaurant(userId))
+                .build();
+    }
+
+    @PostMapping("/detail")
+    public ApiResponse<RestaurantDetailResponse> getRestaurantByRestaurantId(
+            @RequestBody IDRequest restaurantId) {
+        return ApiResponse.<RestaurantDetailResponse>builder()
+                .results(restaurantService.getRestaurantByRestaurantId(restaurantId.getId()))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<RestaurantsResponseSet> getRestaurantSet(
+        @RequestParam(name = "lng", required = false) Double longitude,
+        @RequestParam(name = "lat", required = false) Double latitude,
+        @RequestParam(name = "category_id", required = false) String categoryId,
+        @RequestParam(name = "search_text", required = false) String searchText,
+        @RequestParam(required = false) Integer page
+    ) {
+        return ApiResponse.<RestaurantsResponseSet>builder()
+                .results(restaurantService.getRestaurantSet(longitude, latitude, categoryId, searchText, page != null ? page : 0))
                 .build();
     }
 

@@ -31,7 +31,8 @@ public enum ErrorCode {
   ORDER_DETAIL_ID_EMPTY(1019, "Order detail ID is empty"), 
   ORDER_NOT_COMPLETED(1020, "Order not completed"), 
   REVIEW_ALREADY_REPLIED(1021, "Review already replied"), 
-  REVIEW_ALREADY_DELETED(1022, "Review already deleted")
+  REVIEW_ALREADY_DELETED(1022, "Review already deleted"), 
+  ID_INVALID(1023, "ID is invalid")
   ;
 
   private int code;
