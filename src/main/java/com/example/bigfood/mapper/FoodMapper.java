@@ -2,6 +2,7 @@ package com.example.bigfood.mapper;
 
 import java.util.List;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -12,7 +13,7 @@ import com.example.bigfood.service.CloudinaryService;
 
 @Mapper(componentModel = "spring", uses = { CloudinaryService.class })
 public interface FoodMapper {
-    @Mapping(target = "categoryName", source = "category.name")
+
     @Mapping(target = "image", source = "imageId", qualifiedByName = "generateUrl")
     FoodResponse toFoodResponse(Food food);
 
@@ -24,6 +25,7 @@ public interface FoodMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "orderDetails", ignore = true)
     Food toFood(CreateFoodRequest request);
-
-    List<FoodResponse> toListFoodResponses(List<Food> foods);
+    
+    @Mapping(target = "categoryName", expression = "java(food.getCategory() != null ? food.getCategory().getName() : null)")
+    List<FoodResponse> toListFoodResponses(List<Food> foods , @Context CloudinaryService cloudinaryService);
 }

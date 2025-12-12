@@ -8,14 +8,17 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
-import com.example.bigfood.dto.request.IDRequest;
+import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.RestaurantProfileResponse;
+import com.example.bigfood.dto.request.IDRequest;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantsResponseSet;
 import com.example.bigfood.dto.response.RestaurantFullResponse;
@@ -42,20 +45,40 @@ public class RestaurantController {
                 .build();
     }
 
-    @GetMapping("/myInnfo")
+    @GetMapping("/myInfo")
     @PreAuthorize("hasRole('RESTAURANT') and returnedObject.userId == principal.subject")
     public ApiResponse<RestaurantFullResponse> getRestaurantById(
             @AuthenticationPrincipal Jwt jwt)
             throws IOException {
         String userId = jwt.getSubject();
         return ApiResponse.<RestaurantFullResponse>builder()
-                .results(restaurantService.getRestaurant(userId))
-                .build();
+            .results(restaurantService.getRestaurant(userId))
+            .build();
+    }
+
+    @GetMapping("/detail")
+    public ApiResponse<RestaurantProfileResponse> getRestaurantDetail(
+        @AuthenticationPrincipal Jwt jwt) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<RestaurantProfileResponse>builder()
+            .results(restaurantService.getRestaurantDetail(userId))
+            .build();
+    }
+
+    @PutMapping("/update")
+    public ApiResponse<?> updateRestaurant(
+        @AuthenticationPrincipal Jwt jwt ,
+        @RequestBody UpdateRestaurantRequest request ) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<RestaurantProfileResponse>builder()
+            .results(restaurantService.updateRestaurant(userId ,request))
+            .build();
     }
 
     @PostMapping("/detail")
-    public ApiResponse<RestaurantDetailResponse> getRestaurantByRestaurantId(
-            @RequestBody IDRequest restaurantId) {
+    public ApiResponse<RestaurantDetailResponse> getRestaurantByRestaurantId(@RequestBody IDRequest restaurantId) {
         return ApiResponse.<RestaurantDetailResponse>builder()
                 .results(restaurantService.getRestaurantByRestaurantId(restaurantId.getId()))
                 .build();

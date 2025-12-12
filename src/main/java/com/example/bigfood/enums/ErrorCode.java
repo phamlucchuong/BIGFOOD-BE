@@ -17,6 +17,14 @@ public enum ErrorCode {
   RESTAURANT_CATEGORY_ALREADY_EXISTS(1005, "Restaurant category already exists"),
   RESTAURANT_NOT_EXISTS(1006, "Restaurant not exists"),
   RESTAURANT_ALREADY_EXISTS(1007, "Restaurant already exists"),
+  RESTAURANT_UNAUTHENTICATED(1010, "Restaurant is not approved yet"),
+
+  CATEGORY_REQUIRED(1002, "Phải chọn ít nhất 1 lĩnh vực kinh doanh"),
+  CATEGORY_NOT_FOUND(1003, "Một số lĩnh vực kinh doanh không tồn tại"),
+  GEOCODING_FAILED(1004, "Không thể chuyển đổi địa chỉ thành tọa độ"),
+  FILE_UPLOAD_FAILED(1005, "Upload file thất bại"),
+    
+
   FOOD_CATEGORY_ALREADY_EXISTS(1008, "Food category already exists"), 
   FOOD_CATEGORY_NOT_EXISTS(1009, "Food category not exists"), 
   FOOD_CATEGORY_HAS_FOODS(1010, "Food category has foods"), 

@@ -1,24 +1,18 @@
 package com.example.bigfood.dto.response;
 
-import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class FoodCategoryResponse {
-    String id;
+public class InfoUserOrderResponse {
+    String id ;
     String name;
-    int iconIndex;
-    int numberFood;
-    Set<FoodResponse> foods;
+    String phone;
 }

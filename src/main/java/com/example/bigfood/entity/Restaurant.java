@@ -2,6 +2,7 @@ package com.example.bigfood.entity;
 
 import java.util.Set;
 
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
@@ -44,6 +45,15 @@ public class Restaurant {
     @Column(name = "address")
     String address;
 
+    @Column(name="name_bank")
+    String nameBank;
+    
+    @Column(name="bank_number")
+    String bankNumber;
+
+    @Column(name="bank_account_name")
+    String bankAccountName;
+    
     double latitude;
     double longitude;
 

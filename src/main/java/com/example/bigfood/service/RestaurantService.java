@@ -1,33 +1,41 @@
 package com.example.bigfood.service;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
+import com.example.bigfood.dto.request.UpdateRestaurantRequest;
+import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantsResponseSet;
 import com.example.bigfood.dto.response.RestaurantFullResponse;
 import com.example.bigfood.dto.RestaurantProjection;
 import com.example.bigfood.entity.Restaurant;
+import com.example.bigfood.entity.RestaurantCategory;
 import com.example.bigfood.entity.User;
 import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.RestaurantMapper;
 import com.example.bigfood.repository.RestaurantRepository;
+import com.example.bigfood.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class RestaurantService {
+    RestaurantCategoryService restaurantCategoryService;
     RestaurantRepository restaurantRepository;
+    UserRepository userRepository;
     UserService userService;
     RestaurantMapper restaurantMapper;
     GoongService goongService;
@@ -54,7 +62,6 @@ public class RestaurantService {
         }
 
         Restaurant restaurant = restaurantMapper.toRestaurant(request);
-
         // chuyển đổi địa chỉ thành tọa độ từ Goong API
         GoongLocation location = goongService.getGeocoding(request.getAddress());
         restaurant.setLatitude(location.getLat());
@@ -65,8 +72,10 @@ public class RestaurantService {
         String licenseId = cloudinaryService.uploadFile(request.getLicenseFile(), "licenses");
         restaurant.setLicenseId(licenseId);
 
+        Set<RestaurantCategory> categories = restaurantCategoryService.getCategoriesByIds(request.getCategoryIds());
+        restaurant.setRestaurantCategories(categories);
+        
         restaurant = restaurantRepository.save(restaurant);
-
         return restaurantMapper.toRestaurantResponse(restaurant);
     }
 
@@ -79,9 +88,57 @@ public class RestaurantService {
                 .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_EXISTS));
     }
 
+    public RestaurantProfileResponse getRestaurantDetail(String restaurantId) {
+        Restaurant restaurant = getRestaurantByUserId(restaurantId);
+        return  RestaurantProfileResponse.builder()
+                .id(restaurant.getUserId())
+                .restaurantName(restaurant.getRestaurantName())
+                .address(restaurant.getAddress())
+                .phone(restaurant.getUser().getPhone())
+                .email(restaurant.getUser().getEmail())
+                .nameBank(restaurant.getNameBank())
+                .bankNumber(restaurant.getBankNumber())
+                .bankAccountName(restaurant.getBankAccountName())
+                .avatar(cloudinaryService.generateUrl(restaurant.getLicenseId()))
+                .bannerId(cloudinaryService.generateUrl(restaurant.getBannerId()))
+                .isApproved(restaurant.getIsApproved())
+                .build();
+    }
+     
     public void saveRestaurant(Restaurant restaurant) {
         if (restaurant != null)
             restaurantRepository.save(restaurant);
+    }
+
+     public RestaurantProfileResponse updateRestaurant(String userId ,UpdateRestaurantRequest request)
+            throws AppException, IOException {
+
+        User user = userService.getUserById(userId);
+           user.setPhone(request.getPhone());
+           user.setEmail(request.getEmail());
+
+        Restaurant restaurant = getRestaurantByUserId(userId);
+
+                restaurant.setRestaurantName(request.getRestaurantName());
+                restaurant.setAddress(request.getAddress());
+                restaurant.setNameBank(request.getNameBank());
+                restaurant.setBankAccountName(request.getBankAccountName());
+                restaurant.setBankNumber(request.getBankNumber());
+
+        GoongLocation location = goongService.getGeocoding(request.getAddress());
+        restaurant.setLatitude(location.getLat());
+        restaurant.setLongitude(location.getLng());
+        if(request.getAvatar()!=null && !request.getAvatar().isEmpty()){
+            String licenseId = cloudinaryService.uploadFile(request.getAvatar(), "licenses");
+            restaurant.setLicenseId(licenseId);
+        }
+        if(request.getBanner()!=null && !request.getBanner().isEmpty()){
+            String bannerId = cloudinaryService.uploadFile(request.getBanner(), "licenses");
+             restaurant.setBannerId(bannerId);
+        }
+        restaurant = restaurantRepository.save(restaurant);
+        userRepository.save(user);
+        return getRestaurantDetail(restaurant.getUserId());
     }
 
     public RestaurantsResponseSet getRestaurantNearBy(double longitude, double latitude) {

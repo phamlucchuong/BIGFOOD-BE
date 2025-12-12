@@ -17,7 +17,7 @@ import com.example.bigfood.dto.response.RestaurantCategoryResponse;
 import com.example.bigfood.service.RestaurantCategoryService;
 
 @RestController
-@RequestMapping("api/restaurant-categories")
+@RequestMapping("/api/restaurant-categories")
 public class RestaurantCategoryCotroller {
     @Autowired 
     RestaurantCategoryService restaurantCategoryService;

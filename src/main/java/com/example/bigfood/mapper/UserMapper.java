@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.InfoUserOrderResponse;
 import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.entity.User;
 
@@ -20,6 +21,7 @@ public interface UserMapper {
     @Mapping(target = "deleted" , ignore = true)
     User toUser(UserCreateRequest request);
 
+    @Mapping(target = "deleted", expression = "java(user.isDeleted())")
     UserResponse toUserResponse(User user);
     
     @Mapping(target = "id" , ignore = true)
@@ -31,4 +33,9 @@ public interface UserMapper {
     @Mapping(target = "roles" , ignore = true)
     @Mapping(target = "restaurant" , ignore = true)
     void toUpdate(@MappingTarget User user , UserUpdateRequest request);
+    
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "phone", source = "phone")
+    InfoUserOrderResponse toInfoUserOrderResponse(User user);
 }

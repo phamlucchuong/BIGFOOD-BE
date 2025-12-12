@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bigfood.dto.request.CreateOrderRequest;
 import com.example.bigfood.dto.request.UpdateOrderStatusRequest;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.service.OrderService;
 
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -55,8 +57,19 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}/all")
-    @PostAuthorize("hasRole('ADMIN') or principal.subject == #userId")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByUserId(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
+    @PostAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<OrderResponse>> getAllOrdersByUserId( @PathVariable String userId) {
+        return ApiResponse.<List<OrderResponse>>builder()
+            .results(orderService.getAllOrdersByUserId(userId))
+            .message("Fetched all orders for user: " + userId)
+            .build();
+    }
+
+
+    @GetMapping("/user/all")
+    @PostAuthorize("hasRole('USER')")
+    public ApiResponse<List<OrderResponse>> getAllOrdersByUserId(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
         return ApiResponse.<List<OrderResponse>>builder()
             .results(orderService.getAllOrdersByUserId(userId))
             .message("Fetched all orders for user: " + userId)
@@ -64,14 +77,46 @@ public class OrderController {
     }
 
     @GetMapping("/restaurant/{restaurantId}/all")
-    @PostAuthorize("hasRole('ADMIN') or hasRole('RESTAURANT') or principal.subject == #restaurantId")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@AuthenticationPrincipal Jwt jwt, @PathVariable String restaurantId) {
+    @PostAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@PathVariable String restaurantId) {
         return ApiResponse.<List<OrderResponse>>builder()
             .results(orderService.getAllOrdersByRestaurantId(restaurantId))
             .message("Fetched all orders for restaurant: " + restaurantId)
             .build();
     }
+
+    @GetMapping("/restaurant/all")
+    // @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@AuthenticationPrincipal Jwt jwt) {
+        String restaurantId = jwt.getSubject();
+        return ApiResponse.<List<OrderResponse>>builder()
+            .results(orderService.getAllOrdersByRestaurantId(restaurantId))
+            .message("Fetched all orders for restaurant: " + restaurantId)
+            .build();
+    }
+
     
+    @GetMapping("/restaurant")
+    // @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<List<OrderResponse>> getOrdersRestaurantByStatus(@AuthenticationPrincipal Jwt jwt,
+                                         @PathParam("status") String status) {
+        String restaurantId = jwt.getSubject();
+        return ApiResponse.<List<OrderResponse>>builder()
+            .results(orderService.getLoadStatusFilter(restaurantId , status))
+            .message("Fetched all orders for restaurant: " + restaurantId)
+            .build();
+    }
+
+    @GetMapping("/restaurant/detail/{orderId}")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<OrderDetailResponse> getOrdersDetailByOrderId(@PathVariable String orderId) {
+        return ApiResponse.<OrderDetailResponse>builder()
+            .results(orderService.getOrderDetailByOrderId(orderId))
+            .message("Orders deatil for restaurant: " + orderId)
+            .build();
+    }
+
+
     @PatchMapping("/{orderId}/status")
     public ApiResponse<OrderResponse> updateOrderStatus(
         @PathVariable String orderId,

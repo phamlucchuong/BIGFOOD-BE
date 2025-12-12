@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.CreateFoodRequest;
+import com.example.bigfood.dto.request.UpdateFoodRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.FoodResponse;
 import com.example.bigfood.service.FoodService;
@@ -47,7 +50,28 @@ public class FoodController {
             .results(foodService.getAllFood(userId))
             .build();
     }
+ 
+    @GetMapping("/list")
+    public ApiResponse<List<FoodResponse>> getByCategoryId(
+        @AuthenticationPrincipal Jwt jwt , 
+        @RequestParam(required = false) String categoryId) {
+        String userId = jwt.getSubject();
+        return ApiResponse.<List<FoodResponse>>builder()
+            .results(foodService.listFoodByCategoryId(userId , categoryId))
+            .build();
+    }
 
+
+    @PutMapping("/update")
+        public ApiResponse<FoodResponse> updateFoods(
+            @AuthenticationPrincipal Jwt jwt,
+            @ModelAttribute UpdateFoodRequest request) 
+            throws IOException {
+            String userId = jwt.getSubject();
+            return ApiResponse.<FoodResponse>builder()
+                .results(foodService.updateFood(userId ,request))
+                .build();
+        }
 
     @DeleteMapping("/{foodId}")
     public ApiResponse<Void> deleteFood(

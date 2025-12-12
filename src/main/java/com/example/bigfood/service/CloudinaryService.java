@@ -61,6 +61,7 @@ public class CloudinaryService {
     }
 
 
+
     @Named("generateUrl")
     public String generateUrl(String publicId) {
         return cloudinary.url()

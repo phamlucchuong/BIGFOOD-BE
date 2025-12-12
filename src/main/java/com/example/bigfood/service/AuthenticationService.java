@@ -19,6 +19,7 @@ import com.example.bigfood.dto.request.IntrospectRequest;
 import com.example.bigfood.dto.response.AuthenticationResponse;
 import com.example.bigfood.dto.response.IntrospectResponse;
 import com.example.bigfood.entity.InvalidatedToken;
+import com.example.bigfood.entity.Restaurant;
 import com.example.bigfood.entity.User;
 import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.exception.AppException;
@@ -53,7 +54,13 @@ public class AuthenticationService {
     public AuthenticationResponse authenticated(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository.findByEmailAndDeletedFalse(request.getEmail())
+
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        Restaurant restaurant = user.getRestaurant();
+                if(restaurant != null && !restaurant.getIsApproved()){
+                    throw new AppException(ErrorCode.RESTAURANT_UNAUTHENTICATED);
+                }
 
         boolean authencated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!authencated) {

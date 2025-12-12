@@ -42,7 +42,7 @@ public class SecurityConfig {
             "api/users/verify-email/{email}",
             "api/otp/verify",
             "api/search",
-            "api/restaurant-categories",
+            "/api/restaurant-categories",
             "api/restaurants",
     };
 

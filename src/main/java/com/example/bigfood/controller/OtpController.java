@@ -18,7 +18,7 @@ public class OtpController {
         String otp = otpService.generateOtp(email);
         otpService.sendOtp(email, otp);
         return ApiResponse.<String>builder()
-                .results("OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư!")
+                .message("OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư!")
                 .build();
     }
 

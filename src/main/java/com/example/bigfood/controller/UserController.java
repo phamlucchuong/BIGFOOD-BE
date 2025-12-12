@@ -36,8 +36,10 @@ public class UserController {
     @GetMapping("/verify-email/{email}")
     public ApiResponse<Boolean> verifyEmail(@PathVariable String email) {
         return ApiResponse.<Boolean>builder()
-                .results(userService.verifyEmail(email))
-                .build();
+        .message("Email verification checked successfully")
+        .results(userService.verifyEmail(email))
+        .build();
+
     }
 
     @PostMapping
