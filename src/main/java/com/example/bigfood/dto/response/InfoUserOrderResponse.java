@@ -4,17 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class OrderResponse {
-    String id;
-    String status;
-    String createdAt;
-    double totalAmount;
-    int numberDishes;
-    String rejectReason;
-    InfoUserOrderResponse user;
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+public class InfoUserOrderResponse {
+    String id ;
+    String name;
+    String phone;
 }

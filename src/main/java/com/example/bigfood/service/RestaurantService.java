@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
-import com.example.bigfood.dto.response.RestaurantDetailResponse;
+import com.example.bigfood.dto.request.UpdateRestaurantRequest;
+import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.entity.Restaurant;
@@ -14,6 +15,7 @@ import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.RestaurantMapper;
 import com.example.bigfood.repository.RestaurantRepository;
+import com.example.bigfood.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RestaurantService {
     RestaurantCategoryService restaurantCategoryService;
     RestaurantRepository restaurantRepository;
+    UserRepository userRepository;
     UserService userService;
     RestaurantMapper restaurantMapper;
     GoongService goongService;
@@ -78,9 +81,9 @@ public class RestaurantService {
                 .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_EXISTS));
     }
 
-    public RestaurantDetailResponse getRestaurantDetail(String restaurantId) {
+    public RestaurantProfileResponse getRestaurantDetail(String restaurantId) {
         Restaurant restaurant = getRestaurantByUserId(restaurantId);
-        return  RestaurantDetailResponse.builder()
+        return  RestaurantProfileResponse.builder()
                 .id(restaurant.getUserId())
                 .restaurantName(restaurant.getRestaurantName())
                 .address(restaurant.getAddress())
@@ -89,14 +92,46 @@ public class RestaurantService {
                 .nameBank(restaurant.getNameBank())
                 .bankNumber(restaurant.getBankNumber())
                 .bankAccountName(restaurant.getBankAccountName())
-                .avatar(restaurant.getUser().getImageId())
-                .bannerId(restaurant.getBannerId())
+                .avatar(cloudinaryService.generateUrl(restaurant.getLicenseId()))
+                .bannerId(cloudinaryService.generateUrl(restaurant.getBannerId()))
                 .isApproved(restaurant.getIsApproved())
                 .build();
     }
+     
     public void saveRestaurant(Restaurant restaurant) {
         if (restaurant != null)
             restaurantRepository.save(restaurant);
+    }
+
+     public RestaurantProfileResponse updateRestaurant(String userId ,UpdateRestaurantRequest request)
+            throws AppException, IOException {
+
+        User user = userService.getUserById(userId);
+           user.setPhone(request.getPhone());
+           user.setEmail(request.getEmail());
+
+        Restaurant restaurant = getRestaurantByUserId(userId);
+
+                restaurant.setRestaurantName(request.getRestaurantName());
+                restaurant.setAddress(request.getAddress());
+                restaurant.setNameBank(request.getNameBank());
+                restaurant.setBankAccountName(request.getBankAccountName());
+                restaurant.setBankNumber(request.getBankNumber());
+
+        GoongLocation location = goongService.getGeocoding(request.getAddress());
+        restaurant.setLatitude(location.getLat());
+        restaurant.setLongitude(location.getLng());
+        if(request.getAvatar()!=null && !request.getAvatar().isEmpty()){
+            String licenseId = cloudinaryService.uploadFile(request.getAvatar(), "licenses");
+            restaurant.setLicenseId(licenseId);
+        }
+        if(request.getBanner()!=null && !request.getBanner().isEmpty()){
+            String bannerId = cloudinaryService.uploadFile(request.getBanner(), "licenses");
+             restaurant.setBannerId(bannerId);
+        }
+        restaurant = restaurantRepository.save(restaurant);
+        userRepository.save(user);
+        return getRestaurantDetail(restaurant.getUserId());
     }
 
 

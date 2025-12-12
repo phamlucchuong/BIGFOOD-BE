@@ -56,6 +56,14 @@ public class FoodCategoryController {
             .results(foodCategoryService.getAllFoodCategories(restaurantId))
             .build();
     }
+    @GetMapping("/all")
+    public ApiResponse<Set<FoodCategoryResponse>> getListCategory( @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        return  ApiResponse.<Set<FoodCategoryResponse>>builder()
+            .results(foodCategoryService.getAllFoodCategories(userId))
+            .build();
+    }
+
 
     @DeleteMapping("/{categoryId}")
     public ApiResponse<Void> deleteFoodCategory(

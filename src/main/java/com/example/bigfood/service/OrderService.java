@@ -1,6 +1,10 @@
 package com.example.bigfood.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.bigfood.dto.request.CreateOrderRequest;
 import com.example.bigfood.dto.request.UpdateOrderStatusRequest;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
+import com.example.bigfood.dto.response.InfoUserOrderResponse;
+import com.example.bigfood.dto.response.OrderDetailResponse;
+import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.entity.Restaurant;
@@ -31,6 +38,7 @@ public class OrderService {
     GoongService goongService;
     OrderDetailService orderDetailService;
     OrderMapper orderMapper;
+    CloudinaryService cloudinaryService;
 
     /**
      * Creates a new order with order details.
@@ -117,16 +125,65 @@ public class OrderService {
         if (request.getStatus().equals(OrderStatus.REJECTED)) {
             order.setRejectReason(request.getReason());
         }
-
-        // order.setUpdatedAt(LocalDateTime.now());
-
         orderRepository.save(order);
         return orderMapper.toResponse(order);
     }
 
     public List<OrderResponse> getAllOrdersByRestaurantId(String restaurantId) {
-        return orderMapper.toResponseList(
-                orderRepository.findByRestaurant_UserId(restaurantId));
+        List<Order> order = orderRepository.findByRestaurant_UserId(restaurantId);
+        return orderMapper.toResponseList(order);
+    }
+
+    public OrderDetailResponse getOrderDetailByOrderId(String orderId) {
+         Order orderData = getOrderById(orderId);
+
+         Set<OrderFoodDetailResponse> orderFoodDetails = orderData.getOrderDetails() != null
+                 ? orderData.getOrderDetails().stream()
+                         .map(detail -> OrderFoodDetailResponse.builder()
+                                 .id(detail.getId())
+                                 .foodName(detail.getFoodName())
+                                 .quantity(String.valueOf(detail.getQuantity())) 
+                                 .unitPrice(String.valueOf(detail.getUnitPrice())) 
+                                 .totalPrice(String.valueOf(detail.getTotalPrice())) 
+                                 .imageId(cloudinaryService.generateUrl(detail.getFood().getImageId()))
+                                 .notes(detail.getNotes()) 
+                                 .build())
+                         .collect(Collectors.toSet())
+                 : new HashSet<>();
+
+          return OrderDetailResponse.builder()
+                    .id(orderData.getId())
+                    .status(orderData.getStatus().name())
+                    .createdAt(orderData.getCreatedAt().toString())
+                    .updatedAt(orderData.getUpdatedAt().toString())
+                    .deliveryAddress(orderData.getDeliveryAddress())
+                    .deliveryDistance(orderData.getDeliveryDistance())
+                    .deliveryFee(orderData.getDeliveryFee())
+                    .totalAmount(orderData.getTotalAmount())
+                    .paymentMethod(orderData.getPaymentMethod())
+                    .notes(orderData.getNotes())
+                    .cancellReason(orderData.getCancellReason())
+                    .rejectReason(orderData.getRejectReason())
+                    .numberDishes(orderData.getOrderDetails() != null ? orderData.getOrderDetails().size() : 0)
+                    .orderDetails(orderFoodDetails)
+                    .user(InfoUserOrderResponse.builder()
+                            .id(orderData.getUser().getId())
+                            .name(orderData.getUser().getName())
+                            .phone(orderData.getUser().getPhone())
+                            .build())
+                    .build();
+    }
+
+    public List<OrderResponse> getLoadStatusFilter(String restaurantId, String filter) {
+        OrderStatus statusEnum;
+        try {
+            statusEnum = OrderStatus.valueOf(filter); 
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid status: " + filter);
+        }
+
+        List<Order> listOrder = orderRepository.findByStatus(restaurantId, statusEnum);
+        return orderMapper.toResponseList(listOrder);
     }
 
     public Order getOrderById(String orderId) {

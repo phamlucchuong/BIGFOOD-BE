@@ -54,11 +54,9 @@ public class Food {
     int count = 0;
     
     @Column(name = "is_deleted")
-    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
     boolean deleted;
     
     @Column(name = "is_available")
-    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
     boolean available;
 
     // Quan hệ N:1 với FoodCategory (Sở hữu Khóa ngoại)

@@ -1,21 +1,22 @@
 package com.example.bigfood.controller;
 
 import java.io.IOException;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
+import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.ApiResponse;
-import com.example.bigfood.dto.response.RestaurantDetailResponse;
+import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.service.RestaurantService;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -52,10 +53,22 @@ public class RestaurantController {
         @AuthenticationPrincipal Jwt jwt) 
         throws IOException {
         String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantDetailResponse>builder()
+        return ApiResponse.<RestaurantProfileResponse>builder()
             .results(restaurantService.getRestaurantDetail(userId))
             .build();
     }
+
+    @PutMapping("/update")
+    public ApiResponse<?> updateRestaurant(
+        @AuthenticationPrincipal Jwt jwt ,
+        @RequestBody UpdateRestaurantRequest request ) 
+        throws IOException {
+        String userId = jwt.getSubject();
+        return ApiResponse.<RestaurantProfileResponse>builder()
+            .results(restaurantService.updateRestaurant(userId ,request))
+            .build();
+    }
+    
     
 
 }

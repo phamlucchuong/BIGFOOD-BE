@@ -61,7 +61,7 @@ public class FoodService {
         return foodRepository.save(food);
     }
     
-    public Food updateFood(UpdateFoodRequest request) throws IOException {
+    public Food update(UpdateFoodRequest request) throws IOException {
         Food food = getFoodById(request.getFoodId());
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
@@ -90,7 +90,20 @@ public class FoodService {
     }
 
     public List<FoodResponse> getAllByUserId(String userId) {
-        return foodMapper.toListFoodResponses(foodRepository.findAllByRestaurantUserId(userId));
+        return foodMapper.toListFoodResponses(foodRepository.findAllByRestaurantUserId(userId) , cloudinaryService);
+    }
+
+    public List<FoodResponse> listFoodByCategoryId(String userId, String categoryId) {
+        if (categoryId == null
+                || categoryId.isBlank()
+                || categoryId.equalsIgnoreCase("all")) {
+            categoryId = null;
+        }
+        List<Food> foods = foodRepository.findFoodByCategoryAndRestaurant(categoryId, userId);
+        if (foods.isEmpty()) {
+            throw new AppException(ErrorCode.FOOD_CATEGORY_NOT_EXISTS);
+        }
+        return foodMapper.toListFoodResponses(foods ,  cloudinaryService);
     }
 
     public void deleteFoodById(String itemId) {
@@ -110,7 +123,19 @@ public class FoodService {
        
         category.getFoods().add(food);
         restaurantService.saveRestaurant(restaurant);
-        return foodMapper.toFoodResponse(food);
+        return foodMapper.toFoodResponse(food , cloudinaryService);
+    }
+
+     public FoodResponse updateFood(String userId,UpdateFoodRequest request) throws IOException {
+        Restaurant restaurant = restaurantService.getRestaurantByUserId(userId);
+        Food food = update(request);
+        FoodCategory category = restaurant.getFoodCategories().stream()
+            .filter(cat -> cat.getId().equals(food.getCategory().getId()))
+            .findFirst()
+            .orElseThrow(() -> new AppException(ErrorCode.FOOD_CATEGORY_NOT_EXISTS));
+        category.getFoods().add(food);
+        restaurantService.saveRestaurant(restaurant);
+        return foodMapper.toFoodResponse(food , cloudinaryService);
     }
 
     public List<FoodResponse> getAllFood(String userId) {

@@ -11,9 +11,10 @@ import com.example.bigfood.entity.FoodCategory;
 
 @Mapper(componentModel = "spring", uses = {FoodMapper.class})
 public interface FoodCategoryMapper {
-    FoodCategoryResponse toResponse(FoodCategory foodCategory);
+    @Mapping(target = "numberFood",
+             expression = "java(category.getFoods() != null ? category.getFoods().size() : 0)")
+    FoodCategoryResponse toResponse(FoodCategory category);
 
-    @Mapping(target = "numberFood", expression = "java(category.getFoods() != null ? category.getFoods().size() : 0)")
     Set<FoodCategoryResponse> toResponseSet(Set<FoodCategory> categories);
 
     FoodCategory toFoodCategory(UpdateFoodCategoryRequest request);
