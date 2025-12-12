@@ -123,7 +123,7 @@ public class FoodService {
        
         category.getFoods().add(food);
         restaurantService.saveRestaurant(restaurant);
-        return foodMapper.toFoodResponse(food , cloudinaryService);
+        return foodMapper.toFoodResponse(food);
     }
 
      public FoodResponse updateFood(String userId,UpdateFoodRequest request) throws IOException {
@@ -135,7 +135,7 @@ public class FoodService {
             .orElseThrow(() -> new AppException(ErrorCode.FOOD_CATEGORY_NOT_EXISTS));
         category.getFoods().add(food);
         restaurantService.saveRestaurant(restaurant);
-        return foodMapper.toFoodResponse(food , cloudinaryService);
+        return foodMapper.toFoodResponse(food);
     }
 
     public List<FoodResponse> getAllFood(String userId) {

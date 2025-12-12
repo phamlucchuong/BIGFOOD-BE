@@ -60,11 +60,9 @@ public class CloudinaryService {
         cloudinary.uploader().destroy(publicId, params);
     }
 
-<<<<<<< HEAD
-=======
+
 
     @Named("generateUrl")
->>>>>>> develop
     public String generateUrl(String publicId) {
         return cloudinary.url()
                 .secure(true)

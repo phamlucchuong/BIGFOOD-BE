@@ -66,13 +66,10 @@ CREATE TABLE restaurants (
     address VARCHAR(255) NOT NULL,
     latitude DOUBLE NOT NULL,
     longitude DOUBLE NOT NULL,
-<<<<<<< HEAD
     name_bank VARCHAR(255),
     bank_number VARCHAR(255),
     bank_account_name VARCHAR(255),
-=======
     location POINT NOT NULL SRID 4326,
->>>>>>> develop
     banner_id VARCHAR(255),
     license_id VARCHAR(255) NOT NULL,
     is_approved BOOLEAN DEFAULT FALSE,
