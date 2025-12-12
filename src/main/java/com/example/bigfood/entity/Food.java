@@ -49,9 +49,9 @@ public class Food {
     @Column(name = "price", columnDefinition = "decimal(10, 2) not null check (price >= 0)")
     double price;
 
-    @Column(name = "count", columnDefinition = "int default 0")
-    @Builder.Default
-    int count = 0;
+    @Column(name = "sold")
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    int sold;
     
     @Column(name = "is_deleted")
     boolean deleted;

@@ -1,21 +1,24 @@
 package com.example.bigfood.dto.response;
 
+import java.util.Set;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class RestaurantResponse {
-    String restaurantId;
+@Builder
+public class RestaurantDetailResponse {
+    String userId;
     String restaurantName;
     String address;
-    @Builder.Default
-    Double distanceM = 0.0; // alias trong SELECT
     String banner;
-    double rating;
-    int reviewCount;
+    Set<FoodCategoryResponse> foodCategories;
 }

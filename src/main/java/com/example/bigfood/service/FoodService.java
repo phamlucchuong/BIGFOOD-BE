@@ -158,7 +158,7 @@ public class FoodService {
         cloudinaryService.deleteFile(food.getImageId());
 
         // nếu đã có đơn hàng liên quan đến món ăn thì chỉ đánh dấu xóa mềm
-        if(food.getCount() > 0) {
+        if(food.getSold() > 0) {
             food.setDeleted(true);
             return;
         }

@@ -11,18 +11,17 @@ import com.example.bigfood.dto.response.FoodResponse;
 import com.example.bigfood.entity.Food;
 import com.example.bigfood.service.CloudinaryService;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { CloudinaryService.class })
 public interface FoodMapper {
-    @Mapping(target = "categoryName", source = "category.name")
-      @Mapping(target = "imageId",
-             expression = "java(cloudinaryService.generateUrl(food.getImageId()))")
-    FoodResponse toFoodResponse(Food food, @Context CloudinaryService cloudinaryService);
+
+    @Mapping(target = "image", source = "imageId", qualifiedByName = "generateUrl")
+    FoodResponse toFoodResponse(Food food);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imageId", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "available", ignore = true)
-    @Mapping(target = "count", ignore = true)
+    @Mapping(target = "sold", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "orderDetails", ignore = true)
     Food toFood(CreateFoodRequest request);

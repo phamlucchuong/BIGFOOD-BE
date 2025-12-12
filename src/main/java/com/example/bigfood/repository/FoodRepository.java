@@ -25,7 +25,7 @@ public interface FoodRepository extends JpaRepository<Food, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Food f SET f.count = f.count + :amount WHERE f.id = :foodId")
+    @Query("UPDATE Food f SET f.sold = f.sold + :amount WHERE f.id = :foodId")
     int increaseCountById(@Param("foodId") String foodId, @Param("amount") int amount);
 
     @Query("""

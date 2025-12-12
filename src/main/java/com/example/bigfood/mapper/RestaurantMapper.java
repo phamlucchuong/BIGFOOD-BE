@@ -3,8 +3,11 @@ package com.example.bigfood.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.example.bigfood.dto.RestaurantProjection;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.response.RestaurantResponse;
+import com.example.bigfood.dto.response.RestaurantDetailResponse;
+import com.example.bigfood.dto.response.RestaurantFullResponse;
 import com.example.bigfood.entity.Restaurant;
 
 
@@ -20,6 +23,13 @@ public interface RestaurantMapper {
     @Mapping(target = "bannerId", ignore = true)
     @Mapping(target = "licenseId", ignore = true)
     @Mapping(target = "orders", ignore = true)
+    @Mapping(target = "location", ignore = true)
     Restaurant toRestaurant(CreateRestaurantRequest request);
-    RestaurantResponse toRestaurantResponse(Restaurant restaurant);
+    RestaurantFullResponse toRestaurantResponse(Restaurant restaurant);
+
+    @Mapping(target = "banner", ignore = true)
+    RestaurantDetailResponse toRestaurantDetailResponse(Restaurant restaurant);
+    RestaurantFullResponse toRestaurantResponse(RestaurantResponse nearByRestaurantResponse);
+    
+    RestaurantResponse toRestaurantResponse(RestaurantProjection projection);
 }

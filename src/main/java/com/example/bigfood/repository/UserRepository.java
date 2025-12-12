@@ -17,7 +17,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 
-    // Chỉ cần khai báo dòng này là đủ
     long countByCreatedAtBetweenAndDeletedFalse(LocalDateTime startTime, LocalDateTime endTime);
     Optional<User> findByEmailAndDeletedFalse(String emailRequest);
     Optional<User> findByIdAndDeletedFalse(String id);

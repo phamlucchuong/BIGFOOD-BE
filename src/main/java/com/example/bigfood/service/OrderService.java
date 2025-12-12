@@ -1,6 +1,5 @@
 package com.example.bigfood.service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +24,7 @@ import com.example.bigfood.exception.AppException;
 import com.example.bigfood.mapper.OrderMapper;
 import com.example.bigfood.repository.OrderRepository;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -39,6 +39,7 @@ public class OrderService {
     OrderDetailService orderDetailService;
     OrderMapper orderMapper;
     CloudinaryService cloudinaryService;
+    EntityManager entityManager;
 
     /**
      * Creates a new order with order details.
@@ -93,6 +94,8 @@ public class OrderService {
         // Single save operation - Order and OrderDetails cascade automatically
         // CascadeType.ALL ensures OrderDetails are persisted with Order
         orderRepository.save(order);
+        entityManager.flush(); // Ensure immediate persistence
+        entityManager.refresh(order); // Refresh to get any DB-generated values
         
         return orderMapper.toResponse(order);
     }

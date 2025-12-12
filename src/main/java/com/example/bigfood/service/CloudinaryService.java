@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mapstruct.Named;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,6 +60,11 @@ public class CloudinaryService {
         cloudinary.uploader().destroy(publicId, params);
     }
 
+<<<<<<< HEAD
+=======
+
+    @Named("generateUrl")
+>>>>>>> develop
     public String generateUrl(String publicId) {
         return cloudinary.url()
                 .secure(true)
