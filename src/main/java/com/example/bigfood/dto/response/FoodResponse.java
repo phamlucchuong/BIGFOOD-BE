@@ -15,9 +15,9 @@ public class FoodResponse {
     String id;
     String name;
     String description;
-    String imageId;
+    String image;
     double price;
-    int count;
+    int sold;
     boolean available;
     boolean deleted;
     String categoryName;

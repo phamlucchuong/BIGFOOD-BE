@@ -31,6 +31,7 @@ public class SecurityConfig {
             "api/users",
             "api/otp/send/email",
             "api/search",
+            "api/restaurants/detail",
     };
 
     private final String[] PUBLIC_PUT_ENDPOINT = {
@@ -42,6 +43,7 @@ public class SecurityConfig {
             "api/otp/verify",
             "api/search",
             "api/restaurant-categories",
+            "api/restaurants",
     };
 
     private final String[] SWAGGER_ENDPOINT = {

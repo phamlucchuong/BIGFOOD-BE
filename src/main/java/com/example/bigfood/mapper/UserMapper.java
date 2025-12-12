@@ -11,10 +11,24 @@ import com.example.bigfood.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "roles" , ignore = true)
+    @Mapping(target = "orders" , ignore = true)
+    @Mapping(target = "restaurant" , ignore = true)
+    @Mapping(target = "imageId" , ignore = true)
+    @Mapping(target = "createdAt" , ignore = true)
+    @Mapping(target = "deleted" , ignore = true)
     User toUser(UserCreateRequest request);
 
     UserResponse toUserResponse(User user);
     
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "email" , ignore = true)
+    @Mapping(target = "imageId" , ignore = true)
+    @Mapping(target = "createdAt" , ignore = true)
+    @Mapping(target = "deleted" , ignore = true)
+    @Mapping(target = "orders" , ignore = true)
     @Mapping(target = "roles" , ignore = true)
+    @Mapping(target = "restaurant" , ignore = true)
     void toUpdate(@MappingTarget User user , UserUpdateRequest request);
 }

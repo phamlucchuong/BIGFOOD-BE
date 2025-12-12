@@ -66,6 +66,7 @@ CREATE TABLE restaurants (
     address VARCHAR(255) NOT NULL,
     latitude DOUBLE NOT NULL,
     longitude DOUBLE NOT NULL,
+    location POINT NOT NULL SRID 4326,
     banner_id VARCHAR(255),
     license_id VARCHAR(255) NOT NULL,
     is_approved BOOLEAN DEFAULT FALSE,
@@ -73,6 +74,8 @@ CREATE TABLE restaurants (
     PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+create index idx_restaurants_location on restaurants(location);
 
 create table restaurant_has_categories (
     restaurant_id char(36),
@@ -101,7 +104,7 @@ create table foods (
     description text,
     image_id varchar(255),
     price decimal(10, 2) not null check (price >= 0),
-    count int default 0,
+    sold int default 0,
     is_deleted boolean default false,
     is_available boolean default true,
     food_category_id char(36),
@@ -116,7 +119,7 @@ create table orders (
     restaurant_id varchar(36) not null,
     status varchar(15) default 'PENDING' check (status in ('PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED', 'REJECTED')),
     created_at timestamp not null default current_timestamp,
-    updated_at timestamp not null default current_timestamp on update current_timestamp,
+    updated_at timestamp on update current_timestamp,
     delivery_address varchar(255) not null,
     delivery_latitude decimal(10,8) not null,
     delivery_longitude decimal(11,8) not null,
