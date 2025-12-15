@@ -2,6 +2,7 @@ package com.example.bigfood.controller;
 
 import java.io.IOException;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -66,10 +67,10 @@ public class RestaurantController {
             .build();
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<?> updateRestaurant(
         @AuthenticationPrincipal Jwt jwt ,
-        @RequestBody UpdateRestaurantRequest request ) 
+        @ModelAttribute  UpdateRestaurantRequest request ) 
         throws IOException {
         String userId = jwt.getSubject();
         return ApiResponse.<RestaurantProfileResponse>builder()
