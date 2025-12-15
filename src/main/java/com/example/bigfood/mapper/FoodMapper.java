@@ -15,6 +15,7 @@ import com.example.bigfood.service.CloudinaryService;
 public interface FoodMapper {
 
     @Mapping(target = "image", source = "imageId", qualifiedByName = "generateUrl")
+    @Mapping(target = "categoryName", expression = "java(food.getCategory() != null ? food.getCategory().getName() : null)")
     FoodResponse toFoodResponse(Food food);
 
     @Mapping(target = "id", ignore = true)
@@ -26,6 +27,5 @@ public interface FoodMapper {
     @Mapping(target = "orderDetails", ignore = true)
     Food toFood(CreateFoodRequest request);
     
-    @Mapping(target = "categoryName", expression = "java(food.getCategory() != null ? food.getCategory().getName() : null)")
     List<FoodResponse> toListFoodResponses(List<Food> foods , @Context CloudinaryService cloudinaryService);
 }

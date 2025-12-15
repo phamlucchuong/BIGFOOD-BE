@@ -1,5 +1,6 @@
 package com.example.bigfood.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,16 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByStatus(
             @Param("restaurantId") String restaurantId,
             @Param("status") OrderStatus status);
+
+    @Query("""
+                     SELECT o FROM Order o
+                     WHERE o.restaurant.userId = :restaurantId
+                    ORDER BY o.createdAt DESC
+                     """)
+    List<Order> findOrderNewList(@Param("restaurantId") String restaurantId);
+
+    List<Order> findByRestaurant_UserIdAndCreatedAtBetween(
+                    String restaurantId,
+                    LocalDateTime start,
+                    LocalDateTime end);
 }
