@@ -19,6 +19,5 @@ public class RestaurantProfileResponse {
     String bankNumber;
     String bankAccountName;
     String avatar ;
-    String bannerId;
-    Boolean isApproved;
+    String banner;
 }

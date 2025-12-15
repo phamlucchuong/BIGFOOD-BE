@@ -1,5 +1,6 @@
 package com.example.bigfood.service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +18,10 @@ import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortResponse;
+import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.entity.Restaurant;
+import com.example.bigfood.entity.Review;
 import com.example.bigfood.entity.User;
 import com.example.bigfood.enums.ErrorCode;
 import com.example.bigfood.enums.OrderStatus;
@@ -47,17 +50,21 @@ public class OrderService {
      * Creates a new order with order details.
      * 
      * Production Best Practices implemented:
-     * 1. @Transactional: Ensures atomicity - all operations succeed or rollback together
-     * 2. Cascade persistence: OrderDetails auto-saved via CascadeType.ALL + orphanRemoval
-     * 3. Bidirectional relationship: Parent-child properly linked before persistence
+     * 1. @Transactional: Ensures atomicity - all operations succeed or rollback
+     * together
+     * 2. Cascade persistence: OrderDetails auto-saved via CascadeType.ALL +
+     * orphanRemoval
+     * 3. Bidirectional relationship: Parent-child properly linked before
+     * persistence
      * 4. Single save operation: Only save Order, OrderDetails cascade automatically
      * 
      * Transaction scope ensures:
-     * - If any operation fails (geocoding, distance calc, validation), entire order is rolled back
+     * - If any operation fails (geocoding, distance calc, validation), entire order
+     * is rolled back
      * - Database consistency is maintained
      * - No orphaned OrderDetails if Order creation fails
      * 
-     * @param userId User creating the order
+     * @param userId  User creating the order
      * @param request Order creation request containing order details
      * @return OrderResponse with order and order details
      */
@@ -120,7 +127,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(order.getStatus().toString().equals(request.getStatus().toString())) {
+        if (order.getStatus().toString().equals(request.getStatus().toString())) {
             throw new AppException(ErrorCode.STATUS_SAME_AS_BEFORE);
         }
         order.setStatus(request.getStatus());
@@ -141,51 +148,51 @@ public class OrderService {
     }
 
     public OrderDetailResponse getOrderDetailByOrderId(String orderId) {
-         Order orderData = getOrderById(orderId);
+        Order orderData = getOrderById(orderId);
 
-         Set<OrderFoodDetailResponse> orderFoodDetails = orderData.getOrderDetails() != null
-                 ? orderData.getOrderDetails().stream()
-                         .map(detail -> OrderFoodDetailResponse.builder()
-                                 .id(detail.getId())
-                                 .foodName(detail.getFoodName())
-                                 .quantity(String.valueOf(detail.getQuantity())) 
-                                 .unitPrice(String.valueOf(detail.getUnitPrice())) 
-                                 .totalPrice(String.valueOf(detail.getTotalPrice())) 
-                                 .imageId(cloudinaryService.generateUrl(detail.getFood().getImageId()))
-                                 .notes(detail.getNotes()) 
-                                 .build())
-                         .collect(Collectors.toSet())
-                 : new HashSet<>();
+        Set<OrderFoodDetailResponse> orderFoodDetails = orderData.getOrderDetails() != null
+                ? orderData.getOrderDetails().stream()
+                        .map(detail -> OrderFoodDetailResponse.builder()
+                                .id(detail.getId())
+                                .foodName(detail.getFoodName())
+                                .quantity(String.valueOf(detail.getQuantity()))
+                                .unitPrice(String.valueOf(detail.getUnitPrice()))
+                                .totalPrice(String.valueOf(detail.getTotalPrice()))
+                                .imageId(cloudinaryService.generateUrl(detail.getFood().getImageId()))
+                                .notes(detail.getNotes())
+                                .build())
+                        .collect(Collectors.toSet())
+                : new HashSet<>();
 
-          return OrderDetailResponse.builder()
-                    .id(orderData.getId())
-                    .status(orderData.getStatus().name())
-                    .createdAt(orderData.getCreatedAt().toString())
-                    .updatedAt(orderData.getUpdatedAt() != null
-                            ? orderData.getUpdatedAt().toString()
-                            : "")
-                    .deliveryAddress(orderData.getDeliveryAddress())
-                    .deliveryDistance(orderData.getDeliveryDistance())
-                    .deliveryFee(orderData.getDeliveryFee())
-                    .totalAmount(orderData.getTotalAmount())
-                    .paymentMethod(orderData.getPaymentMethod())
-                    .notes(orderData.getNotes())
-                    .cancellReason(orderData.getCancellReason())
-                    .rejectReason(orderData.getRejectReason())
-                    .numberDishes(orderData.getOrderDetails() != null ? orderData.getOrderDetails().size() : 0)
-                    .orderDetails(orderFoodDetails)
-                    .user(InfoUserOrderResponse.builder()
-                            .id(orderData.getUser().getId())
-                            .name(orderData.getUser().getName())
-                            .phone(orderData.getUser().getPhone())
-                            .build())
-                    .build();
+        return OrderDetailResponse.builder()
+                .id(orderData.getId())
+                .status(orderData.getStatus().name())
+                .createdAt(orderData.getCreatedAt().toString())
+                .updatedAt(orderData.getUpdatedAt() != null
+                        ? orderData.getUpdatedAt().toString()
+                        : "")
+                .deliveryAddress(orderData.getDeliveryAddress())
+                .deliveryDistance(orderData.getDeliveryDistance())
+                .deliveryFee(orderData.getDeliveryFee())
+                .totalAmount(orderData.getTotalAmount())
+                .paymentMethod(orderData.getPaymentMethod())
+                .notes(orderData.getNotes())
+                .cancellReason(orderData.getCancellReason())
+                .rejectReason(orderData.getRejectReason())
+                .numberDishes(orderData.getOrderDetails() != null ? orderData.getOrderDetails().size() : 0)
+                .orderDetails(orderFoodDetails)
+                .user(InfoUserOrderResponse.builder()
+                        .id(orderData.getUser().getId())
+                        .name(orderData.getUser().getName())
+                        .phone(orderData.getUser().getPhone())
+                        .build())
+                .build();
     }
 
     public List<OrderResponse> getLoadStatusFilter(String restaurantId, String filter) {
         OrderStatus statusEnum;
         try {
-            statusEnum = OrderStatus.valueOf(filter); 
+            statusEnum = OrderStatus.valueOf(filter);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid status: " + filter);
         }
@@ -196,10 +203,139 @@ public class OrderService {
 
     protected Order getOrderById(String orderId) {
         if(orderId == null || orderId.isEmpty()) {
+
             throw new AppException(ErrorCode.ORDER_NOT_FOUND);
         }
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+    }
+    public List<OrderResponse> listOrderNew(String restaurantId){
+         List<Order>listOrder = orderRepository.findOrderNewList(restaurantId);
+        return orderMapper.toResponseList(listOrder);
+    }
+
+    public RestaurantStatisticalResponse restaurantStatistical(String restaurantId) {
+        // Restaurant restaurant = restaurantService.getRestaurantByUserId(restaurantId);
+
+        List<Order> allOrders = orderRepository.findByRestaurant_UserId(restaurantId);
+
+        if (allOrders.isEmpty()) {
+            return RestaurantStatisticalResponse.builder()
+                    .totalPrice(0)
+                    .percentagePrice(0)
+                    .averageUnitRevenuePrice(0)
+                    .numberOfOrder(0)
+                    .percentageOrder(0)
+                    .numberOrderCompleted(0)
+                    .numberOrderRejected(0)
+                    .averageStars(0)
+                    .percentageStart(0)
+                    .percentagePositive(0)
+                    .percentNegative(0)
+                    .build();
+        }
+
+        double totalRevenue = allOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                .mapToDouble(Order::getTotalAmount)
+                .sum();
+                
+        int totalOrders = allOrders.size();
+        long completedOrders = allOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                .count();
+        long rejectedOrders = allOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.REJECTED
+                        || order.getStatus() == OrderStatus.CANCELED)
+                .count();
+
+        double averageRevenuePerOrder = completedOrders > 0
+                ? totalRevenue / completedOrders
+                : 0;
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        LocalDateTime currentPeriodStart = LocalDateTime.now().minusYears(1);
+
+        List<Order> previousPeriodOrders = orderRepository.findByRestaurant_UserIdAndCreatedAtBetween(
+                restaurantId, currentPeriodStart, oneYearAgo);
+
+        double previousRevenue = previousPeriodOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                .mapToDouble(Order::getTotalAmount)
+                .sum();
+
+        int previousTotalOrders = previousPeriodOrders.size();
+        double percentagePrice = previousRevenue > 0
+                ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
+                : 0;
+
+        double percentageOrder = previousTotalOrders > 0
+                ? ((totalOrders - previousTotalOrders) / (double) previousTotalOrders) * 100
+                : 0;
+
+        percentagePrice = Math.round(percentagePrice * 10.0) / 10.0;
+        percentageOrder = Math.round(percentageOrder * 10.0) / 10.0;
+
+        // Calculate review statistics
+        List<Review> allReviews = allOrders.stream()
+                .map(Order::getReview)
+                .filter(review -> review != null)
+                .collect(Collectors.toList());
+
+        double averageStars = 0;
+        double percentagePositive = 0; // 4-5 stars
+        double percentNegative = 0;    // 1-2 stars
+        double percentageStart = 0;
+
+        if (!allReviews.isEmpty()) {
+            // Calculate average rating
+            averageStars = allReviews.stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(0);
+            averageStars = Math.round(averageStars * 10.0) / 10.0;
+
+            // Count rating distribution
+            long positiveCount = allReviews.stream()
+                    .filter(review -> review.getRating() >= 4)
+                    .count();
+            long negativeCount = allReviews.stream()
+                    .filter(review -> review.getRating() <= 2)
+                    .count();
+
+            percentagePositive = (positiveCount * 100.0) / allReviews.size();
+            percentNegative = (negativeCount * 100.0) / allReviews.size();
+
+            // Calculate percentage change in average rating from previous period
+            List<Review> previousReviews = previousPeriodOrders.stream()
+                    .map(Order::getReview)
+                    .filter(review -> review != null)
+                    .collect(Collectors.toList());
+
+            if (!previousReviews.isEmpty()) {
+                double previousAverageStars = previousReviews.stream()
+                        .mapToInt(Review::getRating)
+                        .average()
+                        .orElse(0);
+                percentageStart = Math.round((averageStars - previousAverageStars) * 10.0) / 10.0;
+            }
+
+            percentagePositive = Math.round(percentagePositive * 10.0) / 10.0;
+            percentNegative = Math.round(percentNegative * 10.0) / 10.0;
+        }
+
+        return RestaurantStatisticalResponse.builder()
+                .totalPrice(totalRevenue)
+                .percentagePrice(percentagePrice)
+                .averageUnitRevenuePrice(averageRevenuePerOrder)
+                .numberOfOrder(totalOrders)
+                .percentageOrder(percentageOrder)
+                .numberOrderCompleted((int) completedOrders)
+                .numberOrderRejected((int) rejectedOrders)
+                .averageStars(averageStars)
+                .percentageStart(percentageStart)
+                .percentagePositive(percentagePositive)
+                .percentNegative(percentNegative)
+                .build();
     }
 
     public OrderFullResponse getOrderByOrderId(String id) {

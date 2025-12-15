@@ -21,6 +21,7 @@ import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortResponse;
+import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.service.OrderService;
 
 import jakarta.websocket.server.PathParam;
@@ -134,6 +135,28 @@ public class OrderController {
             .message("Orders deatil for restaurant: " + orderId)
             .build();
     }
+
+     @GetMapping("/restaurant/statistital")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<?> getOrdersDetailByOrderId(@AuthenticationPrincipal Jwt jwt) {
+       String userId = jwt.getSubject();
+        return ApiResponse.<RestaurantStatisticalResponse>builder()
+            .results(orderService.restaurantStatistical(userId))
+            .message("Orders restarantStatistital for restaurant: " + userId)
+            .build();
+    }
+    
+     @GetMapping("/restaurant/list-order-new")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<List<OrderResponse>> getListOrderNew(@AuthenticationPrincipal Jwt jwt) {
+       String userId = jwt.getSubject();
+        return ApiResponse.<List<OrderResponse>>builder()
+            .results(orderService.listOrderNew(userId))
+            .message("Orders restarantStatistital for restaurant: " + userId)
+            .build();
+    }
+    
+    
 
 
     @PatchMapping("/{orderId}/status")

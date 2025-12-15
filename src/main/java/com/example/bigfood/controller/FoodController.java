@@ -60,6 +60,23 @@ public class FoodController {
             .results(foodService.listFoodByCategoryId(userId , categoryId))
             .build();
     }
+     @GetMapping("/list/best-sell")
+    public ApiResponse<List<FoodResponse>> getFoodTop5BestSell(
+        @AuthenticationPrincipal Jwt jwt ) {
+        String userId = jwt.getSubject();
+        return ApiResponse.<List<FoodResponse>>builder()
+            .results(foodService.getTop5BestSellingFoods(userId ))
+            .build();
+    }
+     @GetMapping("/list/least-sell")
+    public ApiResponse<List<FoodResponse>> getFoodTop5LeastSell(
+        @AuthenticationPrincipal Jwt jwt ) {
+        String userId = jwt.getSubject();
+        return ApiResponse.<List<FoodResponse>>builder()
+            .results(foodService.getTop5LeastSellingFoods(userId))
+            .build();
+    }
+
 
 
     @PutMapping("/update")

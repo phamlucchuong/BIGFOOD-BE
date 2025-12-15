@@ -140,6 +140,18 @@ public class FoodService {
 
     public List<FoodResponse> getAllFood(String userId) {
         return getAllByUserId(userId);
+    }   
+
+    public List<FoodResponse> getTop5BestSellingFoods(String restaurantId) {
+        List<Food> foods = foodRepository.findBySoldDSECFoods(restaurantId);
+         foods.subList(0, Math.min(5, foods.size()));
+         return foodMapper.toListFoodResponses(foods, cloudinaryService);
+    }
+
+    public List<FoodResponse> getTop5LeastSellingFoods(String restaurantId) {
+        List<Food> foods = foodRepository.findBySoldASCFoods(restaurantId); 
+         foods.subList(0, Math.min(5, foods.size()));
+         return foodMapper.toListFoodResponses(foods, cloudinaryService);
     }
 
     public void deleteFood(String userId, String foodId) throws IOException {

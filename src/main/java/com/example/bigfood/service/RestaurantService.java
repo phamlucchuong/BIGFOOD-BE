@@ -102,8 +102,7 @@ public class RestaurantService {
                 .bankNumber(restaurant.getBankNumber())
                 .bankAccountName(restaurant.getBankAccountName())
                 .avatar(cloudinaryService.generateUrl(restaurant.getLicenseId()))
-                .bannerId(cloudinaryService.generateUrl(restaurant.getBannerId()))
-                .isApproved(restaurant.getIsApproved())
+                .banner(cloudinaryService.generateUrl(restaurant.getBannerId()))
                 .build();
     }
      
@@ -112,7 +111,7 @@ public class RestaurantService {
             restaurantRepository.save(restaurant);
     }
 
-     public RestaurantProfileResponse updateRestaurant(String userId ,UpdateRestaurantRequest request)
+     public RestaurantProfileResponse updateRestaurant(String userId , UpdateRestaurantRequest request)
             throws AppException, IOException {
 
         User user = userService.getUserById(userId);
