@@ -25,11 +25,16 @@ public interface RestaurantMapper {
     @Mapping(target = "orders", ignore = true)
     @Mapping(target = "location", ignore = true)
     Restaurant toRestaurant(CreateRestaurantRequest request);
+
+    @Mapping(target = "id", source = "userId")
     RestaurantFullResponse toRestaurantResponse(Restaurant restaurant);
 
-    @Mapping(target = "banner", ignore = true)
+    @Mapping(target = "id", source = "userId")
     RestaurantDetailResponse toRestaurantDetailResponse(Restaurant restaurant);
+
+    // @Mapping(target = "id", source = "userId")
     RestaurantFullResponse toRestaurantResponse(RestaurantResponse nearByRestaurantResponse);
     
+    @Mapping(target = "id", source = "restaurantId")
     RestaurantResponse toRestaurantResponse(RestaurantProjection projection);
 }

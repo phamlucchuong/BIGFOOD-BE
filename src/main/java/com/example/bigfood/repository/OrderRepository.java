@@ -3,40 +3,52 @@ package com.example.bigfood.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.bigfood.dto.response.OrderResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.enums.OrderStatus;
-
-
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
 
-    List<Order> findByUser_Id(String userId);
-
-    List<Order> findByRestaurant_UserId(String restaurantId);
-    @Query("""
-            SELECT o FROM Order o
-            Where(:status IS NULL OR o.status = :status)
-            AND o.restaurant.userId = :restaurantId
-            """)
-    List<Order> findByStatus(
-            @Param("restaurantId") String restaurantId,
-            @Param("status") OrderStatus status);
-
-    @Query("""
-                     SELECT o FROM Order o
-                     WHERE o.restaurant.userId = :restaurantId
+            @Query("""
+                    SELECT o FROM Order o
+                    WHERE o.user.id = :userId
+                      AND (:statusList IS NULL OR o.status IN :statusList)
                     ORDER BY o.createdAt DESC
-                     """)
-    List<Order> findOrderNewList(@Param("restaurantId") String restaurantId);
+                    """)
+            Page<Order> findByUser_Id(
+                    @Param("userId") String userId,
+                    @Param("statusList") List<OrderStatus> statusList,
+                    Pageable pageable);
 
-    List<Order> findByRestaurant_UserIdAndCreatedAtBetween(
-                    String restaurantId,
-                    LocalDateTime start,
-                    LocalDateTime end);
+        List<Order> findByRestaurant_UserId(String restaurantId);
+
+        @Query("""
+                        SELECT o FROM Order o
+                        Where(:status IS NULL OR o.status = :status)
+                        AND o.restaurant.userId = :restaurantId
+                        """)
+        List<Order> findByStatus(
+                        @Param("restaurantId") String restaurantId,
+                        @Param("status") OrderStatus status);
+
+        @Query("""
+                         SELECT o FROM Order o
+                         WHERE o.restaurant.userId = :restaurantId
+                        ORDER BY o.createdAt DESC
+                         """)
+        List<Order> findOrderNewList(@Param("restaurantId") String restaurantId);
+
+        List<Order> findByRestaurant_UserIdAndCreatedAtBetween(
+                        String restaurantId,
+                        LocalDateTime start,
+                        LocalDateTime end);
 }

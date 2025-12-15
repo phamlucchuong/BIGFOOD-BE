@@ -1,6 +1,6 @@
 package com.example.bigfood.dto.response;
 
-import java.util.Set;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +13,12 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Builder
-public class RestaurantDetailResponse {
-    String id;
-    String restaurantName;
-    String address;
-    String banner;
-    Set<FoodCategoryResponse> foodCategories;
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+public class OrderShortPageResponse {
+    List<OrderShortResponse> orders;
+    long total;
+    int page;
+    int pageSize;
+    int totalPages;
 }

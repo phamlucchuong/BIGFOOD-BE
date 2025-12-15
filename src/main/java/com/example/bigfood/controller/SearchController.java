@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping("/api/search")
+@RequestMapping("/api/searchs")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SearchController {
@@ -35,7 +35,7 @@ public class SearchController {
     }
     
 
-    @GetMapping
+    @GetMapping("/hot")
     public ApiResponse<List<SearchResponse>> getHotSearch() {
         return ApiResponse.<List<SearchResponse>>builder()
             .results(searchService.getHotSearch())

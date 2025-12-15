@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class RestaurantResponse {
-    String restaurantId;
+    String id;
     String restaurantName;
     String address;
     @Builder.Default

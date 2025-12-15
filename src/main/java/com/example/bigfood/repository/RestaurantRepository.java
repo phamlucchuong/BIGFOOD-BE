@@ -23,16 +23,19 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
                  r.location,
                  ST_SRID(POINT(:lng, :lat), 4326)
              ) AS distance_m,
-             COALESCE(AVG(rev.rating), 0) AS rating,
-             count(rev.id) AS review_count
+             COALESCE(ratings.avg_rating, 0) AS rating,
+             COALESCE(ratings.review_count, 0) AS review_count
       FROM restaurants r
-      LEFT JOIN orders o ON r.user_id = o.restaurant_id
-      LEFT JOIN reviews rev ON o.id = rev.order_id
+      LEFT JOIN (
+          SELECT o.restaurant_id, COALESCE(AVG(rev.rating), 0) as avg_rating, COUNT(rev.id) as review_count
+          FROM orders o
+          LEFT JOIN reviews rev ON o.id = rev.order_id
+          GROUP BY o.restaurant_id
+      ) ratings ON r.user_id = ratings.restaurant_id
       WHERE ST_Distance_Sphere(
               r.location,
               ST_SRID(POINT(:lng, :lat), 4326)
             ) <= :radius
-      GROUP BY r.user_id
       ORDER BY distance_m ASC
       """, countQuery = """
       SELECT COUNT(*)
@@ -54,13 +57,15 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
              r.address AS address,
              r.banner_id AS bannerId,
              COALESCE(AVG(rev.rating), 0) AS rating
-      FROM restaurants r
-      JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
+      FROM (
+          SELECT DISTINCT r.user_id, r.restaurant_name, r.address, r.banner_id
+          FROM restaurants r
+          JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
+          WHERE rhc.restaurant_category_id = :categoryId
+      ) r
       LEFT JOIN orders o ON r.user_id = o.restaurant_id
       LEFT JOIN reviews rev ON o.id = rev.order_id
-
-      WHERE rhc.restaurant_category_id = :categoryId
-      GROUP BY r.user_id
+      GROUP BY r.user_id, r.restaurant_name, r.address, r.banner_id
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
@@ -70,37 +75,37 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
   Page<RestaurantProjection> findByCategoryId(@Param("categoryId") String categoryId, Pageable pageable);
 
   @Query(value = """
-      SELECT r.user_id AS restaurantId, r.restaurant_name AS restaurantName,
+      SELECT DISTINCT r.user_id AS restaurantId, r.restaurant_name AS restaurantName,
              r.address AS address, r.banner_id AS bannerId,
              ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) AS distance_m,
-             COALESCE(AVG(rev.rating), 0) AS rating,
-             COUNT(rev.id) AS review_count
+             COALESCE(ratings.avg_rating, 0) AS rating,
+             COALESCE(ratings.review_count, 0) AS review_count
       FROM restaurants r
-      -- Join bảng trung gian category (Dùng LEFT JOIN để không mất dữ liệu nếu không lọc category)
-      LEFT JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
-
-      -- Join rating
-      LEFT JOIN orders o ON r.user_id = o.restaurant_id
-      LEFT JOIN reviews rev ON o.id = rev.order_id
+      LEFT JOIN (
+          SELECT o.restaurant_id, COALESCE(AVG(rev.rating), 0) as avg_rating, COUNT(rev.id) as review_count
+          FROM orders o
+          LEFT JOIN reviews rev ON o.id = rev.order_id
+          GROUP BY o.restaurant_id
+      ) ratings ON r.user_id = ratings.restaurant_id
 
       WHERE ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
-
-        -- LOGIC THÔNG MINH Ở ĐÂY:
-        -- Nếu :categoryId là NULL, vế đầu đúng -> bỏ qua điều kiện sau (lấy tất cả)
-        -- Nếu :categoryId có giá trị, vế đầu sai -> bắt buộc check điều kiện sau
-        AND (:categoryId IS NULL OR rhc.restaurant_category_id = :categoryId)
-
-        -- Tương tự với Search Text
+        AND (:categoryId IS NULL OR EXISTS (
+          SELECT 1 FROM restaurant_has_categories rhc
+          WHERE rhc.restaurant_id = r.user_id
+          AND rhc.restaurant_category_id = :categoryId
+        ))
         AND (:searchText IS NULL OR r.restaurant_name LIKE :searchText)
 
-      GROUP BY r.user_id
       ORDER BY distance_m ASC
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
-      LEFT JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
       WHERE ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
-        AND (:categoryId IS NULL OR rhc.restaurant_category_id = :categoryId)
+        AND (:categoryId IS NULL OR EXISTS (
+          SELECT 1 FROM restaurant_has_categories rhc
+          WHERE rhc.restaurant_id = r.user_id
+          AND rhc.restaurant_category_id = :categoryId
+        ))
         AND (:searchText IS NULL OR r.restaurant_name LIKE :searchText)
       """, nativeQuery = true)
   Page<RestaurantProjection> findNearbyWithFilter(
@@ -112,26 +117,35 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       Pageable pageable);
 
   @Query(value = """
-      SELECT r.user_id AS restaurantId, r.restaurant_name AS restaurantName,
+      SELECT DISTINCT r.user_id AS restaurantId, r.restaurant_name AS restaurantName,
              r.address AS address, r.banner_id AS bannerId,
              0.0 AS distance_m,
-             COALESCE(AVG(rev.rating), 0) AS rating,
-             COUNT(rev.id) AS review_count
+             COALESCE(ratings.avg_rating, 0) AS rating,
+             COALESCE(ratings.review_count, 0) AS review_count
       FROM restaurants r
-      LEFT JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
-      LEFT JOIN orders o ON r.user_id = o.restaurant_id
-      LEFT JOIN reviews rev ON o.id = rev.order_id
+      LEFT JOIN (
+          SELECT o.restaurant_id, COALESCE(AVG(rev.rating), 0) as avg_rating, COUNT(rev.id) as review_count
+          FROM orders o
+          LEFT JOIN reviews rev ON o.id = rev.order_id
+          GROUP BY o.restaurant_id
+      ) ratings ON r.user_id = ratings.restaurant_id
 
-      WHERE (COALESCE(:categoryId, '') = '' OR rhc.restaurant_category_id = :categoryId)
+      WHERE (COALESCE(:categoryId, '') = '' OR EXISTS (
+          SELECT 1 FROM restaurant_has_categories rhc
+          WHERE rhc.restaurant_id = r.user_id
+          AND rhc.restaurant_category_id = :categoryId
+        ))
         AND (COALESCE(:searchText, '') = '' OR r.restaurant_name LIKE :searchText)
 
-      GROUP BY r.user_id
       ORDER BY rating DESC
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
-      LEFT JOIN restaurant_has_categories rhc ON r.user_id = rhc.restaurant_id
-      WHERE (COALESCE(:categoryId, '') = '' OR rhc.restaurant_category_id = :categoryId)
+      WHERE (COALESCE(:categoryId, '') = '' OR EXISTS (
+          SELECT 1 FROM restaurant_has_categories rhc
+          WHERE rhc.restaurant_id = r.user_id
+          AND rhc.restaurant_category_id = :categoryId
+        ))
         AND (COALESCE(:searchText, '') = '' OR r.restaurant_name LIKE :searchText)
       """, nativeQuery = true)
   Page<RestaurantProjection> findAllWithFilter(

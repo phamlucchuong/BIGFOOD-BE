@@ -32,6 +32,8 @@ public class SecurityConfig {
             "api/otp/send/email",
             "api/search",
             "api/restaurants/detail",
+            "api/goong/geocoding",
+            "api/goong/reverse-geocoding"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINT = {
@@ -41,7 +43,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_GET_ENDPOINT = {
             "api/users/verify-email/{email}",
             "api/otp/verify",
-            "api/search",
+            "api/searchs/hot",
             "/api/restaurant-categories",
             "api/restaurants",
     };
