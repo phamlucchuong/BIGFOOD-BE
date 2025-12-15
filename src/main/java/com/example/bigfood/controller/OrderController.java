@@ -20,6 +20,7 @@ import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
+import com.example.bigfood.dto.response.OrderShortPageResponse;
 import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.service.OrderService;
@@ -69,9 +70,11 @@ public class OrderController {
 
     @GetMapping("/user/{userId}/all")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<Set<OrderShortResponse>> getAllOrdersByUserId( @PathVariable String userId) {
-        return ApiResponse.<Set<OrderShortResponse>>builder()
-            .results(orderService.getAllOrdersByUserId(userId))
+    public ApiResponse<OrderShortPageResponse> getAllOrdersByUserId( @PathVariable String userId,
+        @PathParam("status") boolean status,
+        @PathParam("page") Integer page) {
+        return ApiResponse.<OrderShortPageResponse>builder()
+            .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
             .message("Fetched all orders for user: " + userId)
             .build();
     }
@@ -86,12 +89,13 @@ public class OrderController {
      */
     @GetMapping("/user/all")
     // @PostAuthorize("hasRole('USER')")
-    public ApiResponse<Set<OrderShortResponse>> getAllOrdersByUserId(
+    public ApiResponse<OrderShortPageResponse> getAllOrdersByUserId(
         @AuthenticationPrincipal Jwt jwt,
+        @PathParam("status") boolean status,
         @PathParam("page") Integer page) {
         String userId = jwt.getSubject();
-        return ApiResponse.<Set<OrderShortResponse>>builder()
-            .results(orderService.getAllOrdersByUserId(userId))
+        return ApiResponse.<OrderShortPageResponse>builder()
+            .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
             .message("Fetched all orders for user: " + userId)
             .build();
     }
