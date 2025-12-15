@@ -1,29 +1,31 @@
 package com.example.bigfood.controller;
 
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.CreateOrderRequest;
 import com.example.bigfood.dto.request.UpdateOrderStatusRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.OrderDetailResponse;
+import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.service.OrderService;
 
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
-
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -36,11 +38,11 @@ public class OrderController {
 
     
     @PostMapping
-    public ApiResponse<OrderResponse> postMethodName(
+    public ApiResponse<OrderFullResponse> postMethodName(
         @AuthenticationPrincipal Jwt jwt,
         @RequestBody CreateOrderRequest request) {
         String userId = jwt.getSubject();
-        return ApiResponse.<OrderResponse>builder()
+        return ApiResponse.<OrderFullResponse>builder()
             .results(orderService.createOrder(userId, request))
             .message("Order created successfully for user: " + userId)
             .build();
@@ -56,21 +58,38 @@ public class OrderController {
             .build();
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<OrderFullResponse> getOrderById(@PathVariable String id) {
+        return ApiResponse.<OrderFullResponse>builder()
+            .results(orderService.getOrderByOrderId(id))
+            .message("Fetched order with id: " + id)
+            .build();
+    }
+
     @GetMapping("/user/{userId}/all")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByUserId( @PathVariable String userId) {
-        return ApiResponse.<List<OrderResponse>>builder()
+    public ApiResponse<Set<OrderShortResponse>> getAllOrdersByUserId( @PathVariable String userId) {
+        return ApiResponse.<Set<OrderShortResponse>>builder()
             .results(orderService.getAllOrdersByUserId(userId))
             .message("Fetched all orders for user: " + userId)
             .build();
     }
 
 
+    /**
+     * hàm lấy danh sách đơn hàng của user bằng jwt
+     *
+     * @param jwt token đăng nhập
+     * @param page số trang
+     * @return danh sách đơn hàng theo phân trang
+     */
     @GetMapping("/user/all")
-    @PostAuthorize("hasRole('USER')")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByUserId(@AuthenticationPrincipal Jwt jwt) {
+    // @PostAuthorize("hasRole('USER')")
+    public ApiResponse<Set<OrderShortResponse>> getAllOrdersByUserId(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathParam("page") Integer page) {
         String userId = jwt.getSubject();
-        return ApiResponse.<List<OrderResponse>>builder()
+        return ApiResponse.<Set<OrderShortResponse>>builder()
             .results(orderService.getAllOrdersByUserId(userId))
             .message("Fetched all orders for user: " + userId)
             .build();

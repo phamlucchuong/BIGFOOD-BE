@@ -13,7 +13,7 @@ import com.example.bigfood.service.CloudinaryService;
 
 @Mapper(componentModel = "spring", uses = { CloudinaryService.class })
 public interface FoodMapper {
-
+    @Mapping(target = "categoryName", ignore = true)
     @Mapping(target = "image", source = "imageId", qualifiedByName = "generateUrl")
     FoodResponse toFoodResponse(Food food);
 

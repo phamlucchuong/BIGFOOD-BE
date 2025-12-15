@@ -129,7 +129,7 @@ create table orders (
     delivery_distance decimal(10,2) not null check (delivery_distance >= 0),
     delivery_fee decimal(10,2) not null check (delivery_fee >= 0),
     total_amount decimal(10,2) not null check (total_amount >= 0),
-    payment_method varchar(50) not null check (payment_method in ('MOMO', 'BANK', 'CASH_ON_DELIVERY')),
+    payment_method varchar(50) not null check (payment_method in ('MOMO', 'BANK', 'CASH')),
     notes text,
     cancell_reason text,
     reject_reason text,

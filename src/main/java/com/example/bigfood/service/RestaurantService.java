@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
+import com.example.bigfood.dto.request.SearchRequest;
 import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
@@ -40,6 +41,7 @@ public class RestaurantService {
     RestaurantMapper restaurantMapper;
     GoongService goongService;
     CloudinaryService cloudinaryService;
+    SearchService searchService;
 
     public boolean existsByUserId(String userId) {
         return restaurantRepository.existsByUserId(userId);
@@ -182,6 +184,25 @@ public class RestaurantService {
                 .build();
     }
 
+
+    private String formatSearchText(String searchText) {
+    if (searchText == null || searchText.trim().isEmpty()) {
+        return null;
+    }
+
+    // Bước 1: Xóa khoảng trắng thừa ở đầu đuôi và chuẩn hóa nhiều dấu cách ở giữa thành 1
+    // VD: "  yen    tra   " -> "yen tra"
+    String cleaned = searchText.trim().replaceAll("\\s+", " ");
+
+    // Bước 2: Thay thế khoảng trắng bằng dấu %
+    // VD: "yen tra" -> "yen%tra"
+    String withWildcards = cleaned.replace(" ", "%");
+
+    // Bước 3: Bao bọc 2 đầu bằng %
+    // VD: "yen%tra" -> "%yen%tra%"
+    return "%" + withWildcards + "%";
+}
+
     /**
      * hàm lấy danh sách nhà hàng theo điều kiện
      *
@@ -200,6 +221,15 @@ public class RestaurantService {
         String cleanCategoryId = (categoryId != null && !categoryId.trim().isEmpty()) ? categoryId.trim() : null;
         String cleanSearchText = (searchText != null && !searchText.trim().isEmpty()) ? "%" + searchText.trim() + "%"
                 : null;
+
+                
+        if(cleanSearchText != null) {
+            cleanSearchText = formatSearchText(searchText);
+            searchService.addSearch(
+                SearchRequest.builder()
+                .content(cleanSearchText)
+                .build());
+        }
         int size = 1; // số kết quả tối đa trả về
         Double radius = 20000.0; // Bán kính mặc định 5km
 

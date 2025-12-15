@@ -77,7 +77,7 @@ public class Order {
     @Column(name = "total_amount", nullable = false, columnDefinition = "decimal(10,2)")
     double totalAmount;
 
-    @Column(name = "payment_method", nullable = false, columnDefinition = "VARCHAR(50) check (payment_method in ('MOMO', 'BANK', 'CASH_ON_DELIVERY'))")
+    @Column(name = "payment_method", nullable = false, columnDefinition = "VARCHAR(50) check (payment_method in ('MOMO', 'BANK', 'CASH'))")
     String paymentMethod;
 
     String notes;

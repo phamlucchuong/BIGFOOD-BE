@@ -14,7 +14,9 @@ import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.InfoUserOrderResponse;
 import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFoodDetailResponse;
+import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.entity.Restaurant;
 import com.example.bigfood.entity.User;
@@ -60,7 +62,7 @@ public class OrderService {
      * @return OrderResponse with order and order details
      */
     @Transactional
-    public OrderResponse createOrder(String userId, CreateOrderRequest request) {
+    public OrderFullResponse createOrder(String userId, CreateOrderRequest request) {
         // Validate and fetch related entities
         Restaurant restaurant = restaurantService.getRestaurantByUserId(request.getRestaurantId());
         User user = userService.getUserById(userId);
@@ -97,12 +99,13 @@ public class OrderService {
         entityManager.flush(); // Ensure immediate persistence
         entityManager.refresh(order); // Refresh to get any DB-generated values
         
-        return orderMapper.toResponse(order);
+        return orderMapper.toFullResponse(order);
     }
 
-    public List<OrderResponse> getAllOrdersByUserId(String userId) {
-        return orderMapper.toResponseList(
-                orderRepository.findByUser_Id(userId));
+    public Set<OrderShortResponse> getAllOrdersByUserId(String userId) {
+        return orderRepository.findByUser_Id(userId).stream()
+                .map(orderMapper::toShortResponse)
+                .collect(Collectors.toSet());
     }
 
     public List<OrderResponse> getAllOrders() {
@@ -191,12 +194,19 @@ public class OrderService {
         return orderMapper.toResponseList(listOrder);
     }
 
-    public Order getOrderById(String orderId) {
+    protected Order getOrderById(String orderId) {
         if(orderId == null || orderId.isEmpty()) {
             throw new AppException(ErrorCode.ORDER_NOT_FOUND);
         }
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+    }
+
+    public OrderFullResponse getOrderByOrderId(String id) {
+        if(id == null || id.isEmpty()) {
+            throw new AppException(ErrorCode.ORDER_NOT_FOUND);
+        }
+        return orderMapper.toFullResponse(orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND)));
     }
 
 }

@@ -12,5 +12,6 @@ public interface RestaurantCategoryMapper {
    @Mapping(target = "id" , ignore = true)
    @Mapping(target = "restaurants" , ignore = true)
    RestaurantCategory toRestaurantCategory(RestaurantCategoryCreateRequest request);
+   
    RestaurantCategoryResponse toRestaurantCategoryResponse(RestaurantCategory restaurant);
 } 
