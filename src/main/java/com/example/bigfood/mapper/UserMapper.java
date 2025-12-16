@@ -37,5 +37,6 @@ public interface UserMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "phone", source = "phone")
+    @Mapping(target = "imageId" , source = "imageId")
     InfoUserOrderResponse toInfoUserOrderResponse(User user);
 }

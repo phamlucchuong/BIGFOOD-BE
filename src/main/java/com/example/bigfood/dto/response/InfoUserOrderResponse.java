@@ -15,4 +15,5 @@ public class InfoUserOrderResponse {
     String id ;
     String name;
     String phone;
+    String imageId;
 }

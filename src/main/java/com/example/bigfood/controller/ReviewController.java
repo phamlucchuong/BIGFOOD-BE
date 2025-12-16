@@ -1,6 +1,7 @@
 package com.example.bigfood.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.CreateReviewRequest;
@@ -9,6 +10,7 @@ import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.ReviewResponse;
 import com.example.bigfood.service.ReviewService;
 
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -102,6 +104,15 @@ public class ReviewController {
         String restaurantId = jwt.getSubject();
         return ApiResponse.<Set<ReviewResponse>>builder()
                 .results(reviewService.getAllByRestaurantId(restaurantId))
+                .message("Get all reviews by restaurant id successfully")
+                .build();
+    }
+
+    @GetMapping("/restaurant/filter")
+    public ApiResponse<Set<ReviewResponse>> getAllByRestaurantAndSort(@AuthenticationPrincipal Jwt jwt ,  @RequestParam String sort) {
+        String restaurantId = jwt.getSubject();
+        return ApiResponse.<Set<ReviewResponse>>builder()
+                .results(reviewService.getAllByRestaurantIdAndSort(restaurantId, sort))
                 .message("Get all reviews by restaurant id successfully")
                 .build();
     }

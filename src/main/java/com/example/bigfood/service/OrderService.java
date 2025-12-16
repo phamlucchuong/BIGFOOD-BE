@@ -382,4 +382,187 @@ public class OrderService {
                                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND)));
         }
 
+        /**
+         * Get restaurant statistics filtered by time range
+         * 
+         * @param restaurantId Restaurant user ID
+         * @param timeRange Filter: "day" (hôm nay), "week" (tuần này), 
+         *                  "month" (tháng này), "year" (năm này)
+         * @return RestaurantStatisticalResponse with filtered statistics
+         */
+        public RestaurantStatisticalResponse restaurantStatisticalByTimeRange(String restaurantId, String timeRange) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime startDateTime;
+
+                // Determine start date based on time range
+                switch (timeRange != null ? timeRange.toLowerCase() : "day") {
+                        case "day":
+                                // Hôm nay - từ 00:00:00 hôm nay
+                                startDateTime = now.toLocalDate().atStartOfDay();
+                                break;
+                        case "week":
+                                // Tuần này - từ thứ Hai tuần này
+                                startDateTime = now.toLocalDate()
+                                                .minusDays(now.getDayOfWeek().getValue() - 1)
+                                                .atStartOfDay();
+                                break;
+                        case "month":
+                                // Tháng này - từ ngày 1 tháng
+                                startDateTime = now.toLocalDate()
+                                                .withDayOfMonth(1)
+                                                .atStartOfDay();
+                                break;
+                        case "year":
+                                // Năm này - từ ngày 1/1
+                                startDateTime = now.toLocalDate()
+                                                .withDayOfYear(1)
+                                                .atStartOfDay();
+                                break;
+                        default:
+                                startDateTime = now.toLocalDate().atStartOfDay();
+                }
+
+                // Get orders within time range
+                List<Order> allOrders = orderRepository.findByRestaurant_UserIdAndCreatedAtBetween(
+                                restaurantId, startDateTime, now);
+
+                if (allOrders.isEmpty()) {
+                        return RestaurantStatisticalResponse.builder()
+                                        .totalPrice(0)
+                                        .percentagePrice(0)
+                                        .averageUnitRevenuePrice(0)
+                                        .numberOfOrder(0)
+                                        .percentageOrder(0)
+                                        .numberOrderCompleted(0)
+                                        .numberOrderRejected(0)
+                                        .averageStars(0)
+                                        .percentageStart(0)
+                                        .percentagePositive(0)
+                                        .percentNegative(0)
+                                        .build();
+                }
+
+                // Calculate revenue statistics
+                double totalRevenue = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .mapToDouble(Order::getTotalAmount)
+                                .sum();
+
+                int totalOrders = allOrders.size();
+                long completedOrders = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .count();
+                long rejectedOrders = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.REJECTED
+                                                || order.getStatus() == OrderStatus.CANCELED)
+                                .count();
+
+                double averageRevenuePerOrder = completedOrders > 0
+                                ? totalRevenue / completedOrders
+                                : 0;
+
+                // Get previous period for comparison
+                LocalDateTime previousPeriodEnd = startDateTime;
+                LocalDateTime previousPeriodStart;
+
+                switch (timeRange != null ? timeRange.toLowerCase() : "day") {
+                        case "day":
+                                previousPeriodStart = previousPeriodEnd.minusDays(1);
+                                break;
+                        case "week":
+                                previousPeriodStart = previousPeriodEnd.minusWeeks(1);
+                                break;
+                        case "month":
+                                previousPeriodStart = previousPeriodEnd.minusMonths(1);
+                                break;
+                        case "year":
+                                previousPeriodStart = previousPeriodEnd.minusYears(1);
+                                break;
+                        default:
+                                previousPeriodStart = previousPeriodEnd.minusDays(1);
+                }
+
+                List<Order> previousPeriodOrders = orderRepository.findByRestaurant_UserIdAndCreatedAtBetween(
+                                restaurantId, previousPeriodStart, previousPeriodEnd);
+
+                double previousRevenue = previousPeriodOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .mapToDouble(Order::getTotalAmount)
+                                .sum();
+
+                int previousTotalOrders = previousPeriodOrders.size();
+                double percentagePrice = previousRevenue > 0
+                                ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
+                                : 0;
+
+                double percentageOrder = previousTotalOrders > 0
+                                ? ((totalOrders - previousTotalOrders) / (double) previousTotalOrders) * 100
+                                : 0;
+
+                percentagePrice = Math.round(percentagePrice * 10.0) / 10.0;
+                percentageOrder = Math.round(percentageOrder * 10.0) / 10.0;
+
+                // Calculate review statistics
+                List<Review> allReviews = allOrders.stream()
+                                .map(Order::getReview)
+                                .filter(review -> review != null)
+                                .collect(Collectors.toList());
+
+                double averageStars = 0;
+                double percentagePositive = 0; // 4-5 stars
+                double percentNegative = 0; // 1-2 stars
+                double percentageStart = 0;
+
+                if (!allReviews.isEmpty()) {
+                        // Calculate average rating
+                        averageStars = allReviews.stream()
+                                        .mapToInt(Review::getRating)
+                                        .average()
+                                        .orElse(0);
+                        averageStars = Math.round(averageStars * 10.0) / 10.0;
+
+                        // Count rating distribution
+                        long positiveCount = allReviews.stream()
+                                        .filter(review -> review.getRating() >= 4)
+                                        .count();
+                        long negativeCount = allReviews.stream()
+                                        .filter(review -> review.getRating() <= 2)
+                                        .count();
+
+                        percentagePositive = (positiveCount * 100.0) / allReviews.size();
+                        percentNegative = (negativeCount * 100.0) / allReviews.size();
+
+                        // Calculate percentage change in average rating from previous period
+                        List<Review> previousReviews = previousPeriodOrders.stream()
+                                        .map(Order::getReview)
+                                        .filter(review -> review != null)
+                                        .collect(Collectors.toList());
+
+                        if (!previousReviews.isEmpty()) {
+                                double previousAverageStars = previousReviews.stream()
+                                                .mapToInt(Review::getRating)
+                                                .average()
+                                                .orElse(0);
+                                percentageStart = Math.round((averageStars - previousAverageStars) * 10.0) / 10.0;
+                        }
+
+                        percentagePositive = Math.round(percentagePositive * 10.0) / 10.0;
+                        percentNegative = Math.round(percentNegative * 10.0) / 10.0;
+                }
+
+                return RestaurantStatisticalResponse.builder()
+                                .totalPrice(totalRevenue)
+                                .percentagePrice(percentagePrice)
+                                .averageUnitRevenuePrice(averageRevenuePerOrder)
+                                .numberOfOrder(totalOrders)
+                                .percentageOrder(percentageOrder)
+                                .numberOrderCompleted((int) completedOrders)
+                                .numberOrderRejected((int) rejectedOrders)
+                                .averageStars(averageStars)
+                                .percentageStart(percentageStart)
+                                .percentagePositive(percentagePositive)
+                                .percentNegative(percentNegative)
+                                .build();
+        }
+
 }
