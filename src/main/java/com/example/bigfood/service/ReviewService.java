@@ -96,6 +96,13 @@ public class ReviewService {
         Set<Review> reviews = reviewRepository.findAllByOrder_Restaurant(restaurant);
         return reviewMapper.toReviewResponseSet(reviews);
     }
+    public Set<ReviewResponse> getAllByRestaurantIdAndSort(String restaurantId, String filter) {
+        Restaurant restaurant = restaurantService.getRestaurantByUserId(restaurantId);
+        String normalizedFilter = (filter == null || filter.isEmpty()) ? "all" : filter.toLowerCase();
+        
+        Set<Review> reviews = reviewRepository.findAllByOrder_RestaurantAndSortReviews(restaurant, normalizedFilter);
+        return reviewMapper.toReviewResponseSet(reviews);
+    }
 
     public void deleteReviewByOrderId(String orderId) {
         Order order = orderService.getOrderById(orderId);

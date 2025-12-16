@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bigfood.dto.request.CreateOrderRequest;
@@ -147,6 +148,16 @@ public class OrderController {
         return ApiResponse.<RestaurantStatisticalResponse>builder()
             .results(orderService.restaurantStatistical(userId))
             .message("Orders restarantStatistital for restaurant: " + userId)
+            .build();
+    }
+
+    @GetMapping("/restaurant/statistics")
+    public ApiResponse<?> getStatisticsByTimeRange(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "day") String timeRange) {
+         return ApiResponse.<RestaurantStatisticalResponse>builder()
+            .results( orderService.restaurantStatisticalByTimeRange(jwt.getSubject(), timeRange))
+            .message("Orders restarantStatistital for restaurant: " + jwt.getSubject())
             .build();
     }
     
