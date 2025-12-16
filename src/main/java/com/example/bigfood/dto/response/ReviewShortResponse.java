@@ -15,12 +15,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ReviewResponse {
+public class ReviewShortResponse {
     String id;
     int rating;
     String reviewText;
     LocalDateTime lastUpdateAt;
     String replyText;
     LocalDateTime replyAt;
-    OrderResponse order;
 }

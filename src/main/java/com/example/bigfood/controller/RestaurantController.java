@@ -89,10 +89,13 @@ public class RestaurantController {
     public ApiResponse<RestaurantsResponseSet> getRestaurantSet(
         @RequestParam(name = "lng", required = false) Double longitude,
         @RequestParam(name = "lat", required = false) Double latitude,
-        @RequestParam(name = "category_id", required = false) String categoryId,
-        @RequestParam(name = "search_text", required = false) String searchText,
+        @RequestParam(name = "categoryId", required = false) String categoryId,
+        @RequestParam(name = "searchText", required = false) String searchText,
         @RequestParam(required = false) Integer page
     ) {
+        System.err.println("************ Controller *************");
+        System.out.println(categoryId);
+        System.out.println(searchText);
         return ApiResponse.<RestaurantsResponseSet>builder()
                 .results(restaurantService.getRestaurantSet(longitude, latitude, categoryId, searchText, page != null ? page : 0))
                 .build();

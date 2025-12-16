@@ -1,7 +1,6 @@
 package com.example.bigfood.controller;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +20,6 @@ import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
-import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.service.OrderService;
 
@@ -170,6 +168,17 @@ public class OrderController {
         return ApiResponse.<OrderResponse>builder()
             .results(orderService.updateOrderStatus(orderId, request))
             .message("Order status updated successfully for order: " + orderId)
+            .build();
+    }
+
+    @PatchMapping("/cancel/{orderId}")
+    public ApiResponse<OrderFullResponse> cancelOrder(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String orderId,
+        @RequestBody UpdateOrderStatusRequest request) {
+        return ApiResponse.<OrderFullResponse>builder()
+            .results(orderService.cancelOrder(orderId, request))
+            .message("Order canceled successfully for order: " + orderId)
             .build();
     }
 }

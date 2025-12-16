@@ -22,6 +22,7 @@ public interface OrderMapper {
 
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "toOrderItemResponseSet")
     @Mapping(target = "restaurantName", source = "restaurant.restaurantName")
+    @Mapping(target = "userId", source = "user.id")
     OrderFullResponse toFullResponse(Order order);
 
     @Mapping(target = "restaurantName", source = "restaurant.restaurantName")

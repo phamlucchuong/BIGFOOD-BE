@@ -215,20 +215,30 @@ public class RestaurantService {
      */
     public RestaurantsResponseSet getRestaurantSet(Double lat, Double lng, String categoryId, String searchText, int page) {
         Page<RestaurantProjection> resultPage;
+        System.out.println("*******************service********************");
+        System.out.println(lat);
+        System.out.println(lng);
+        System.out.println(categoryId);
+        System.out.println(searchText);
 
         // Chuẩn hóa input (tránh null pointer và string rỗng)
         String cleanCategoryId = (categoryId != null && !categoryId.trim().isEmpty()) ? categoryId.trim() : null;
         String cleanSearchText = (searchText != null && !searchText.trim().isEmpty()) ? "%" + searchText.trim() + "%"
                 : null;
 
+
+        System.out.println("***************************************");
+        System.out.println(cleanSearchText);
+
                 
         if(cleanSearchText != null) {
             cleanSearchText = formatSearchText(searchText);
             searchService.addSearch(
                 SearchRequest.builder()
-                .content(cleanSearchText)
+                .content(cleanSearchText.replace("%", " ").trim())
                 .build());
         }
+
         int size = 1; // số kết quả tối đa trả về
         Double radius = 20000.0; // Bán kính mặc định 5km
 

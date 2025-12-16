@@ -27,4 +27,6 @@ public class OrderFullResponse {
     String cancelReason;
     String rejectReason;
     Set<OrderItemResponse> orderDetails;
+    String userId;
+    ReviewShortResponse review;
 }
