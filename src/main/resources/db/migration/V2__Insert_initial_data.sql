@@ -86,14 +86,14 @@ values ('d1cc08be-5e00-4a85-a108-3adabfaa8d49',
 '450-451 Lê Văn Việt, phường Tăng Nhơn Phú, TP.HCM.', 
 10.845696, 106.794172, 
 ST_SRID(POINT(106.794172, 10.845696), 4326),
-'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE123', true),
+'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE123', false),
 
 ('299e093c-273a-4c6e-b005-aca5ce5d80dd', 
 'Lẩu gà Yến Trà',
 'Kenbar Coffee And Tea', 
 10.84025325510041, 106.78136712955003, 
 ST_SRID(POINT(106.700000, 10.800000), 4326),
-'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE456', true);
+'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE456', false);
 
 insert into restaurant_has_categories (restaurant_id, restaurant_category_id)
 values 

@@ -51,4 +51,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                         String restaurantId,
                         LocalDateTime start,
                         LocalDateTime end);
+
+        long countByCreatedAtBetween(LocalDateTime startTimeCurrent, LocalDateTime endTimeCurrent);
 }

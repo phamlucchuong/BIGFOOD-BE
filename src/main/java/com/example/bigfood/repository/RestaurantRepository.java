@@ -88,7 +88,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
           GROUP BY o.restaurant_id
       ) ratings ON r.user_id = ratings.restaurant_id
 
-      WHERE ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
+      WHERE r.is_approved = true 
+      AND ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
         AND (:categoryId IS NULL OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
@@ -100,7 +101,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
-      WHERE ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
+      WHERE r.is_approved = true
+      AND ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
         AND (:categoryId IS NULL OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
@@ -130,7 +132,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
           GROUP BY o.restaurant_id
       ) ratings ON r.user_id = ratings.restaurant_id
 
-      WHERE (COALESCE(:categoryId, '') = '' OR EXISTS (
+      WHERE r.is_approved = true 
+      AND(COALESCE(:categoryId, '') = '' OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
           AND rhc.restaurant_category_id = :categoryId
@@ -141,7 +144,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
-      WHERE (COALESCE(:categoryId, '') = '' OR EXISTS (
+      WHERE r.is_approved = true 
+      AND (COALESCE(:categoryId, '') = '' OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
           AND rhc.restaurant_category_id = :categoryId
@@ -152,4 +156,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       @Param("categoryId") String categoryId,
       @Param("searchText") String searchText,
       Pageable pageable);
+
+  Page<Restaurant> findAllByApprovedFalse(Pageable pageable);
 }

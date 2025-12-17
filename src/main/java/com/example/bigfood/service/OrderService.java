@@ -1,6 +1,7 @@
 package com.example.bigfood.service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +21,8 @@ import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
-import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
+import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.entity.Restaurant;
 import com.example.bigfood.entity.Review;
@@ -399,8 +400,8 @@ public class OrderService {
          * Get restaurant statistics filtered by time range
          * 
          * @param restaurantId Restaurant user ID
-         * @param timeRange Filter: "day" (hôm nay), "week" (tuần này), 
-         *                  "month" (tháng này), "year" (năm này)
+         * @param timeRange    Filter: "day" (hôm nay), "week" (tuần này),
+         *                     "month" (tháng này), "year" (năm này)
          * @return RestaurantStatisticalResponse with filtered statistics
          */
         public RestaurantStatisticalResponse restaurantStatisticalByTimeRange(String restaurantId, String timeRange) {
@@ -467,7 +468,7 @@ public class OrderService {
                                 .count();
                 long rejectedOrders = allOrders.stream()
                                 .filter(order -> order.getStatus() == OrderStatus.REJECTED
-                                                || order.getStatus() == OrderStatus.CANCELED)
+                                                || order.getStatus() == OrderStatus.CANCELLED)
                                 .count();
 
                 double averageRevenuePerOrder = completedOrders > 0
@@ -578,4 +579,67 @@ public class OrderService {
                                 .build();
         }
 
+        /**
+         * @return UserSummaryResponse chứa thông tin tổng kết người dùng, bao gồm tổng
+         *         số và
+         *         % thay đổi số lượng người dùng mới so với cùng kì tháng trước.
+         * 
+         *         hàm lấy ngày tháng hiện tại, tính số người dùng mới trong một chu kì
+         *         với một chu kì được tính từ ngày 1 tháng này đến ngày hiện tại
+         */
+        public SummaryResponse getOrderSummary() {
+
+                // Lấy tổng số người dùng
+                long totalUsers = orderRepository.count();
+
+                // Tính toán các mốc thời gian
+                LocalDateTime now = LocalDateTime.now();
+
+                // --- Kì hiện tại
+                LocalDateTime startTimeCurrent = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
+                LocalDateTime endTimeCurrent = now.toLocalDate().atTime(LocalTime.MAX); // 23:59:59.999...
+
+                // --- Cùng kì tháng trước
+                LocalDateTime previousPeriod = now.minusMonths(1);
+                LocalDateTime startTimePrevious = previousPeriod.withDayOfMonth(1).toLocalDate().atStartOfDay();
+                LocalDateTime endTimePrevious = previousPeriod.toLocalDate().atTime(LocalTime.MAX);
+
+                // Lấy số lượng của 2 kì
+                long currentPeriodCount = orderRepository.countByCreatedAtBetween(startTimeCurrent,
+                                endTimeCurrent);
+                long previousPeriodCount = orderRepository.countByCreatedAtBetween(startTimePrevious,
+                                endTimePrevious);
+
+                // Tính toán phần trăm thay đổi (Rất quan trọng: Xử lý chia cho 0)
+                double changePercentage = 0.0;
+                String direction = "neutral";
+
+                if (previousPeriodCount > 0) {
+                        // Trường hợp thông thường (ví dụ: tháng trước 100, tháng này 110)
+                        changePercentage = ((double) (currentPeriodCount - previousPeriodCount) / previousPeriodCount)
+                                        * 100.0;
+                } else if (previousPeriodCount == 0 && currentPeriodCount > 0) {
+                        // Tháng trước 0, tháng này > 0 (tăng 100%)
+                        changePercentage = 100.0;
+                }
+                // Trường hợp (previousPeriodCount == 0 && currentPeriodCount == 0) ->
+                // changePercentage = 0.0 (giữ nguyên)
+
+                // Xác định hướng (tăng/giảm)
+                if (changePercentage > 0) {
+                        direction = "increase";
+                } else if (changePercentage < 0) {
+                        direction = "decrease";
+                }
+
+                // Làm tròn 2 chữ số thập phân
+                double roundedPercentage = Math.round(changePercentage * 100.0) / 100.0;
+
+                // Trả về kết quả
+                return SummaryResponse.builder()
+                                .total(totalUsers) // Tên trường nên là long thay vì int
+                                .changePercentage(roundedPercentage)
+                                .direction(direction)
+                                .build();
+        }
 }
