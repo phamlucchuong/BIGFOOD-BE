@@ -23,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 import com.example.bigfood.repository.RoleRepository;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.UserSummaryResponse;
 
@@ -107,7 +108,7 @@ public class UserService {
      * hàm lấy ngày tháng hiện tại, tính số người dùng mới trong một chu kì
      * với một chu kì được tính từ ngày 1 tháng này đến ngày hiện tại
      */
-    public UserSummaryResponse getUserSummary() {
+    public SummaryResponse getUserSummary() {
         
         // Lấy tổng số người dùng
         long totalUsers = userRepository.count();
@@ -155,8 +156,8 @@ public class UserService {
         double roundedPercentage = Math.round(changePercentage * 100.0) / 100.0;
 
         // Trả về kết quả
-        return UserSummaryResponse.builder()
-                .totalUsers(totalUsers) // Tên trường nên là long thay vì int
+        return SummaryResponse.builder()
+                .total(totalUsers) // Tên trường nên là long thay vì int
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();

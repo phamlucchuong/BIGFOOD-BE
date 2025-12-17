@@ -127,7 +127,7 @@ public class OrderService {
                         statusList = List.of(
                                         OrderStatus.COMPLETED,
                                         OrderStatus.REJECTED,
-                                        OrderStatus.CANCELED);
+                                        OrderStatus.CANCELLED);
                 }
 
                 int size = 5;
@@ -164,7 +164,7 @@ public class OrderService {
                 }
                 order.setStatus(request.getStatus());
 
-                if (request.getStatus().equals(OrderStatus.CANCELED)) {
+                if (request.getStatus().equals(OrderStatus.CANCELLED)) {
                         order.setCancellReason(request.getReason());
                 }
                 if (request.getStatus().equals(OrderStatus.REJECTED)) {
@@ -172,6 +172,19 @@ public class OrderService {
                 }
                 orderRepository.save(order);
                 return orderMapper.toResponse(order);
+        }
+
+        public OrderFullResponse cancelOrder(String orderId, UpdateOrderStatusRequest request) {
+                Order order = orderRepository.findById(orderId != null ? orderId : "")
+                                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+                if (order.getStatus().equals(request.getStatus())) {
+                        throw new AppException(ErrorCode.STATUS_SAME_AS_BEFORE);
+                }
+                order.setStatus(request.getStatus());
+                order.setCancellReason(request.getReason());
+                orderRepository.save(order);
+                return orderMapper.toFullResponse(order);
         }
 
         public List<OrderResponse> getAllOrdersByRestaurantId(String restaurantId) {
@@ -282,7 +295,7 @@ public class OrderService {
                                 .count();
                 long rejectedOrders = allOrders.stream()
                                 .filter(order -> order.getStatus() == OrderStatus.REJECTED
-                                                || order.getStatus() == OrderStatus.CANCELED)
+                                                || order.getStatus() == OrderStatus.CANCELLED)
                                 .count();
 
                 double averageRevenuePerOrder = completedOrders > 0

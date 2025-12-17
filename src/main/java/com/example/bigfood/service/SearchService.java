@@ -23,6 +23,7 @@ public class SearchService {
     SearchMapper searchMapper;
 
     public void addSearch(SearchRequest request) {
+        System.out.println("Search content: '" + request.getContent() + "******************************");
         String searchContent = request.getContent().toLowerCase().trim();
         if (searchContent == "")
             return;
