@@ -7,7 +7,7 @@ import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.UserSummaryResponse;
 import com.example.bigfood.dto.response.ApiResponse;
-
+import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,8 +59,8 @@ public class UserController {
 
     @GetMapping("/summary")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<UserSummaryResponse> getUserSummary() {
-        return ApiResponse.<UserSummaryResponse>builder()
+    public ApiResponse<SummaryResponse> getUserSummary() {
+        return ApiResponse.<SummaryResponse>builder()
                 .results(userService.getUserSummary())
                 .build();
     }
