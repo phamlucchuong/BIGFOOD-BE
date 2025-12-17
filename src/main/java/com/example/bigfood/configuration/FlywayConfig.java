@@ -12,7 +12,7 @@ public class FlywayConfig {
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return flyway -> {
             // Repair nếu cần
-            // flyway.repair();
+            flyway.repair();
             // Migrate
             flyway.migrate();
         };

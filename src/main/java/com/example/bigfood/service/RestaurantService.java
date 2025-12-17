@@ -14,6 +14,7 @@ import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.dto.response.RestaurantTagResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
+import com.example.bigfood.dto.response.RestaurantActiveResponse;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantsResponseSet;
 import com.example.bigfood.dto.response.RestaurantFullResponse;
@@ -193,7 +194,7 @@ public class RestaurantService {
 
     // Bước 1: Xóa khoảng trắng thừa ở đầu đuôi và chuẩn hóa nhiều dấu cách ở giữa thành 1
     // VD: "  yen    tra   " -> "yen tra"
-    String cleaned = searchText.trim().replaceAll("\\s+", " ");
+    String cleaned = searchText.trim().replaceAll("\s+", " ");
 
     // Bước 2: Thay thế khoảng trắng bằng dấu %
     // VD: "yen tra" -> "yen%tra"
@@ -298,9 +299,30 @@ public class RestaurantService {
             restaurant.setApproved(true);
             restaurantRepository.save(restaurant);
         } else {
-            System.out.println("**************************");
             restaurantRepository.delete(restaurant);
         }
+    }
+
+    public RestaurantsResponseSet<RestaurantActiveResponse> getRestaurantActiveSet(String categoryId, int page) {
+        int size = 2; // số kết quả tối đa trả về
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Restaurant> pageData;
+        if(categoryId == null || categoryId.isEmpty()) {
+            pageData = restaurantRepository.findAllByApprovedTrue(pageable);
+        } else {
+            pageData = restaurantRepository.findAllByApprovedTrueAndRestaurantCategories_Id(categoryId, pageable);
+        }
+
+        return RestaurantsResponseSet.<RestaurantActiveResponse>builder()
+                .restaurants(
+                        pageData.getContent().stream()
+                                .map(restaurantMapper::toRestaurantActiveResponse)
+                                .toList())
+                .total(pageData.getTotalElements())
+                .page(page)
+                .pageSize(size)
+                .build();
     }
 
 }

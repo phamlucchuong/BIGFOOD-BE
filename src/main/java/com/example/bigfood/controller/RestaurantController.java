@@ -22,6 +22,7 @@ import com.example.bigfood.dto.request.ApproveRestaurantRequest;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.RestaurantActiveResponse;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.dto.response.RestaurantTagResponse;
@@ -39,84 +40,95 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class RestaurantController {
-    RestaurantService restaurantService;
+        RestaurantService restaurantService;
 
-    @PostMapping
-    public ApiResponse<RestaurantFullResponse> createRestaurant(
-            @AuthenticationPrincipal Jwt jwt,
-            @ModelAttribute CreateRestaurantRequest request)
-            throws IOException {
-        String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantFullResponse>builder()
-                .results(restaurantService.createNewRestaurant(userId, request))
-                .build();
-    }
+        @PostMapping
+        public ApiResponse<RestaurantFullResponse> createRestaurant(
+                        @AuthenticationPrincipal Jwt jwt,
+                        @ModelAttribute CreateRestaurantRequest request)
+                        throws IOException {
+                String userId = jwt.getSubject();
+                return ApiResponse.<RestaurantFullResponse>builder()
+                                .results(restaurantService.createNewRestaurant(userId, request))
+                                .build();
+        }
 
-    @GetMapping("/myInfo")
-    @PreAuthorize("hasRole('RESTAURANT') and returnedObject.userId == principal.subject")
-    public ApiResponse<RestaurantFullResponse> getRestaurantById(
-            @AuthenticationPrincipal Jwt jwt)
-            throws IOException {
-        String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantFullResponse>builder()
-                .results(restaurantService.getRestaurant(userId))
-                .build();
-    }
+        @GetMapping("/myInfo")
+        @PreAuthorize("hasRole('RESTAURANT') and returnedObject.userId == principal.subject")
+        public ApiResponse<RestaurantFullResponse> getRestaurantById(
+                        @AuthenticationPrincipal Jwt jwt)
+                        throws IOException {
+                String userId = jwt.getSubject();
+                return ApiResponse.<RestaurantFullResponse>builder()
+                                .results(restaurantService.getRestaurant(userId))
+                                .build();
+        }
 
-    @GetMapping("/detail")
-    public ApiResponse<RestaurantProfileResponse> getRestaurantDetail(
-            @AuthenticationPrincipal Jwt jwt)
-            throws IOException {
-        String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantProfileResponse>builder()
-                .results(restaurantService.getRestaurantDetail(userId))
-                .build();
-    }
+        @GetMapping("/detail")
+        public ApiResponse<RestaurantProfileResponse> getRestaurantDetail(
+                        @AuthenticationPrincipal Jwt jwt)
+                        throws IOException {
+                String userId = jwt.getSubject();
+                return ApiResponse.<RestaurantProfileResponse>builder()
+                                .results(restaurantService.getRestaurantDetail(userId))
+                                .build();
+        }
 
-    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<?> updateRestaurant(
-            @AuthenticationPrincipal Jwt jwt,
-            @ModelAttribute UpdateRestaurantRequest request)
-            throws IOException {
-        String userId = jwt.getSubject();
-        return ApiResponse.<RestaurantProfileResponse>builder()
-                .results(restaurantService.updateRestaurant(userId, request))
-                .build();
-    }
+        @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ApiResponse<?> updateRestaurant(
+                        @AuthenticationPrincipal Jwt jwt,
+                        @ModelAttribute UpdateRestaurantRequest request)
+                        throws IOException {
+                String userId = jwt.getSubject();
+                return ApiResponse.<RestaurantProfileResponse>builder()
+                                .results(restaurantService.updateRestaurant(userId, request))
+                                .build();
+        }
 
-    @PostMapping("/detail")
-    public ApiResponse<RestaurantDetailResponse> getRestaurantByRestaurantId(@RequestBody IDRequest restaurantId) {
-        return ApiResponse.<RestaurantDetailResponse>builder()
-                .results(restaurantService.getRestaurantByRestaurantId(restaurantId.getId()))
-                .build();
-    }
+        @PostMapping("/detail")
+        public ApiResponse<RestaurantDetailResponse> getRestaurantByRestaurantId(@RequestBody IDRequest restaurantId) {
+                return ApiResponse.<RestaurantDetailResponse>builder()
+                                .results(restaurantService.getRestaurantByRestaurantId(restaurantId.getId()))
+                                .build();
+        }
 
-    @GetMapping("/request")
-    @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<RestaurantsResponseSet<RestaurantTagResponse>> getRestaurantSet(
-            @RequestParam(required = false) Integer page) {
-        return ApiResponse.<RestaurantsResponseSet<RestaurantTagResponse>>builder()
-                .results(restaurantService.getRestaurantRequestSet(page != null ? page : 0))
-                .build();
-    }
+        @GetMapping("/request")
+        @PostAuthorize("hasRole('ADMIN')")
+        public ApiResponse<RestaurantsResponseSet<RestaurantTagResponse>> getRestaurantSet(
+                        @RequestParam(required = false) Integer page) {
+                return ApiResponse.<RestaurantsResponseSet<RestaurantTagResponse>>builder()
+                                .results(restaurantService.getRestaurantRequestSet(page != null ? page : 0))
+                                .build();
+        }
 
-    @GetMapping
-    public ApiResponse<RestaurantsResponseSet<RestaurantResponse>> getRestaurantSet(
-            @RequestParam(name = "lng", required = false) Double longitude,
-            @RequestParam(name = "lat", required = false) Double latitude,
-            @RequestParam(name = "categoryId", required = false) String categoryId,
-            @RequestParam(name = "searchText", required = false) String searchText,
-            @RequestParam(required = false) Integer page) {
-        return ApiResponse.<RestaurantsResponseSet<RestaurantResponse>>builder()
-                .results(restaurantService.getRestaurantSet(longitude, latitude, categoryId, searchText,
-                        page != null ? page : 0))
-                .build();
-    }
+        @GetMapping
+        public ApiResponse<RestaurantsResponseSet<RestaurantResponse>> getRestaurantSet(
+                        @RequestParam(name = "lng", required = false) Double longitude,
+                        @RequestParam(name = "lat", required = false) Double latitude,
+                        @RequestParam(name = "categoryId", required = false) String categoryId,
+                        @RequestParam(name = "searchText", required = false) String searchText,
+                        @RequestParam(required = false) Integer page) {
+                return ApiResponse.<RestaurantsResponseSet<RestaurantResponse>>builder()
+                                .results(restaurantService.getRestaurantSet(longitude, latitude, categoryId, searchText,
+                                                page != null ? page : 0))
+                                .build();
+        }
 
-    @PatchMapping("/request/approve")
-    public ApiResponse<Void> approveRestaurantRequest(
-            @RequestBody ApproveRestaurantRequest request) {
-        restaurantService.approveRestaurantRequest(request.getRestaurantId(), request.isApproved());
-        return ApiResponse.<Void>builder().message("Hoan tat yeu cau xet duyet").build();
-    }
+        @GetMapping("/category")
+        public ApiResponse<RestaurantsResponseSet<RestaurantActiveResponse>> getRestaurantsByCategoryId(
+                        @RequestParam(name = "categoryId", required = false) String categoryId,
+                        @RequestParam(required = false) Integer page) {
+                return ApiResponse.<RestaurantsResponseSet<RestaurantActiveResponse>>builder()
+                                .results(restaurantService.getRestaurantActiveSet(categoryId,
+                                                page != null ? page : 0))
+                                .build();
+        }
+
+        @PatchMapping("/request/approve")
+        @PostAuthorize("hasRole('ADMIN')")
+        public ApiResponse<Void> approveRestaurantRequest(
+                        @RequestBody ApproveRestaurantRequest request) {
+                restaurantService.approveRestaurantRequest(request.getRestaurantId(), request.isApproved());
+                return ApiResponse.<Void>builder().message("Hoan tat yeu cau xet duyet").build();
+        }
 }

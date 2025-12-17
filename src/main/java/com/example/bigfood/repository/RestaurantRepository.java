@@ -158,4 +158,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       Pageable pageable);
 
   Page<Restaurant> findAllByApprovedFalse(Pageable pageable);
+
+  Page<Restaurant> findAllByApprovedTrueAndRestaurantCategories_Id(String categoryId, Pageable pageable);
+
+  Page<Restaurant> findAllByApprovedTrue(Pageable pageable);
 }
