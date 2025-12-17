@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
-import com.example.bigfood.dto.response.UserSummaryResponse;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.service.UserService;

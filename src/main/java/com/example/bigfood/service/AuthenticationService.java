@@ -58,7 +58,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Restaurant restaurant = user.getRestaurant();
-                if(restaurant != null && !restaurant.getIsApproved()){
+                if(restaurant != null && !restaurant.getApproved()){
                     throw new AppException(ErrorCode.RESTAURANT_UNAUTHENTICATED);
                 }
 

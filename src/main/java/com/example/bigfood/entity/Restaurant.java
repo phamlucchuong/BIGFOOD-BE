@@ -1,5 +1,6 @@
 package com.example.bigfood.entity;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 
@@ -69,7 +70,7 @@ public class Restaurant {
     String licenseId;
     
     @Column(name = "is_approved", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    Boolean isApproved;
+    Boolean approved;
 
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

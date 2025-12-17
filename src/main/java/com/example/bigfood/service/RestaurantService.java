@@ -11,6 +11,8 @@ import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.SearchRequest;
 import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
+import com.example.bigfood.dto.response.RestaurantResponse;
+import com.example.bigfood.dto.response.RestaurantTagResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantsResponseSet;
@@ -142,7 +144,7 @@ public class RestaurantService {
         return getRestaurantDetail(restaurant.getUserId());
     }
 
-    public RestaurantsResponseSet getRestaurantNearBy(double longitude, double latitude) {
+    public RestaurantsResponseSet<RestaurantResponse> getRestaurantNearBy(double longitude, double latitude) {
         if (longitude == 0 || latitude == 0) {
             throw new IllegalArgumentException("Location must be [lat, lng]");
         }
@@ -156,7 +158,7 @@ public class RestaurantService {
         Pageable pageable = PageRequest.of(page, size);
         Page<RestaurantProjection> pageData = restaurantRepository.findNearby(lat, lng, radiusMeters, pageable);
 
-        return RestaurantsResponseSet.builder()
+        return RestaurantsResponseSet.<RestaurantResponse>builder()
                 .restaurants(
                         pageData.getContent().stream()
                                 .map(restaurantMapper::toRestaurantResponse)
@@ -173,9 +175,9 @@ public class RestaurantService {
      * @param categoryid id của danh mục
      * @return danh sách nhà hàng thuộc danh mục category theo số phân trang
      */
-    public RestaurantsResponseSet getRestaurantByCategory(String categoryId) {
+    public RestaurantsResponseSet<RestaurantResponse> getRestaurantByCategory(String categoryId) {
         Pageable pageable = PageRequest.of(0, 2);
-        return RestaurantsResponseSet.builder()
+        return RestaurantsResponseSet.<RestaurantResponse>builder()
                 .restaurants(
                         restaurantRepository.findByCategoryId(categoryId, pageable).stream()
                                 .map(restaurantMapper::toRestaurantResponse)
@@ -213,24 +215,14 @@ public class RestaurantService {
      *                           tìm kiếm
      * @return danh sách nhà hàng theo điều kiện
      */
-    public RestaurantsResponseSet getRestaurantSet(Double lat, Double lng, String categoryId, String searchText, int page) {
+    public RestaurantsResponseSet<RestaurantResponse> getRestaurantSet(Double lat, Double lng, String categoryId, String searchText, int page) {
         Page<RestaurantProjection> resultPage;
-        System.out.println("*******************service********************");
-        System.out.println(lat);
-        System.out.println(lng);
-        System.out.println(categoryId);
-        System.out.println(searchText);
 
         // Chuẩn hóa input (tránh null pointer và string rỗng)
         String cleanCategoryId = (categoryId != null && !categoryId.trim().isEmpty()) ? categoryId.trim() : null;
         String cleanSearchText = (searchText != null && !searchText.trim().isEmpty()) ? "%" + searchText.trim() + "%"
                 : null;
 
-
-        System.out.println("***************************************");
-        System.out.println(cleanSearchText);
-
-                
         if(cleanSearchText != null) {
             cleanSearchText = formatSearchText(searchText);
             searchService.addSearch(
@@ -255,7 +247,7 @@ public class RestaurantService {
         }
 
         // Map từ Projection sang Response DTO (Builder)
-        return RestaurantsResponseSet.builder()
+        return RestaurantsResponseSet.<RestaurantResponse>builder()
                 .restaurants(resultPage.getContent().stream()
                         .map(proj -> {
                             var response = restaurantMapper.toRestaurantResponse(proj);
@@ -280,6 +272,35 @@ public class RestaurantService {
                     return response;
                 })
                 .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_EXISTS));
+    }
+
+    public RestaurantsResponseSet<RestaurantTagResponse> getRestaurantRequestSet(int page) {
+        int size = 10; // số kết quả tối đa trả về
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Restaurant> pageData = restaurantRepository.findAllByApprovedFalse(pageable);
+
+        return RestaurantsResponseSet.<RestaurantTagResponse>builder()
+                .restaurants(
+                        pageData.getContent().stream()
+                                .map(restaurantMapper::toRestaurantTagResponse)
+                                .toList())
+                .total(pageData.getTotalElements())
+                .page(page)
+                .pageSize(size)
+                .build();
+        
+    }
+
+    public void approveRestaurantRequest(String restaurantId, boolean approved) {
+        Restaurant restaurant = getRestaurantByUserId(restaurantId);
+        if(approved) {
+            restaurant.setApproved(true);
+            restaurantRepository.save(restaurant);
+        } else {
+            System.out.println("**************************");
+            restaurantRepository.delete(restaurant);
+        }
     }
 
 }

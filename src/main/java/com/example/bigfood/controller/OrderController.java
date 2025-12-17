@@ -22,6 +22,7 @@ import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
+import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.service.OrderService;
 
 import jakarta.websocket.server.PathParam;
@@ -192,4 +193,14 @@ public class OrderController {
             .message("Order canceled successfully for order: " + orderId)
             .build();
     }
+
+    @GetMapping("/summary")
+    @PostAuthorize("hasRole('ADMIN')")
+    public ApiResponse<SummaryResponse> getOrderSummary() {
+        return ApiResponse.<SummaryResponse>builder()
+            .results(orderService.getOrderSummary())
+            .message("Fetched order summary")
+            .build();
+    }
+    
 }
