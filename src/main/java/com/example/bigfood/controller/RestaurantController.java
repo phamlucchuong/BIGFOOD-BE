@@ -24,6 +24,7 @@ import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.RestaurantActiveResponse;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
+import com.example.bigfood.dto.response.RestaurantReportResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.dto.response.RestaurantTagResponse;
 import com.example.bigfood.dto.request.IDRequest;
@@ -130,5 +131,16 @@ public class RestaurantController {
                         @RequestBody ApproveRestaurantRequest request) {
                 restaurantService.approveRestaurantRequest(request.getRestaurantId(), request.isApproved());
                 return ApiResponse.<Void>builder().message("Hoan tat yeu cau xet duyet").build();
+        }
+
+        @GetMapping("/report")
+        @PostAuthorize("hasRole('ADMIN')")
+        public ApiResponse<RestaurantsResponseSet<RestaurantReportResponse>> getRestaurantReport(
+                        @RequestParam(required = false) Integer page) {
+                
+                return ApiResponse.<RestaurantsResponseSet<RestaurantReportResponse>>builder()
+                                .message("Hoan tat yeu cau xet duyet")
+                                .results(restaurantService.getRestaurantReport(page != null ? page : 0))
+                                .build();
         }
 }

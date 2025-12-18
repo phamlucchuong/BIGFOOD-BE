@@ -88,7 +88,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
           GROUP BY o.restaurant_id
       ) ratings ON r.user_id = ratings.restaurant_id
 
-      WHERE r.is_approved = true 
+      WHERE r.is_approved = true
       AND ST_Distance_Sphere(r.location, ST_SRID(POINT(:lng, :lat), 4326)) <= :radius
         AND (:categoryId IS NULL OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
@@ -132,7 +132,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
           GROUP BY o.restaurant_id
       ) ratings ON r.user_id = ratings.restaurant_id
 
-      WHERE r.is_approved = true 
+      WHERE r.is_approved = true
       AND(COALESCE(:categoryId, '') = '' OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
@@ -144,7 +144,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
       """, countQuery = """
       SELECT COUNT(DISTINCT r.user_id)
       FROM restaurants r
-      WHERE r.is_approved = true 
+      WHERE r.is_approved = true
       AND (COALESCE(:categoryId, '') = '' OR EXISTS (
           SELECT 1 FROM restaurant_has_categories rhc
           WHERE rhc.restaurant_id = r.user_id
@@ -162,4 +162,21 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
   Page<Restaurant> findAllByApprovedTrueAndRestaurantCategories_Id(String categoryId, Pageable pageable);
 
   Page<Restaurant> findAllByApprovedTrue(Pageable pageable);
+
+  @Query(value = """
+      SELECT r.* FROM restaurants r
+      JOIN orders o ON r.user_id = o.restaurant_id
+      JOIN reviews rev ON o.id = rev.order_id
+      GROUP BY r.user_id
+      HAVING CAST(SUM(CASE WHEN rev.sentiment = 'NEGATIVE' THEN 1 ELSE 0 END) AS DECIMAL) / COUNT(rev.id) > 0.8
+      """, countQuery = """
+      SELECT COUNT(*) FROM (
+          SELECT r.user_id FROM restaurants r
+          JOIN orders o ON r.user_id = o.restaurant_id
+          JOIN reviews rev ON o.id = rev.order_id
+          GROUP BY r.id
+          HAVING CAST(SUM(CASE WHEN rev.sentiment = 'NEGATIVE' THEN 1 ELSE 0 END) AS DECIMAL) / COUNT(rev.id) > 0.8
+      ) as temp
+      """, nativeQuery = true)
+  Page<Restaurant> findHighNegativeRestaurants(Pageable pageable);
 }

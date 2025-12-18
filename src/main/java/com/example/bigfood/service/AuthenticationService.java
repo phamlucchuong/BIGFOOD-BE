@@ -91,7 +91,7 @@ public class AuthenticationService {
         var signToken = verifySignedJWT(token);
         var jwtID = signToken.getJWTClaimsSet().getJWTID();
         var expriryDate = signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken = new InvalidatedToken().builder()
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                 .id(jwtID)
                 .expiryTime(expriryDate)
                 .build();

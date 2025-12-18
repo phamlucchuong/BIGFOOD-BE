@@ -11,6 +11,7 @@ import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.SearchRequest;
 import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
+import com.example.bigfood.dto.response.RestaurantReportResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.dto.response.RestaurantTagResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
@@ -318,6 +319,23 @@ public class RestaurantService {
                 .restaurants(
                         pageData.getContent().stream()
                                 .map(restaurantMapper::toRestaurantActiveResponse)
+                                .toList())
+                .total(pageData.getTotalElements())
+                .page(page)
+                .pageSize(size)
+                .build();
+    }
+
+    public RestaurantsResponseSet<RestaurantReportResponse> getRestaurantReport(int page) {
+        int size = 10; // số kết quả tối đa trả về
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Restaurant> pageData = restaurantRepository.findHighNegativeRestaurants(pageable);
+
+        return RestaurantsResponseSet.<RestaurantReportResponse>builder()
+                .restaurants(
+                        pageData.getContent().stream()
+                                .map(restaurantMapper::toRestaurantReportResponse)
                                 .toList())
                 .total(pageData.getTotalElements())
                 .page(page)

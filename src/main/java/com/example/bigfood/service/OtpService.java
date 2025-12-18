@@ -56,5 +56,17 @@ public class OtpService {
         mailSender.send(message);
     }
 
+    public void sendEmail(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(email);
+        message.setSubject("Cảnh báo hành vi tiêu cực!");
+        message.setText("Xin chào quý khách,\n\nHệ thống của chúng tôi đã phát hiện nhiều đánh giá tiêu cực từ khách hàng về nhà hàng của bạn." +
+                "\nVui lòng kiểm tra và cải thiện chất lượng dịch vụ để tránh các biện pháp xử lý từ hệ thống." +
+                "\n\nTrân trọng!");
+
+        mailSender.send(message);
+    }
+
     private record OtpData(String otp, Instant expireAt) {}
 }
