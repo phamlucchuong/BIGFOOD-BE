@@ -10,7 +10,6 @@ import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.ReviewResponse;
 import com.example.bigfood.service.ReviewService;
 
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;

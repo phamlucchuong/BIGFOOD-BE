@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.bigfood.dto.request.CreateReviewRequest;
 import com.example.bigfood.dto.request.ReplyReviewRequest;
 import com.example.bigfood.dto.response.ReviewResponse;
+import com.example.bigfood.dto.response.SentimentResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.entity.Restaurant;
 import com.example.bigfood.entity.Review;
@@ -28,6 +29,7 @@ public class ReviewService {
     ReviewMapper reviewMapper;
     OrderService orderService;
     RestaurantService restaurantService;
+    SentimentService sentimentService;
 
     public ReviewResponse userCreateReview(String orderId, CreateReviewRequest request) {
         Order order = orderService.getOrderById(orderId);
@@ -39,10 +41,10 @@ public class ReviewService {
 
         if (order.getReview() != null)
             throw new AppException(ErrorCode.REVIEW_ALREADY_EXISTS);
-
+        
+        SentimentResponse response = sentimentService.analyzeReview(request.getReviewText());
         Review review = reviewMapper.toReview(request);
-        if (review == null)
-            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
+        review.setSentiment(response.getSentiment());
 
         review.setOrder(order);
         order.setReview(review);

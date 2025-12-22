@@ -10,24 +10,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.bigfood.dto.response.OrderResponse;
-import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.enums.OrderStatus;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
 
-            @Query("""
-                    SELECT o FROM Order o
-                    WHERE o.user.id = :userId
-                      AND (:statusList IS NULL OR o.status IN :statusList)
-                    ORDER BY o.createdAt DESC
-                    """)
-            Page<Order> findByUser_Id(
-                    @Param("userId") String userId,
-                    @Param("statusList") List<OrderStatus> statusList,
-                    Pageable pageable);
+        @Query("""
+                        SELECT o FROM Order o
+                        WHERE o.user.id = :userId
+                          AND (:statusList IS NULL OR o.status IN :statusList)
+                        ORDER BY o.createdAt DESC
+                        """)
+        Page<Order> findByUser_Id(
+                        @Param("userId") String userId,
+                        @Param("statusList") List<OrderStatus> statusList,
+                        Pageable pageable);
 
         List<Order> findByRestaurant_UserId(String restaurantId);
 
@@ -53,4 +51,14 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                         LocalDateTime end);
 
         long countByCreatedAtBetween(LocalDateTime startTimeCurrent, LocalDateTime endTimeCurrent);
+
+        @Query(value = """
+                        SELECT MONTH(o.created_at) as month, COUNT(o.id) as totalOrders
+                        FROM orders o
+                        WHERE YEAR(o.created_at) = YEAR(CURRENT_DATE)
+                          AND MONTH(o.created_at) <= MONTH(CURRENT_DATE)
+                        GROUP BY MONTH(o.created_at)
+                        ORDER BY month ASC
+                        """, nativeQuery = true)
+        List<Object[]> countOrdersByMonthInCurrentYear();
 }

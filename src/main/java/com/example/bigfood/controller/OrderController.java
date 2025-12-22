@@ -3,6 +3,7 @@ package com.example.bigfood.controller;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -194,12 +195,33 @@ public class OrderController {
             .build();
     }
 
+    @PatchMapping("/complete/{orderId}")
+    @PostAuthorize("hasRole('USER')")
+    @PreAuthorize("principal.subject == @orderService.getOrderByOrderId(#orderId).userId")
+    public ApiResponse<OrderFullResponse> completeOrder(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String orderId) {
+        return ApiResponse.<OrderFullResponse>builder()
+            .results(orderService.completeOrder(orderId))
+            .message("Order completed successfully for order: " + orderId)
+            .build();
+    }
+
     @GetMapping("/summary")
     @PostAuthorize("hasRole('ADMIN')")
     public ApiResponse<SummaryResponse> getOrderSummary() {
         return ApiResponse.<SummaryResponse>builder()
             .results(orderService.getOrderSummary())
             .message("Fetched order summary")
+            .build();
+    }
+
+    @GetMapping("/chart")
+    @PostAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<Integer>> getOrderChart() {
+        return ApiResponse.<List<Integer>>builder()
+            .results(orderService.getOrderChart())
+            .message("Fetched order chart")
             .build();
     }
     

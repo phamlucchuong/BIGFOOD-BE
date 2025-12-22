@@ -1,6 +1,6 @@
-package com.example.bigfood.dto.request;
+package com.example.bigfood.dto.response;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,20 +11,15 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Builder
-public class UpdateRestaurantRequest {
+public class RestaurantReportResponse {
+    String id;
     String restaurantName;
     String address;
-    String phone;
     String email;
-    String nameBank;
-    String bankNumber;
-    String bankAccountName;
-    double latitude;
-    double longitude;
-    MultipartFile banner;
-    MultipartFile avatar;
+    LocalDateTime approvedAt;
+    double negativeRatingPercentage;
 }

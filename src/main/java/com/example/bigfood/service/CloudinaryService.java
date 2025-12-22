@@ -36,7 +36,7 @@ public class CloudinaryService {
 
         // Tải tệp lên
         // Sử dụng file.getBytes() để truyền dữ liệu byte
-        Map result = cloudinary.uploader().upload(file.getBytes(), params);
+        Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), params);
 
         // Lấy URL an toàn (HTTPS) từ kết quả
         // String secureUrl = (String) result.get("secure_url");

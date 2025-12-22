@@ -5,8 +5,11 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Generated;
 
+import com.example.bigfood.enums.Sentiment;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -43,6 +46,11 @@ public class Review {
     @Column(name = "last_update_at")
     @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
     LocalDateTime lastUpdateAt;
+
+
+    @Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "sentiment", columnDefinition = "VARCHAR(20) DEFAULT 'NEUTRAL' check (sentiment IN ('POSITIVE', 'NEUTRAL', 'NEGATIVE'))")
+    Sentiment sentiment;
 
     String replyText;
     @Column(name = "reply_at")

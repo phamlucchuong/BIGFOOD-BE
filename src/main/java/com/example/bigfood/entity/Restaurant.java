@@ -1,12 +1,14 @@
 package com.example.bigfood.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Generated;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -71,6 +73,13 @@ public class Restaurant {
     
     @Column(name = "is_approved", columnDefinition = "BOOLEAN DEFAULT FALSE")
     Boolean approved;
+
+    @Column(name = "request_at")
+    LocalDateTime requestAt;
+
+    @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
+    @Column(name = "approved_at", insertable = false, updatable = false)
+    LocalDateTime approvedAt;
 
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
