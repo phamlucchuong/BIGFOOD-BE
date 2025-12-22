@@ -30,7 +30,7 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @NonFinal
-    static final String ADMIN_EMAIL = "lucchuongg@gmail.com";
+    static final String ADMIN_EMAIL = "admin@gmail.com";
     @NonFinal
     static final String ADMIN_PASSWORD = "123456";
 

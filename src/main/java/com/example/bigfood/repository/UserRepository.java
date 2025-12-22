@@ -3,6 +3,7 @@ package com.example.bigfood.repository;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     long countByCreatedAtBetweenAndDeletedFalse(LocalDateTime startTime, LocalDateTime endTime);
     Optional<User> findByEmailAndDeletedFalse(String emailRequest);
     Optional<User> findByIdAndDeletedFalse(String id);
+    List<User> findByRolesIn(List<String> roles);
 }

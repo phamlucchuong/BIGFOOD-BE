@@ -51,7 +51,7 @@ logging:
     level:
         root: WARN 
         # Đặt mức log INFO cho mã nguồn của bạn
-        com.example.bigfood: INFO
+        "com.example.bigfood": INFO
     pattern:
         console: "%d{HH:mm:ss.SSS} %-5level %msg%n"
 

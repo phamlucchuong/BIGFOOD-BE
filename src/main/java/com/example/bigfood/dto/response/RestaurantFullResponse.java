@@ -25,5 +25,5 @@ public class RestaurantFullResponse {
     String licenseId;
     Set<RestaurantCategoryResponse> restaurantCategories;
     Set<FoodCategoryResponse> foodCategories;
-    Boolean isApproved;
+    Boolean approved;
 }

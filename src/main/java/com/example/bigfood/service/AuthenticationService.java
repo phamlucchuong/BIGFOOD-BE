@@ -58,7 +58,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Restaurant restaurant = user.getRestaurant();
-                if(restaurant != null && !restaurant.getIsApproved()){
+                if(restaurant != null && !restaurant.getApproved()){
                     throw new AppException(ErrorCode.RESTAURANT_UNAUTHENTICATED);
                 }
 
@@ -91,7 +91,7 @@ public class AuthenticationService {
         var signToken = verifySignedJWT(token);
         var jwtID = signToken.getJWTClaimsSet().getJWTID();
         var expriryDate = signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken = new InvalidatedToken().builder()
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                 .id(jwtID)
                 .expiryTime(expriryDate)
                 .build();

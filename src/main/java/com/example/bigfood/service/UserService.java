@@ -25,7 +25,6 @@ import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.dto.response.UserResponse;
-import com.example.bigfood.dto.response.UserSummaryResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +74,9 @@ public class UserService {
     }
 
     public List<UserResponse> getAllUser() {
-        List<UserResponse> users = userRepository.findAll().stream()
+        List<String> roles = List.of(com.example.bigfood.enums.Role.USER.name(),
+                                     com.example.bigfood.enums.Role.ADMIN.name());
+        List<UserResponse> users = userRepository.findByRolesIn(roles).stream()
                 .map(userMapper::toUserResponse).toList();
         return users;
     }

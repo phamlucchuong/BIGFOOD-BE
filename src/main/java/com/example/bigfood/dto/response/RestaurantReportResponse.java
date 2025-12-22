@@ -1,6 +1,6 @@
 package com.example.bigfood.dto.response;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +11,15 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Builder
-public class RestaurantsResponseSet<T> {
-    List<T> restaurants;
-    long total;
-    int page;
-    int pageSize;
+public class RestaurantReportResponse {
+    String id;
+    String restaurantName;
+    String address;
+    String email;
+    LocalDateTime approvedAt;
+    double negativeRatingPercentage;
 }
