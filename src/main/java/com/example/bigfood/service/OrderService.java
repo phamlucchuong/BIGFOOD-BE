@@ -467,7 +467,7 @@ public class OrderService {
                                 .count();
                 long rejectedOrders = allOrders.stream()
                                 .filter(order -> order.getStatus() == OrderStatus.REJECTED
-                                                || order.getStatus() == OrderStatus.CANCELED)
+                                                || order.getStatus() == OrderStatus.CANCELLED)
                                 .count();
 
                 double averageRevenuePerOrder = completedOrders > 0
