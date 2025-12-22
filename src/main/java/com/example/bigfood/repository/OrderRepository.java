@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.bigfood.dto.MonthlyOrderCount;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.enums.OrderStatus;
 
@@ -61,5 +60,5 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                         GROUP BY MONTH(o.created_at)
                         ORDER BY month ASC
                         """, nativeQuery = true)
-        List<MonthlyOrderCount> countOrdersByMonthInCurrentYear();
+        List<Object[]> countOrdersByMonthInCurrentYear();
 }

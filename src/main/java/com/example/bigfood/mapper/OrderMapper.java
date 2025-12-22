@@ -1,7 +1,6 @@
 package com.example.bigfood.mapper;
 
 import java.util.List;
-import java.util.Map;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

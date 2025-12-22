@@ -40,7 +40,9 @@ public enum ErrorCode {
   ORDER_NOT_COMPLETED(1020, "Order not completed"), 
   REVIEW_ALREADY_REPLIED(1021, "Review already replied"), 
   REVIEW_ALREADY_DELETED(1022, "Review already deleted"), 
-  ID_INVALID(1023, "ID is invalid")
+  ID_INVALID(1023, "ID is invalid"), 
+  ORDER_CANNOT_BE_COMPLETED(1024, "Order cannot be completed"), 
+  FINANCE_NOT_FOUND(1025, "Finance not found")
   ;
 
   private int code;

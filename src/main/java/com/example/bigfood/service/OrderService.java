@@ -2,8 +2,11 @@ package com.example.bigfood.service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,7 @@ public class OrderService {
         OrderMapper orderMapper;
         CloudinaryService cloudinaryService;
         EntityManager entityManager;
+        FinanceService financeService;
 
         /**
          * Creates a new order with order details.
@@ -641,5 +645,35 @@ public class OrderService {
                                 .changePercentage(roundedPercentage)
                                 .direction(direction)
                                 .build();
+        }
+
+        public List<Integer> getOrderChart() {
+                List<Object[]> monthlyCounts = orderRepository.countOrdersByMonthInCurrentYear();
+                Map<Integer, Integer> monthToCountMap = new HashMap<>();
+                for (Object[] moc : monthlyCounts) {
+                        monthToCountMap.put((Integer) moc[0], ((Number) moc[1]).intValue());
+                }
+
+                List<Integer> orderCountsByMonth = new ArrayList<>();
+                for (int month = 1; month <= 12; month++) {
+                        orderCountsByMonth.add(monthToCountMap.getOrDefault(month, 0));
+                }
+
+                return orderCountsByMonth;
+        }
+
+        public OrderFullResponse completeOrder(String orderId) {
+                Order order = getOrderById(orderId);
+
+                if (order.getStatus() != OrderStatus.DELIVERING) {
+                        throw new AppException(ErrorCode.ORDER_CANNOT_BE_COMPLETED);
+                }
+
+                order.setStatus(OrderStatus.COMPLETED);
+                orderRepository.save(order);
+
+                financeService.createFinance(order);
+
+                return orderMapper.toFullResponse(order);
         }
 }
