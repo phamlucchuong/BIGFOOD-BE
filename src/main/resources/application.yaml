@@ -1,0 +1,85 @@
+server: 
+    port: 8080
+    servlet:
+        context-path: /bigfood
+
+spring:
+    datasource:
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: validate  # ĐỔI từ update -> validate (quan trọng!)
+        show-sql: true
+        defer-datasource-initialization: false  # ĐỔI thành false
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+
+    # Flyway Configuration
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        locations: classpath:db/migration
+        baseline-version: 0
+        validate-on-migrate: true
+        clean-disabled: true  # Bảo vệ khỏi xóa data nhầm
+
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: hoa25102020@gmail.com
+        password: oetowidjpwcidyet
+        properties:
+            mail: 
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+
+    # Tắt banner Spring Boot
+    main:
+        banner-mode: "off"
+    
+    output:
+        ansi:
+            enabled: ALWAYS
+
+# Cấu hình logging
+logging:
+    level:
+        root: WARN 
+        # Đặt mức log INFO cho mã nguồn của bạn
+        "com.example.bigfood": INFO
+    pattern:
+        console: "%d{HH:mm:ss.SSS} %-5level %msg%n"
+
+jwt:
+    signerKey: qCkvf8aYzJEJGgIh7j2rW8V5L4pAKOWqYTf7qePD3WOy8i8JbJ7bwJ6Bt3pr20Da
+    valid-duration: 3600
+    refreshable-duration: 36000
+
+
+# Thông tin cấu hình Cloudinary
+cloudinary:
+    cloudName: dmlz8xuq1
+    apiKey: 633818322111998
+    apiSecret: a4M47qnrfndZjWCVepI1jlWBmNE
+
+goong:
+  api:
+    key: ZZk7tokzqbxJqy5jF33sHXwP5vriHomhTiwMrnih
+    base-url: https://rsapi.goong.io
+    # geocode-url: ${goong.api.base-url}/Geocode
+    # place-url: ${goong.api.base-url}/Place
+    # direction-url: ${goong.api.base-url}/Direction
+    # distance-matrix-url: ${goong.api.base-url}/DistanceMatrix
+
+# Springdoc OpenAPI Configuration
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true

@@ -1,0 +1,42 @@
+package com.example.bigfood.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+import com.example.bigfood.dto.request.UserCreateRequest;
+import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.InfoUserOrderResponse;
+import com.example.bigfood.dto.response.UserResponse;
+import com.example.bigfood.entity.User;
+
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "roles" , ignore = true)
+    @Mapping(target = "orders" , ignore = true)
+    @Mapping(target = "restaurant" , ignore = true)
+    @Mapping(target = "imageId" , ignore = true)
+    @Mapping(target = "createdAt" , ignore = true)
+    @Mapping(target = "deleted" , ignore = true)
+    User toUser(UserCreateRequest request);
+
+    @Mapping(target = "deleted", expression = "java(user.isDeleted())")
+    UserResponse toUserResponse(User user);
+    
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "email" , ignore = true)
+    @Mapping(target = "imageId" , ignore = true)
+    @Mapping(target = "createdAt" , ignore = true)
+    @Mapping(target = "deleted" , ignore = true)
+    @Mapping(target = "orders" , ignore = true)
+    @Mapping(target = "roles" , ignore = true)
+    @Mapping(target = "restaurant" , ignore = true)
+    void toUpdate(@MappingTarget User user , UserUpdateRequest request);
+    
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "phone", source = "phone")
+    @Mapping(target = "imageId" , source = "imageId")
+    InfoUserOrderResponse toInfoUserOrderResponse(User user);
+}
