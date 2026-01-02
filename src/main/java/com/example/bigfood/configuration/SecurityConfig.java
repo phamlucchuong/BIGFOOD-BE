@@ -33,7 +33,8 @@ public class SecurityConfig {
             "api/search",
             "api/restaurants/detail",
             "api/goong/geocoding",
-            "api/goong/reverse-geocoding"
+            "api/goong/reverse-geocoding",
+            "api/media"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINT = {

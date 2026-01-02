@@ -46,9 +46,6 @@ public class Food {
     @Column(name = "image_id")
     String imageId;
 
-    @Column(name = "price", columnDefinition = "decimal(10, 2) not null check (price >= 0)")
-    double price;
-
     @Column(name = "sold")
     @Generated(org.hibernate.annotations.GenerationTime.ALWAYS)
     int sold;
@@ -66,4 +63,7 @@ public class Food {
 
     @OneToMany(mappedBy = "food", fetch = FetchType.LAZY)
     Set<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "food")
+    Set<FoodOption> foodOptions;
 }

@@ -53,7 +53,6 @@ public class FoodService {
         Food food = Food.builder()
                         .name(request.getName())
                         .description(request.getDescription())
-                        .price(request.getPrice())
                         .imageId(imageId)
                         .category(category)
                         .build();
@@ -77,9 +76,6 @@ public class FoodService {
         }
          if(request.getDescription() != null && !request.getDescription().isEmpty()) {
               food.setDescription(request.getDescription());
-        }
-        if(request.getPrice() != 0 && request.getPrice() > 0) {
-            food.setPrice(request.getPrice());
         }
         if(request.getCategoryId() != null && !request.getCategoryId().isEmpty()) {
         FoodCategory category = foodCategoryRepository.findById(request.getCategoryId())
