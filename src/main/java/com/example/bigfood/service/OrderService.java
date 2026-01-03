@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.entity.Order;
@@ -117,7 +119,7 @@ public class OrderService {
                 return orderMapper.toFullResponse(order);
         }
 
-        public OrderShortPageResponse getAllOrdersByUserId(String userId, boolean status, Integer page) {
+        public OrderShortPageResponse<OrderShortResponse> getAllOrdersByUserId(String userId, boolean status, Integer page) {
                 List<OrderStatus> statusList = null;
 
                 if (!status) {
@@ -141,7 +143,7 @@ public class OrderService {
 
                 var pageData = orderRepository.findByUser_Id(userId, statusList, pageable);
 
-                return OrderShortPageResponse.builder()
+                return OrderShortPageResponse.<OrderShortResponse>builder()
                                 .orders(pageData.getContent().stream()
                                                 .map(orderMapper::toShortResponse)
                                                 .toList())
@@ -152,9 +154,21 @@ public class OrderService {
                                 .build();
         }
 
-        public List<OrderResponse> getAllOrders() {
-                return orderMapper.toResponseList(
-                                orderRepository.findAll());
+        public OrderShortPageResponse<OrderResponse> getAllOrders(Integer page) {
+                int size = 2 ;
+                Integer pageCurrent = page > 0 ? page : 0;
+
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData = orderRepository.findAll(pageable);
+                  return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
         }
 
         public OrderResponse updateOrderStatus(String orderId, UpdateOrderStatusRequest request) {
@@ -192,9 +206,21 @@ public class OrderService {
                 return orderMapper.toFullResponse(order);
         }
 
-        public List<OrderResponse> getAllOrdersByRestaurantId(String restaurantId) {
-                List<Order> order = orderRepository.findByRestaurant_UserId(restaurantId);
-                return orderMapper.toResponseList(order);
+        public OrderShortPageResponse<OrderResponse> getAllOrdersByRestaurantId(String restaurantId , Integer page) {
+                int size = 2 ;
+               int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
+
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData = orderRepository.findByRestaurant_UserId(restaurantId , pageable);
+               return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent + 1)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
         }
 
         public OrderDetailResponse getOrderDetailByOrderId(String orderId) {
@@ -241,7 +267,7 @@ public class OrderService {
                                 .build();
         }
 
-        public List<OrderResponse> getLoadStatusFilter(String restaurantId, String filter) {
+        public OrderShortPageResponse<OrderResponse> getLoadStatusFilter(String restaurantId, String filter , Integer page) {
                 OrderStatus statusEnum;
                 try {
                         statusEnum = OrderStatus.valueOf(filter);
@@ -249,8 +275,21 @@ public class OrderService {
                         throw new IllegalArgumentException("Invalid status: " + filter);
                 }
 
-                List<Order> listOrder = orderRepository.findByStatus(restaurantId, statusEnum);
-                return orderMapper.toResponseList(listOrder);
+                int size = 2 ;
+                int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
+
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+
+                var pageData =  orderRepository.findByStatus(restaurantId, statusEnum , pageable);
+                 return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent + 1)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
         }
 
         protected Order getOrderById(String orderId) {
@@ -267,11 +306,13 @@ public class OrderService {
                 return orderMapper.toResponseList(listOrder);
         }
 
-        public RestaurantStatisticalResponse restaurantStatistical(String restaurantId) {
-                // Restaurant restaurant =
-                // restaurantService.getRestaurantByUserId(restaurantId);
+        public RestaurantStatisticalResponse restaurantStatistical(String restaurantId , Integer page) {
+                int size = 2 ;
+                Integer pageCurrent = page > 0 ? page : 0;
 
-                List<Order> allOrders = orderRepository.findByRestaurant_UserId(restaurantId);
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData= orderRepository.findByRestaurant_UserId(restaurantId , pageable);
+                List<Order> allOrders = pageData.getContent();
 
                 if (allOrders.isEmpty()) {
                         return RestaurantStatisticalResponse.builder()
