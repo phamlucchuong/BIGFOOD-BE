@@ -1,5 +1,6 @@
 package com.example.bigfood.entity;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -41,6 +42,9 @@ public class Food {
     String id;
 
     String name;
+    @Column(precision = 12, scale = 2, nullable = false)
+    BigDecimal price;
+
     String description;
 
     @Column(name = "image_id")
