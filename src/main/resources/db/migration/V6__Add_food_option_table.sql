@@ -1,7 +1,7 @@
 
 create table food_options (
     id VARCHAR(36) primary key,
-    name VARCHAR(255) not null,
+    name VARCHAR(255),
     price DECIMAL(10,2) not null,
     is_default BOOLEAN not null default false,
     food_id VARCHAR(36) not null,
