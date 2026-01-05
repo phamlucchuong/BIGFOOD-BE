@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class SummaryResponse {
     long total;
+    long changeAmount;
     double changePercentage;
     String direction;
 }

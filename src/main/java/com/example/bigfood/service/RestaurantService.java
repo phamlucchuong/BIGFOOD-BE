@@ -234,7 +234,7 @@ public class RestaurantService {
                 .build());
         }
 
-        int size = 1; // số kết quả tối đa trả về
+        int size = 8; // số kết quả tối đa trả về
         Double radius = 20000.0; // Bán kính mặc định 5km
 
         Pageable pageable = PageRequest.of(page, size);

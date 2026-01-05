@@ -2,6 +2,7 @@ package com.example.bigfood.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.bigfood.dto.response.FinanceResponse;
 import com.example.bigfood.entity.Finance;
 import com.example.bigfood.entity.Order;
 import com.example.bigfood.enums.ErrorCode;
@@ -34,4 +35,8 @@ public class FinanceService {
         finance.setStatus("COMPLETED");
         financeRepository.save(finance);
     }
+
+    // public FinanceResponse getFinanceSummary() {
+    //     var summary = financeRepository.getFinanceSummary();
+    // }
 }
