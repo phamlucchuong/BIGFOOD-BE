@@ -1,14 +1,17 @@
 package com.example.bigfood.service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.bigfood.dto.request.CreateFoodRequest;
 import com.example.bigfood.dto.request.UpdateFoodRequest;
 import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.entity.Food;
 import com.example.bigfood.entity.FoodCategory;
 import com.example.bigfood.entity.Restaurant;
@@ -54,7 +57,6 @@ public class FoodService {
         String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
         Food food = Food.builder()
                         .name(request.getName())
-                        .price(BigDecimal.valueOf(request.getPrice()))
                         .description(request.getDescription())
                         .imageId(imageId)
                         .category(category)
@@ -63,7 +65,7 @@ public class FoodService {
         Food foodData = foodRepository.save(food);
         if(request.getFoodOptions() != null && !request.getFoodOptions().isEmpty()){
             request.getFoodOptions().forEach(x -> {
-                foodOptionService.createFoodOption(x.getName(), x.getPrice() , foodData);
+                foodOptionService.createFoodOption(x.getName(), x.getPrice(), x.getDefaultPrice() ,foodData);
             });
         }
          return foodData;
@@ -91,22 +93,31 @@ public class FoodService {
                 .orElseThrow(() -> new RuntimeException("Food category not found"));
             food.setCategory(category);
         }
-        if(request.getPrice() > 0 ){
-            food.setPrice(BigDecimal.valueOf(request.getPrice()));
-        }
         food.setAvailable(request.isAvailable());
         if(request.getFoodOptions() != null && !request.getFoodOptions().isEmpty()){
            food.getFoodOptions().clear();
             if(!request.getFoodOptions().isEmpty()) {
                 request.getFoodOptions().forEach(x -> {
-                    foodOptionService.createFoodOption(x.getName(), x.getPrice(), food);
+                    foodOptionService.createFoodOption(x.getName(), x.getPrice(), x.getDefaultPrice() ,food);
                 });
             }
         }
     }
 
-    public List<FoodResponse> getAllByUserId(String userId) {
-        return foodMapper.toListFoodResponses(foodRepository.findAllByRestaurantUserId(userId) , cloudinaryService);
+    public PageResponse<FoodResponse> getAllByUserId(String userId , Integer page) {
+        int limit = 10;
+        int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
+
+        Pageable pageable = PageRequest.of(pageCurrent, limit , Sort.by(Sort.Direction.DESC, "createdAt"));
+        var pageData = foodRepository.findAllByRestaurantUserId(userId ,  pageable);
+        return PageResponse.<FoodResponse>builder()
+                .items(pageData.getContent().stream()
+                    .map(foodMapper::toFoodResponse).toList())
+                .total(pageData.getTotalElements())
+                .page(pageCurrent+1)
+                .pageSize(limit)
+                .totalPages(pageData.getTotalPages())
+                .build();
     }
 
     public List<FoodResponse> listFoodByCategoryId(String userId, String categoryId) {
@@ -154,19 +165,15 @@ public class FoodService {
         return foodMapper.toFoodResponse(food);
     }
 
-    public List<FoodResponse> getAllFood(String userId) {
-        return getAllByUserId(userId);
-    }   
-
     public List<FoodResponse> getTop5BestSellingFoods(String restaurantId) {
         List<Food> foods = foodRepository.findBySoldDSECFoods(restaurantId);
-         foods.subList(0, Math.min(5, foods.size()));
+         foods = foods.subList(0, Math.min(5, foods.size()));
          return foodMapper.toListFoodResponses(foods, cloudinaryService);
     }
 
     public List<FoodResponse> getTop5LeastSellingFoods(String restaurantId) {
         List<Food> foods = foodRepository.findBySoldASCFoods(restaurantId); 
-         foods.subList(0, Math.min(5, foods.size()));
+          foods = foods.subList(0, Math.min(5, foods.size()));
          return foodMapper.toListFoodResponses(foods, cloudinaryService);
     }
 

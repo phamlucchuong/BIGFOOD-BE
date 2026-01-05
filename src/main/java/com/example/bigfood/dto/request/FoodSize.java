@@ -12,4 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class FoodSize {
     String name;  
     double price;
+    Boolean defaultPrice;
 }
