@@ -722,4 +722,35 @@ public class OrderService {
 
         return orderMapper.toFullResponse(order);
     }
+
+    public FinanceResponse getFinanceSummary() {
+        FinanceProjection projection = orderRepository.getFinanceSummary();
+        return FinanceResponse.builder()
+                .monthIncome(projection.getMonthIncome())
+                .monthDirection(projection.getMonthDirection())
+                .dayIncome(projection.getDayIncome())
+                .dayDirection(projection.getDayDirection())
+                .build();
+    }
+
+    public List<TopOrderResponse> getTopOrders() {
+        List<Order> topOrders = orderRepository.findTop5ByCreatedAtTodayOrderByTotalAmountDesc();
+
+        return topOrders.stream()
+                .map(order -> TopOrderResponse.builder()
+                        .id(order.getId())
+                        .restaurantBanner(cloudinaryService.generateUrl(
+                                order.getRestaurant().getBannerId()))
+                        .restaurantName(order.getRestaurant().getRestaurantName())
+                        .status(order.getStatus().name())
+                        .createdAt(order.getCreatedAt())
+                        .totalAmount(order.getTotalAmount())
+                        .numberDishes(order.getOrderDetails() != null
+                                ? order.getOrderDetails().size()
+                                : 0)
+                        .userName(order.getUser().getName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
