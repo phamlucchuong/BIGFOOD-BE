@@ -18,11 +18,11 @@ public class FoodOptionService {
         return foodOptionRepository.findAllByFood_Id(foodId);
     }
 
-    public FoodOption createFoodOption(String name , double price , Food food){
+    public FoodOption createFoodOption(String name , double price ,boolean flag  ,Food food){
           FoodOption foodOption = FoodOption.builder()
                                 .name(name)
                                 .price(price)
-                                .defaultPrice((name.equals("M")) ? true : false)
+                                .defaultPrice((flag) ? true : false)
                                 .food(food)
                                 .build();
           return foodOptionRepository.save(foodOption);

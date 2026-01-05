@@ -19,7 +19,6 @@ public class UpdateFoodRequest {
     String categoryId;
     String description;
     MultipartFile image;
-    double price;
     boolean available;
     List<FoodSize> foodOptions;
 }
