@@ -27,16 +27,18 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                         @Param("statusList") List<OrderStatus> statusList,
                         Pageable pageable);
 
-        List<Order> findByRestaurant_UserId(String restaurantId);
+        Page<Order> findByRestaurant_UserId(String restaurantId ,  Pageable pageable);
 
         @Query("""
                         SELECT o FROM Order o
                         Where(:status IS NULL OR o.status = :status)
                         AND o.restaurant.userId = :restaurantId
                         """)
-        List<Order> findByStatus(
+        Page<Order> findByStatus(
                         @Param("restaurantId") String restaurantId,
-                        @Param("status") OrderStatus status);
+                        @Param("status") OrderStatus status ,
+                        Pageable pageable
+                      );
 
         @Query("""
                          SELECT o FROM Order o

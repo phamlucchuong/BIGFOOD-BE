@@ -22,6 +22,7 @@ import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.service.OrderService;
@@ -50,11 +51,11 @@ public class OrderController {
 
     @GetMapping("/all")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<List<OrderResponse>> getAllOrders() {
-        return ApiResponse.<List<OrderResponse>>builder()
-                .results(orderService.getAllOrders())
-                .message("Fetched all orders")
-                .build();
+    public ApiResponse<OrderShortPageResponse<OrderResponse>> getAllOrders(Integer page) {
+        return ApiResponse.<OrderShortPageResponse<OrderResponse>>builder()
+            .results(orderService.getAllOrders(page))
+            .message("Fetched all orders")
+            .build();
     }
 
     @GetMapping("/{id}")
@@ -67,13 +68,13 @@ public class OrderController {
 
     @GetMapping("/user/{userId}/all")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<OrderShortPageResponse> getAllOrdersByUserId(@PathVariable String userId,
-            @PathParam("status") boolean status,
-            @PathParam("page") Integer page) {
-        return ApiResponse.<OrderShortPageResponse>builder()
-                .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
-                .message("Fetched all orders for user: " + userId)
-                .build();
+    public ApiResponse<OrderShortPageResponse<OrderShortResponse>> getAllOrdersByUserId( @PathVariable String userId,
+        @PathParam("status") boolean status,
+        @PathParam("page") Integer page) {
+        return ApiResponse.<OrderShortPageResponse<OrderShortResponse>>builder()
+            .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
+            .message("Fetched all orders for user: " + userId)
+            .build();
     }
 
     /**
@@ -85,45 +86,48 @@ public class OrderController {
      */
     @GetMapping("/user/all")
     // @PostAuthorize("hasRole('USER')")
-    public ApiResponse<OrderShortPageResponse> getAllOrdersByUserId(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathParam("status") boolean status,
-            @PathParam("page") Integer page) {
+    public ApiResponse<OrderShortPageResponse<OrderShortResponse>> getAllOrdersByUserId(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathParam("status") boolean status,
+        @PathParam("page") Integer page) {
         String userId = jwt.getSubject();
-        return ApiResponse.<OrderShortPageResponse>builder()
-                .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
-                .message("Fetched all orders for user: " + userId)
-                .build();
+        return ApiResponse.<OrderShortPageResponse<OrderShortResponse>>builder()
+            .results(orderService.getAllOrdersByUserId(userId, status, page != null ? page : 0))
+            .message("Fetched all orders for user: " + userId)
+            .build();
     }
 
-    @GetMapping("/restaurant/{restaurantId}/all")
+    @GetMapping("/restaurant/{restaurantId}/page/{page}")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@PathVariable String restaurantId) {
-        return ApiResponse.<List<OrderResponse>>builder()
-                .results(orderService.getAllOrdersByRestaurantId(restaurantId))
-                .message("Fetched all orders for restaurant: " + restaurantId)
-                .build();
+    public ApiResponse<OrderShortPageResponse<OrderResponse>> getAllOrdersByRestaurantId(@PathVariable String restaurantId , @PathVariable Integer page) {
+        return ApiResponse.<OrderShortPageResponse<OrderResponse>>builder()
+            .results(orderService.getAllOrdersByRestaurantId(restaurantId , page))
+            .message("Fetched all orders for restaurant: " + restaurantId)
+            .build();
     }
 
-    @GetMapping("/restaurant/all")
+    @GetMapping("/restaurant/page/{page}")
     // @PostAuthorize("hasRole('RESTAURANT')")
-    public ApiResponse<List<OrderResponse>> getAllOrdersByRestaurantId(@AuthenticationPrincipal Jwt jwt) {
+    public ApiResponse<OrderShortPageResponse<OrderResponse>> getAllOrdersByRestaurantId(@AuthenticationPrincipal Jwt jwt , @PathVariable("page") Integer page) {
         String restaurantId = jwt.getSubject();
-        return ApiResponse.<List<OrderResponse>>builder()
-                .results(orderService.getAllOrdersByRestaurantId(restaurantId))
-                .message("Fetched all orders for restaurant: " + restaurantId)
-                .build();
+        return ApiResponse.<OrderShortPageResponse<OrderResponse>>builder()
+            .results(orderService.getAllOrdersByRestaurantId(restaurantId , page))
+            .message("Fetched all orders for restaurant: " + restaurantId)
+            .build();
     }
 
     @GetMapping("/restaurant")
     // @PostAuthorize("hasRole('RESTAURANT')")
-    public ApiResponse<List<OrderResponse>> getOrdersRestaurantByStatus(@AuthenticationPrincipal Jwt jwt,
-            @PathParam("status") String status) {
+    public ApiResponse<OrderShortPageResponse<OrderResponse>> getOrdersRestaurantByStatus(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathParam("status") String status ,
+        @PathParam("page") Integer page    
+    ) {
         String restaurantId = jwt.getSubject();
-        return ApiResponse.<List<OrderResponse>>builder()
-                .results(orderService.getLoadStatusFilter(restaurantId, status))
-                .message("Fetched all orders for restaurant: " + restaurantId)
-                .build();
+        return ApiResponse.<OrderShortPageResponse<OrderResponse>>builder()
+            .results(orderService.getLoadStatusFilter(restaurantId , status , page))
+            .message("Fetched all orders for restaurant: " + restaurantId)
+            .build();
     }
 
     @GetMapping("/restaurant/detail/{orderId}")
@@ -135,14 +139,14 @@ public class OrderController {
                 .build();
     }
 
-    @GetMapping("/restaurant/statistital")
-    // @PostAuthorize("hasRole('RESTAURANT')")
-    public ApiResponse<?> getOrdersDetailByOrderId(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
+     @GetMapping("/restaurant/statistital/page/{page}")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
+    public ApiResponse<?> getOrdersDetailByOrderId(@AuthenticationPrincipal Jwt jwt , @PathVariable Integer page) {
+       String userId = jwt.getSubject();
         return ApiResponse.<RestaurantStatisticalResponse>builder()
-                .results(orderService.restaurantStatistical(userId))
-                .message("Orders restarantStatistital for restaurant: " + userId)
-                .build();
+            .results(orderService.restaurantStatistical(userId , page))
+            .message("Orders restarantStatistital for restaurant: " + userId)
+            .build();
     }
 
     @GetMapping("/restaurant/statistics")

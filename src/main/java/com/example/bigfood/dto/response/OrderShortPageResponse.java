@@ -15,8 +15,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class OrderShortPageResponse {
-    List<OrderShortResponse> orders;
+public class OrderShortPageResponse<T> {
+    List<T> orders;
     long total;
     int page;
     int pageSize;

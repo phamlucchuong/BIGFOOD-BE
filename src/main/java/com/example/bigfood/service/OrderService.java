@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
 import com.example.bigfood.dto.response.OrderShortPageResponse;
+import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.entity.Order;
@@ -109,37 +111,59 @@ public class OrderService {
                     OrderStatus.CANCELLED);
         }
 
-        int size = 5;
-        int safePage = page != null && page >= 0 ? page : 0; // fallback tránh NullPointer và page âm
-        Pageable pageable = PageRequest.of(safePage, size);
+        public OrderShortPageResponse<OrderShortResponse> getAllOrdersByUserId(String userId, boolean status, Integer page) {
+                List<OrderStatus> statusList = null;
 
-        var pageData = orderRepository.findByUser_Id(userId, statusList, pageable);
+                if (!status) {
+                        // Nhóm trạng thái đang xử lý
+                        statusList = List.of(
+                                        OrderStatus.PENDING,
+                                        OrderStatus.CONFIRMED,
+                                        OrderStatus.PREPARING,
+                                        OrderStatus.DELIVERING);
+                } else {
+                        // Nhóm trạng thái đã hoàn thành hoặc hủy
+                        statusList = List.of(
+                                        OrderStatus.COMPLETED,
+                                        OrderStatus.REJECTED,
+                                        OrderStatus.CANCELLED);
+                }
 
-        return OrderShortPageResponse.builder()
-                .orders(pageData.getContent().stream()
-                        .map(orderMapper::toShortResponse)
-                        .toList())
-                .total(pageData.getTotalElements())
-                .page(safePage)
-                .pageSize(size)
-                .totalPages(pageData.getTotalPages())
-                .build();
-    }
+                int size = 5;
+                int safePage = page != null && page >= 0 ? page : 0; // fallback tránh NullPointer và page âm
+                Pageable pageable = PageRequest.of(safePage, size);
 
-    public List<OrderResponse> getAllOrders() {
-        return orderMapper.toResponseList(
-                orderRepository.findAll());
-    }
+                var pageData = orderRepository.findByUser_Id(userId, statusList, pageable);
 
-    public OrderResponse updateOrderStatus(String orderId, UpdateOrderStatusRequest request) {
-        if (orderId == null || orderId.isEmpty()) {
-            throw new AppException(ErrorCode.ORDER_NOT_FOUND);
+                return OrderShortPageResponse.<OrderShortResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toShortResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(safePage)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
+
         }
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if (order.getStatus().toString().equals(request.getStatus().toString())) {
-            throw new AppException(ErrorCode.STATUS_SAME_AS_BEFORE);
+        public OrderShortPageResponse<OrderResponse> getAllOrders(Integer page) {
+                int size = 2 ;
+                Integer pageCurrent = page > 0 ? page : 0;
+
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData = orderRepository.findAll(pageable);
+                  return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
         }
         order.setStatus(request.getStatus());
 
@@ -153,74 +177,50 @@ public class OrderService {
         return orderMapper.toResponse(order);
     }
 
-    public OrderFullResponse cancelOrder(String orderId, UpdateOrderStatusRequest request) {
-        Order order = orderRepository.findById(orderId != null ? orderId : "")
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        public OrderShortPageResponse<OrderResponse> getAllOrdersByRestaurantId(String restaurantId , Integer page) {
+                int size = 2 ;
+               int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
+
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData = orderRepository.findByRestaurant_UserId(restaurantId , pageable);
+               return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent + 1)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
+        }
 
         if (order.getStatus().equals(request.getStatus())) {
             throw new AppException(ErrorCode.STATUS_SAME_AS_BEFORE);
         }
-        order.setStatus(request.getStatus());
-        order.setCancellReason(request.getReason());
-        orderRepository.save(order);
-        return orderMapper.toFullResponse(order);
-    }
 
-    public List<OrderResponse> getAllOrdersByRestaurantId(String restaurantId) {
-        List<Order> order = orderRepository.findByRestaurant_UserId(restaurantId);
-        return orderMapper.toResponseList(order);
-    }
+        public OrderShortPageResponse<OrderResponse> getLoadStatusFilter(String restaurantId, String filter , Integer page) {
+                OrderStatus statusEnum;
+                try {
+                        statusEnum = OrderStatus.valueOf(filter);
+                } catch (Exception e) {
+                        throw new IllegalArgumentException("Invalid status: " + filter);
+                }
 
-    public OrderDetailResponse getOrderDetailByOrderId(String orderId) {
-        Order orderData = getOrderById(orderId);
+                int size = 2 ;
+                int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
 
-        Set<OrderFoodDetailResponse> orderFoodDetails = orderData.getOrderDetails() != null
-                ? orderData.getOrderDetails().stream()
-                        .map(detail -> OrderFoodDetailResponse.builder()
-                                .id(detail.getId())
-                                .foodName(detail.getFoodName())
-                                .quantity(String.valueOf(detail.getQuantity()))
-                                .unitPrice(String.valueOf(detail.getUnitPrice()))
-                                .totalPrice(String.valueOf(detail.getTotalPrice()))
-                                .imageId(cloudinaryService.generateUrl(
-                                        detail.getFood().getImageId()))
-                                .notes(detail.getNotes())
-                                .build())
-                        .collect(Collectors.toSet())
-                : new HashSet<>();
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
 
-        return OrderDetailResponse.builder()
-                .id(orderData.getId())
-                .status(orderData.getStatus().name())
-                .createdAt(orderData.getCreatedAt().toString())
-                .updatedAt(orderData.getUpdatedAt() != null
-                        ? orderData.getUpdatedAt().toString()
-                        : "")
-                .deliveryAddress(orderData.getDeliveryAddress())
-                .deliveryDistance(orderData.getDeliveryDistance())
-                .deliveryFee(orderData.getDeliveryFee())
-                .totalAmount(orderData.getTotalAmount())
-                .paymentMethod(orderData.getPaymentMethod())
-                .notes(orderData.getNotes())
-                .cancellReason(orderData.getCancellReason())
-                .rejectReason(orderData.getRejectReason())
-                .numberDishes(orderData.getOrderDetails() != null ? orderData.getOrderDetails().size()
-                        : 0)
-                .orderDetails(orderFoodDetails)
-                .user(InfoUserOrderResponse.builder()
-                        .id(orderData.getUser().getId())
-                        .name(orderData.getUser().getName())
-                        .phone(orderData.getUser().getPhone())
-                        .build())
-                .build();
-    }
-
-    public List<OrderResponse> getLoadStatusFilter(String restaurantId, String filter) {
-        OrderStatus statusEnum;
-        try {
-            statusEnum = OrderStatus.valueOf(filter);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid status: " + filter);
+                var pageData =  orderRepository.findByStatus(restaurantId, statusEnum , pageable);
+                 return OrderShortPageResponse.<OrderResponse>builder()
+                                .orders(pageData.getContent().stream()
+                                                .map(orderMapper::toResponse)
+                                                .toList())
+                                .total(pageData.getTotalElements())
+                                .page(pageCurrent + 1)
+                                .pageSize(size)
+                                .totalPages(pageData.getTotalPages())
+                                .build();
         }
 
         List<Order> listOrder = orderRepository.findByStatus(restaurantId, statusEnum);
@@ -232,35 +232,132 @@ public class OrderService {
 
             throw new AppException(ErrorCode.ORDER_NOT_FOUND);
         }
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-    }
 
-    public List<OrderResponse> listOrderNew(String restaurantId) {
-        List<Order> listOrder = orderRepository.findOrderNewList(restaurantId);
-        return orderMapper.toResponseList(listOrder);
-    }
+        public RestaurantStatisticalResponse restaurantStatistical(String restaurantId , Integer page) {
+                int size = 2 ;
+                Integer pageCurrent = page > 0 ? page : 0;
 
-    public RestaurantStatisticalResponse restaurantStatistical(String restaurantId) {
-        // Restaurant restaurant =
-        // restaurantService.getRestaurantByUserId(restaurantId);
+                Pageable pageable = PageRequest.of(pageCurrent, size , Sort.by(Sort.Direction.DESC , "createdAt"));
+                var pageData= orderRepository.findByRestaurant_UserId(restaurantId , pageable);
+                List<Order> allOrders = pageData.getContent();
 
-        List<Order> allOrders = orderRepository.findByRestaurant_UserId(restaurantId);
+                if (allOrders.isEmpty()) {
+                        return RestaurantStatisticalResponse.builder()
+                                        .totalPrice(0)
+                                        .percentagePrice(0)
+                                        .averageUnitRevenuePrice(0)
+                                        .numberOfOrder(0)
+                                        .percentageOrder(0)
+                                        .numberOrderCompleted(0)
+                                        .numberOrderRejected(0)
+                                        .averageStars(0)
+                                        .percentageStart(0)
+                                        .percentagePositive(0)
+                                        .percentNegative(0)
+                                        .build();
+                }
 
-        if (allOrders.isEmpty()) {
-            return RestaurantStatisticalResponse.builder()
-                    .totalPrice(0)
-                    .percentagePrice(0)
-                    .averageUnitRevenuePrice(0)
-                    .numberOfOrder(0)
-                    .percentageOrder(0)
-                    .numberOrderCompleted(0)
-                    .numberOrderRejected(0)
-                    .averageStars(0)
-                    .percentageStart(0)
-                    .percentagePositive(0)
-                    .percentNegative(0)
-                    .build();
+                double totalRevenue = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .mapToDouble(Order::getTotalAmount)
+                                .sum();
+
+                int totalOrders = allOrders.size();
+                long completedOrders = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .count();
+                long rejectedOrders = allOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.REJECTED
+                                                || order.getStatus() == OrderStatus.CANCELLED)
+                                .count();
+
+                double averageRevenuePerOrder = completedOrders > 0
+                                ? totalRevenue / completedOrders
+                                : 0;
+                LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+                LocalDateTime currentPeriodStart = LocalDateTime.now().minusYears(1);
+
+                List<Order> previousPeriodOrders = orderRepository.findByRestaurant_UserIdAndCreatedAtBetween(
+                                restaurantId, currentPeriodStart, oneYearAgo);
+
+                double previousRevenue = previousPeriodOrders.stream()
+                                .filter(order -> order.getStatus() == OrderStatus.COMPLETED)
+                                .mapToDouble(Order::getTotalAmount)
+                                .sum();
+
+                int previousTotalOrders = previousPeriodOrders.size();
+                double percentagePrice = previousRevenue > 0
+                                ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
+                                : 0;
+
+                double percentageOrder = previousTotalOrders > 0
+                                ? ((totalOrders - previousTotalOrders) / (double) previousTotalOrders) * 100
+                                : 0;
+
+                percentagePrice = Math.round(percentagePrice * 10.0) / 10.0;
+                percentageOrder = Math.round(percentageOrder * 10.0) / 10.0;
+
+                // Calculate review statistics
+                List<Review> allReviews = allOrders.stream()
+                                .map(Order::getReview)
+                                .filter(review -> review != null)
+                                .collect(Collectors.toList());
+
+                double averageStars = 0;
+                double percentagePositive = 0; // 4-5 stars
+                double percentNegative = 0; // 1-2 stars
+                double percentageStart = 0;
+
+                if (!allReviews.isEmpty()) {
+                        // Calculate average rating
+                        averageStars = allReviews.stream()
+                                        .mapToInt(Review::getRating)
+                                        .average()
+                                        .orElse(0);
+                        averageStars = Math.round(averageStars * 10.0) / 10.0;
+
+                        // Count rating distribution
+                        long positiveCount = allReviews.stream()
+                                        .filter(review -> review.getRating() >= 4)
+                                        .count();
+                        long negativeCount = allReviews.stream()
+                                        .filter(review -> review.getRating() <= 2)
+                                        .count();
+
+                        percentagePositive = (positiveCount * 100.0) / allReviews.size();
+                        percentNegative = (negativeCount * 100.0) / allReviews.size();
+
+                        // Calculate percentage change in average rating from previous period
+                        List<Review> previousReviews = previousPeriodOrders.stream()
+                                        .map(Order::getReview)
+                                        .filter(review -> review != null)
+                                        .collect(Collectors.toList());
+
+                        if (!previousReviews.isEmpty()) {
+                                double previousAverageStars = previousReviews.stream()
+                                                .mapToInt(Review::getRating)
+                                                .average()
+                                                .orElse(0);
+                                percentageStart = Math.round((averageStars - previousAverageStars) * 10.0) / 10.0;
+                        }
+
+                        percentagePositive = Math.round(percentagePositive * 10.0) / 10.0;
+                        percentNegative = Math.round(percentNegative * 10.0) / 10.0;
+                }
+
+                return RestaurantStatisticalResponse.builder()
+                                .totalPrice(totalRevenue)
+                                .percentagePrice(percentagePrice)
+                                .averageUnitRevenuePrice(averageRevenuePerOrder)
+                                .numberOfOrder(totalOrders)
+                                .percentageOrder(percentageOrder)
+                                .numberOrderCompleted((int) completedOrders)
+                                .numberOrderRejected((int) rejectedOrders)
+                                .averageStars(averageStars)
+                                .percentageStart(percentageStart)
+                                .percentagePositive(percentagePositive)
+                                .percentNegative(percentNegative)
+                                .build();
         }
 
         double totalRevenue = allOrders.stream()
