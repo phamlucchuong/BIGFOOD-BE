@@ -86,17 +86,17 @@ values ('d1cc08be-5e00-4a85-a108-3adabfaa8d49',
 '450-451 Lê Văn Việt, phường Tăng Nhơn Phú, TP.HCM.', 
 10.845696, 106.794172, 
 ST_SRID(POINT(106.794172, 10.845696), 4326),
-'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE123', false),
+'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'bigfood/images/lisense/y1ukrdeq0ohtxhlxpfts', true),
 
-('299e093c-273a-4c6e-b005-aca5ce5d80dd', 
+('299e093c-273a-4c6e-b005-aca5ce5d80dd',
 'Lẩu gà Yến Trà',
-'Kenbar Coffee And Tea', 
-10.84025325510041, 106.78136712955003, 
+'Kenbar Coffee And Tea',
+10.84025325510041, 106.78136712955003,
 ST_SRID(POINT(106.700000, 10.800000), 4326),
-'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'LICENSE456', false);
+'bigfood/images/profile_pictures/a3bb8utbnidlnooknbic', 'bigfood/images/lisense/y1ukrdeq0ohtxhlxpfts', true);
 
 insert into restaurant_has_categories (restaurant_id, restaurant_category_id)
-values 
+values
 ('d1cc08be-5e00-4a85-a108-3adabfaa8d49', '0d15f7c8-9345-47c0-856e-5aa8d71dc753'),
 ('d1cc08be-5e00-4a85-a108-3adabfaa8d49', '4a71ac70-55bf-429e-bc85-bb637f2cbeda'),
 ('299e093c-273a-4c6e-b005-aca5ce5d80dd', '83ce45d0-159e-46f2-a9ec-bbe4653232b8');
@@ -117,3 +117,7 @@ values ('f1e2d3c4-b5a6-7890-1234-56789abcdef0', 'Cà phê đen đá', 'Cà phê 
     ('c3d4e5f6-a7b8-9012-3456-789abcdef023', 'Gỏi gà xé phay', 'Gỏi gà trộn với rau sống và nước mắm chua ngọt', 'bigfood/images/profile_pictures/yput6cdtq83v95ywpplm', 60000.00, 3, false, true, 'c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f'),
     ('47a5b3e6-efbc-4e70-9348-234b70227bcd', 'Gỏi gà măng cụt', 'Gỏi gà trộn với rau thơm và măng cụt kèm nước mắm chua ngọt', 'bigfood/images/profile_pictures/yput6cdtq83v95ywpplm', 60000.00, 5, false, true, 'c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f'),
     ('eb52b47b-f06a-473c-8cd8-81b5730032c3', 'Gỏi gà sốt cay', 'Gỏi gà trộn với rau sống và sốt cay độc quyền', 'bigfood/images/profile_pictures/yput6cdtq83v95ywpplm', 60000.00, 9, false, true, 'c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f');
+
+    -- Auto-generated SQL INSERT statements for restaurants
+    -- Generated: 2026-01-03 09:07:48
+    -- ========================================
