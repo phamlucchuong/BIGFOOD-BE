@@ -1,5 +1,7 @@
 package com.example.bigfood.dto.response;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +18,10 @@ public class FoodResponse {
     String name;
     String description;
     String image;
-    double price;
     int sold;
+    double price;
     boolean available;
     boolean deleted;
     String categoryName;
+    Set<FoodOptionResponse> foodOptions;
 }

@@ -17,15 +17,15 @@ import com.example.bigfood.service.UserService;
 public class MediaController {
 
     private final CloudinaryService cloudinaryService;
-    // private final UserService userService; // Dịch vụ để lưu URL vào DB
 
     public MediaController(CloudinaryService cloudinaryService, UserService userService) {
         this.cloudinaryService = cloudinaryService;
-        // this.userService = userService;
     }
 
-    @PostMapping("/profile-picture")
-    public ApiResponse<String> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+    @PostMapping
+    public ApiResponse<String> uploadProfilePicture(
+        @RequestParam("folder") String folder,
+        @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ApiResponse.<String>builder()
                     .message("Tệp tin không được để trống.")
@@ -34,12 +34,8 @@ public class MediaController {
         
         try {
             // 1. Tải lên Cloudinary
-            String imageUrl = cloudinaryService.uploadFile(file, "images/profile_pictures");
+            String imageUrl = cloudinaryService.uploadFile(file, "images/" + folder);
             
-            // 2. Lưu URL vào Database
-            // user.setProfilePictureUrl(imageUrl);
-            // userService.save(user);
-
             return ApiResponse.<String>builder()
                     .message("Tải lên thành công.")
                     .results(imageUrl)
