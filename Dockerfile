@@ -1,10 +1,13 @@
 # Build stage
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-COPY . .
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM openjdk:21-jdk-slim
-COPY --from=build /target/*.jar demo.jar
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","demo.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
