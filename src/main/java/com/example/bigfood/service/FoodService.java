@@ -1,6 +1,7 @@
 package com.example.bigfood.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class FoodService {
     CloudinaryService cloudinaryService;
     FoodMapper foodMapper;
     RestaurantService restaurantService;
+    FoodOptionService foodOptionService;
 
     public Food getFoodById(String itemId) {
         if(itemId == null) throw new AppException(ErrorCode.FOOD_NOT_EXISTS);
@@ -48,16 +50,23 @@ public class FoodService {
         foodRepository.increaseCountById(foodId, amount);
     }
 
-    public Food createNewFood(FoodCategory category, CreateFoodRequest request) throws IOException {
+    public Food createNewFood(FoodCategory category, CreateFoodRequest request ) throws IOException {
         String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
         Food food = Food.builder()
                         .name(request.getName())
+                        .price(BigDecimal.valueOf(request.getPrice()))
                         .description(request.getDescription())
                         .imageId(imageId)
                         .category(category)
                         .build();
         if(food == null) throw new AppException(ErrorCode.FOOD_CREATION_FAILED);
-        return foodRepository.save(food);
+        Food foodData = foodRepository.save(food);
+        if(request.getFoodOptions() != null && !request.getFoodOptions().isEmpty()){
+            request.getFoodOptions().forEach(x -> {
+                foodOptionService.createFoodOption(x.getName(), x.getPrice() , foodData);
+            });
+        }
+         return foodData;
     }
     
     public Food update(UpdateFoodRequest request) throws IOException {
@@ -82,7 +91,18 @@ public class FoodService {
                 .orElseThrow(() -> new RuntimeException("Food category not found"));
             food.setCategory(category);
         }
+        if(request.getPrice() > 0 ){
+            food.setPrice(BigDecimal.valueOf(request.getPrice()));
+        }
         food.setAvailable(request.isAvailable());
+        if(request.getFoodOptions() != null && !request.getFoodOptions().isEmpty()){
+           food.getFoodOptions().clear();
+            if(!request.getFoodOptions().isEmpty()) {
+                request.getFoodOptions().forEach(x -> {
+                    foodOptionService.createFoodOption(x.getName(), x.getPrice(), food);
+                });
+            }
+        }
     }
 
     public List<FoodResponse> getAllByUserId(String userId) {

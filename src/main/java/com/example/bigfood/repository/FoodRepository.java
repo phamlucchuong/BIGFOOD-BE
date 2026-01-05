@@ -12,9 +12,10 @@ import com.example.bigfood.entity.Food;
 import jakarta.transaction.Transactional;
 
 public interface FoodRepository extends JpaRepository<Food, String> {
-    @Query("""
-                SELECT f
+       @Query("""
+                SELECT DISTINCT f
                 FROM Food f
+                LEFT JOIN FETCH f.foodOptions
                 JOIN f.category fc
                 WHERE fc.restaurant.userId = :userId AND f.deleted = false
             """)
