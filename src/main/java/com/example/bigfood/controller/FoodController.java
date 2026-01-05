@@ -19,6 +19,7 @@ import com.example.bigfood.dto.request.CreateFoodRequest;
 import com.example.bigfood.dto.request.UpdateFoodRequest;
 import com.example.bigfood.dto.response.ApiResponse;
 import com.example.bigfood.dto.response.FoodResponse;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.service.FoodService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,11 @@ public class FoodController {
             .build();
     }
     
-    @GetMapping("/all")
-    public ApiResponse<List<FoodResponse>> getAllFood(@AuthenticationPrincipal Jwt jwt) {
+    @GetMapping("/all/page/{page}")
+    public ApiResponse<PageResponse<FoodResponse>> getAllFood(@AuthenticationPrincipal Jwt jwt , @PathVariable("page") Integer page)  {
         String userId = jwt.getSubject();
-        return ApiResponse.<List<FoodResponse>>builder()
-            .results(foodService.getAllFood(userId))
+        return ApiResponse.<PageResponse<FoodResponse>>builder()
+            .results(foodService.getAllByUserId(userId ,  page != null ? page : 0))
             .build();
     }
  

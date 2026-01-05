@@ -6,12 +6,12 @@ import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
 import com.example.bigfood.dto.response.UserResponse;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -48,11 +48,11 @@ public class UserController {
         return apiResponse;
     }
 
-    @GetMapping
+    @GetMapping("/page/{page}")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<List<UserResponse>> getAllUser() {
-        ApiResponse<List<UserResponse>> response = new ApiResponse<>();
-        response.setResults(userService.getAllUser());
+    public ApiResponse<PageResponse<UserResponse>> getAllUser(@PathVariable("page") int page) {
+        ApiResponse<PageResponse<UserResponse>> response = new ApiResponse<>();
+        response.setResults(userService.getAllUser(page));
         return response;
     }
 

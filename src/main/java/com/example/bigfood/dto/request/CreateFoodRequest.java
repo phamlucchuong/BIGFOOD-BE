@@ -19,6 +19,5 @@ public class CreateFoodRequest {
     String name;
     String description;
     MultipartFile image;
-    double price;
     List<FoodSize> foodOptions;
 }

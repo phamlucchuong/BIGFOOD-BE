@@ -26,7 +26,7 @@ import com.example.bigfood.dto.response.OrderDetailResponse;
 import com.example.bigfood.dto.response.OrderFoodDetailResponse;
 import com.example.bigfood.dto.response.OrderFullResponse;
 import com.example.bigfood.dto.response.OrderResponse;
-import com.example.bigfood.dto.response.OrderShortPageResponse;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.dto.response.OrderShortResponse;
 import com.example.bigfood.dto.response.RestaurantStatisticalResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
@@ -122,7 +122,7 @@ public class OrderService {
         return orderMapper.toFullResponse(order);
     }
 
-    public OrderShortPageResponse<OrderShortResponse> getAllOrdersByUserId(String userId, boolean status,
+    public PageResponse<OrderShortResponse> getAllOrdersByUserId(String userId, boolean status,
             Integer page) {
         List<OrderStatus> statusList = null;
 
@@ -147,8 +147,8 @@ public class OrderService {
 
         var pageData = orderRepository.findByUser_Id(userId, statusList, pageable);
 
-        return OrderShortPageResponse.<OrderShortResponse>builder()
-                .orders(pageData.getContent().stream()
+        return PageResponse.<OrderShortResponse>builder()
+                .items(pageData.getContent().stream()
                         .map(orderMapper::toShortResponse)
                         .toList())
                 .total(pageData.getTotalElements())
@@ -158,14 +158,14 @@ public class OrderService {
                 .build();
     }
 
-    public OrderShortPageResponse<OrderResponse> getAllOrders(Integer page) {
+    public PageResponse<OrderResponse> getAllOrders(Integer page) {
         int size = 2;
         Integer pageCurrent = page > 0 ? page : 0;
 
         Pageable pageable = PageRequest.of(pageCurrent, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         var pageData = orderRepository.findAll(pageable);
-        return OrderShortPageResponse.<OrderResponse>builder()
-                .orders(pageData.getContent().stream()
+        return PageResponse.<OrderResponse>builder()
+                .items(pageData.getContent().stream()
                         .map(orderMapper::toResponse)
                         .toList())
                 .total(pageData.getTotalElements())
@@ -210,14 +210,14 @@ public class OrderService {
         return orderMapper.toFullResponse(order);
     }
 
-    public OrderShortPageResponse<OrderResponse> getAllOrdersByRestaurantId(String restaurantId, Integer page) {
+    public PageResponse<OrderResponse> getAllOrdersByRestaurantId(String restaurantId, Integer page) {
         int size = 2;
         int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
 
         Pageable pageable = PageRequest.of(pageCurrent, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         var pageData = orderRepository.findByRestaurant_UserId(restaurantId, pageable);
-        return OrderShortPageResponse.<OrderResponse>builder()
-                .orders(pageData.getContent().stream()
+        return PageResponse.<OrderResponse>builder()
+                .items(pageData.getContent().stream()
                         .map(orderMapper::toResponse)
                         .toList())
                 .total(pageData.getTotalElements())
@@ -271,7 +271,7 @@ public class OrderService {
                 .build();
     }
 
-    public OrderShortPageResponse<OrderResponse> getLoadStatusFilter(String restaurantId, String filter, Integer page) {
+    public PageResponse<OrderResponse> getLoadStatusFilter(String restaurantId, String filter, Integer page) {
         OrderStatus statusEnum;
         try {
             statusEnum = OrderStatus.valueOf(filter);
@@ -285,8 +285,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(pageCurrent, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         var pageData = orderRepository.findByStatus(restaurantId, statusEnum, pageable);
-        return OrderShortPageResponse.<OrderResponse>builder()
-                .orders(pageData.getContent().stream()
+        return PageResponse.<OrderResponse>builder()
+                .items(pageData.getContent().stream()
                         .map(orderMapper::toResponse)
                         .toList())
                 .total(pageData.getTotalElements())
@@ -307,6 +307,7 @@ public class OrderService {
 
     public List<OrderResponse> listOrderNew(String restaurantId) {
         List<Order> listOrder = orderRepository.findOrderNewList(restaurantId);
+        listOrder = listOrder.subList(0, Math.min(5, listOrder.size()));
         return orderMapper.toResponseList(listOrder);
     }
 
@@ -687,7 +688,6 @@ public class OrderService {
         // Trả về kết quả
         return SummaryResponse.builder()
                 .total(totalUsers) // Tên trường nên là long thay vì int
-                .changeAmount(currentPeriodCount - previousPeriodCount)
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();
@@ -721,34 +721,5 @@ public class OrderService {
         financeService.createFinance(order);
 
         return orderMapper.toFullResponse(order);
-    }
-
-    public FinanceResponse getFinanceSummary() {
-        FinanceProjection projection = orderRepository.getFinanceSummary();
-        return FinanceResponse.builder()
-                .monthIncome(projection.getMonthIncome())
-                .monthDirection(projection.getMonthDirection())
-                .dayIncome(projection.getDayIncome())
-                .dayDirection(projection.getDayDirection())
-                .build();
-    }
-
-    public List<TopOrderResponse> getTopOrders() {
-        List<Order> topOrders = orderRepository.findTop5ByCreatedAtTodayOrderByTotalAmountDesc();
-        
-        return topOrders.stream()
-                .map(order -> TopOrderResponse.builder()
-                        .id(order.getId())
-                        .restaurantBanner(cloudinaryService.generateUrl(
-                                order.getRestaurant().getBannerId()))
-                        .restaurantName(order.getRestaurant().getRestaurantName())
-                        .status(order.getStatus().name())
-                        .createdAt(order.getCreatedAt())
-                        .totalAmount(order.getTotalAmount())
-                        .numberDishes(order.getOrderDetails() != null 
-                                ? order.getOrderDetails().size() : 0)
-                        .userName(order.getUser().getName())
-                        .build())
-                .collect(Collectors.toList());
     }
 }

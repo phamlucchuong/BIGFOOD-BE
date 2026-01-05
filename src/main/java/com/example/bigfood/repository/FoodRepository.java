@@ -2,6 +2,8 @@ package com.example.bigfood.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +21,7 @@ public interface FoodRepository extends JpaRepository<Food, String> {
                 JOIN f.category fc
                 WHERE fc.restaurant.userId = :userId AND f.deleted = false
             """)
-    List<Food> findAllByRestaurantUserId(@Param("userId") String userId);
+    Page<Food> findAllByRestaurantUserId(@Param("userId") String userId , Pageable pageable);
 
     long countByCategory_IdAndAvailableTrue(String categoryId);
     long countByCategoryId(String categoryId);
