@@ -158,6 +158,7 @@ public class UserService {
         // Trả về kết quả
         return SummaryResponse.builder()
                 .total(totalUsers) // Tên trường nên là long thay vì int
+                .changeAmount(currentPeriodCount - previousPeriodCount)
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();

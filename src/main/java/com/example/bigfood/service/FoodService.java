@@ -54,7 +54,6 @@ public class FoodService {
         String imageId = cloudinaryService.uploadFile(request.getImage(), "foods");
         Food food = Food.builder()
                         .name(request.getName())
-                        .price(BigDecimal.valueOf(request.getPrice()))
                         .description(request.getDescription())
                         .imageId(imageId)
                         .category(category)
@@ -90,9 +89,6 @@ public class FoodService {
         FoodCategory category = foodCategoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Food category not found"));
             food.setCategory(category);
-        }
-        if(request.getPrice() > 0 ){
-            food.setPrice(BigDecimal.valueOf(request.getPrice()));
         }
         food.setAvailable(request.isAvailable());
         if(request.getFoodOptions() != null && !request.getFoodOptions().isEmpty()){

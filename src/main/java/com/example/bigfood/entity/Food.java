@@ -42,8 +42,6 @@ public class Food {
     String id;
 
     String name;
-    @Column(precision = 12, scale = 2, nullable = false)
-    BigDecimal price;
 
     String description;
 

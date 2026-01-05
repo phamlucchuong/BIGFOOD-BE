@@ -28,6 +28,9 @@ public class Finance {
     @Column(name = "order_id", columnDefinition = "CHAR(36)")
     String orderId;
 
+    // @Column(name = "monthly_target", columnDefinition = "DECIMAL(10,2) check (monthly_target >= 0)")
+    // double monthlyTarget;
+
     @Column(name = "total_amount", columnDefinition = "DECIMAL(10,2) check (total_amount >= 0)")
     double totalAmount;
 

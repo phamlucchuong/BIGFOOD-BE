@@ -233,7 +233,7 @@ public class RestaurantService {
                 .build());
         }
 
-        int size = 1; // số kết quả tối đa trả về
+        int size = 8; // số kết quả tối đa trả về
         Double radius = 20000.0; // Bán kính mặc định 5km
 
         Pageable pageable = PageRequest.of(page, size);
@@ -305,7 +305,7 @@ public class RestaurantService {
     }
 
     public RestaurantsResponseSet<RestaurantActiveResponse> getRestaurantActiveSet(String categoryId, int page) {
-        int size = 2; // số kết quả tối đa trả về
+        int size = 8; // số kết quả tối đa trả về
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Restaurant> pageData;
