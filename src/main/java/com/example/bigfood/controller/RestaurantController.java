@@ -22,6 +22,7 @@ import com.example.bigfood.dto.request.ApproveRestaurantRequest;
 import com.example.bigfood.dto.request.CreateRestaurantRequest;
 import com.example.bigfood.dto.request.UpdateRestaurantRequest;
 import com.example.bigfood.dto.response.ApiResponse;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.dto.response.RestaurantActiveResponse;
 import com.example.bigfood.dto.response.RestaurantProfileResponse;
 import com.example.bigfood.dto.response.RestaurantReportResponse;
@@ -116,12 +117,11 @@ public class RestaurantController {
     }
 
     @GetMapping("/category")
-    public ApiResponse<RestaurantsResponseSet<RestaurantActiveResponse>> getRestaurantsByCategoryId(
+    public ApiResponse<PageResponse<RestaurantActiveResponse>> getRestaurantsByCategoryId(
             @RequestParam(name = "categoryId", required = false) String categoryId,
             @RequestParam(required = false) Integer page) {
-        return ApiResponse.<RestaurantsResponseSet<RestaurantActiveResponse>>builder()
-                .results(restaurantService.getRestaurantActiveSet(categoryId,
-                        page != null ? page : 0))
+        return ApiResponse.<PageResponse<RestaurantActiveResponse>>builder()
+                .results(restaurantService.getRestaurantActiveSet(categoryId, page))
                 .build();
     }
 

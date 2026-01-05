@@ -15,6 +15,7 @@ import com.example.bigfood.dto.response.RestaurantReportResponse;
 import com.example.bigfood.dto.response.RestaurantResponse;
 import com.example.bigfood.dto.response.RestaurantTagResponse;
 import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.dto.response.RestaurantActiveResponse;
 import com.example.bigfood.dto.response.RestaurantDetailResponse;
 import com.example.bigfood.dto.response.RestaurantsResponseSet;
@@ -304,10 +305,10 @@ public class RestaurantService {
         }
     }
 
-    public RestaurantsResponseSet<RestaurantActiveResponse> getRestaurantActiveSet(String categoryId, int page) {
-        int size = 2; // số kết quả tối đa trả về
-
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<RestaurantActiveResponse> getRestaurantActiveSet(String categoryId, Integer page) {
+        int size = 1; // số kết quả tối đa trả về
+        int pageCurrent = (page > 0 && page != null) ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(pageCurrent, size);
         Page<Restaurant> pageData;
         if(categoryId == null || categoryId.isEmpty()) {
             pageData = restaurantRepository.findAllByApprovedTrue(pageable);
@@ -315,14 +316,15 @@ public class RestaurantService {
             pageData = restaurantRepository.findAllByApprovedTrueAndRestaurantCategories_Id(categoryId, pageable);
         }
 
-        return RestaurantsResponseSet.<RestaurantActiveResponse>builder()
-                .restaurants(
+        return PageResponse.<RestaurantActiveResponse>builder()
+                .items(
                         pageData.getContent().stream()
                                 .map(restaurantMapper::toRestaurantActiveResponse)
                                 .toList())
                 .total(pageData.getTotalElements())
                 .page(page)
                 .pageSize(size)
+                .totalPages(pageData.getTotalPages())
                 .build();
     }
 
