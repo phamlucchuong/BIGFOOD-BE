@@ -31,6 +31,8 @@ import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+
+
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -38,16 +40,18 @@ import lombok.experimental.FieldDefaults;
 public class OrderController {
     OrderService orderService;
 
+    
     @PostMapping
     public ApiResponse<OrderFullResponse> postMethodName(
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestBody CreateOrderRequest request) {
+        @AuthenticationPrincipal Jwt jwt,
+        @RequestBody CreateOrderRequest request) {
         String userId = jwt.getSubject();
         return ApiResponse.<OrderFullResponse>builder()
-                .results(orderService.createOrder(userId, request))
-                .message("Order created successfully for user: " + userId)
-                .build();
+            .results(orderService.createOrder(userId, request))
+            .message("Order created successfully for user: " + userId)
+            .build();
     }
+
 
     @GetMapping("/all")
     @PostAuthorize("hasRole('ADMIN')")
@@ -61,9 +65,9 @@ public class OrderController {
     @GetMapping("/{id}")
     public ApiResponse<OrderFullResponse> getOrderById(@PathVariable String id) {
         return ApiResponse.<OrderFullResponse>builder()
-                .results(orderService.getOrderByOrderId(id))
-                .message("Fetched order with id: " + id)
-                .build();
+            .results(orderService.getOrderByOrderId(id))
+            .message("Fetched order with id: " + id)
+            .build();
     }
 
     @GetMapping("/user/{userId}/all")
@@ -77,10 +81,11 @@ public class OrderController {
             .build();
     }
 
+
     /**
      * hàm lấy danh sách đơn hàng của user bằng jwt
      *
-     * @param jwt  token đăng nhập
+     * @param jwt token đăng nhập
      * @param page số trang
      * @return danh sách đơn hàng theo phân trang
      */
@@ -116,6 +121,7 @@ public class OrderController {
             .build();
     }
 
+    
     @GetMapping("/restaurant")
     // @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<OrderShortPageResponse<OrderResponse>> getOrdersRestaurantByStatus(
@@ -131,12 +137,12 @@ public class OrderController {
     }
 
     @GetMapping("/restaurant/detail/{orderId}")
-    // @PostAuthorize("hasRole('RESTAURANT')")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<OrderDetailResponse> getOrdersDetailByOrderId(@PathVariable String orderId) {
         return ApiResponse.<OrderDetailResponse>builder()
-                .results(orderService.getOrderDetailByOrderId(orderId))
-                .message("Orders deatil for restaurant: " + orderId)
-                .build();
+            .results(orderService.getOrderDetailByOrderId(orderId))
+            .message("Orders deatil for restaurant: " + orderId)
+            .build();
     }
 
      @GetMapping("/restaurant/statistital/page/{page}")
@@ -153,71 +159,74 @@ public class OrderController {
     public ApiResponse<?> getStatisticsByTimeRange(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "day") String timeRange) {
-        return ApiResponse.<RestaurantStatisticalResponse>builder()
-                .results(orderService.restaurantStatisticalByTimeRange(jwt.getSubject(), timeRange))
-                .message("Orders restarantStatistital for restaurant: " + jwt.getSubject())
-                .build();
+         return ApiResponse.<RestaurantStatisticalResponse>builder()
+            .results( orderService.restaurantStatisticalByTimeRange(jwt.getSubject(), timeRange))
+            .message("Orders restarantStatistital for restaurant: " + jwt.getSubject())
+            .build();
     }
-
-    @GetMapping("/restaurant/list-order-new")
-    // @PostAuthorize("hasRole('RESTAURANT')")
+    
+     @GetMapping("/restaurant/list-order-new")
+    //  @PostAuthorize("hasRole('RESTAURANT')")
     public ApiResponse<List<OrderResponse>> getListOrderNew(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
+       String userId = jwt.getSubject();
         return ApiResponse.<List<OrderResponse>>builder()
-                .results(orderService.listOrderNew(userId))
-                .message("Orders restarantStatistital for restaurant: " + userId)
-                .build();
+            .results(orderService.listOrderNew(userId))
+            .message("Orders restarantStatistital for restaurant: " + userId)
+            .build();
     }
+    
+    
+
 
     @PatchMapping("/{orderId}/status")
     public ApiResponse<OrderResponse> updateOrderStatus(
-            @PathVariable String orderId,
-            @RequestBody UpdateOrderStatusRequest request) {
+        @PathVariable String orderId,
+        @RequestBody UpdateOrderStatusRequest request) {
         return ApiResponse.<OrderResponse>builder()
-                .results(orderService.updateOrderStatus(orderId, request))
-                .message("Order status updated successfully for order: " + orderId)
-                .build();
+            .results(orderService.updateOrderStatus(orderId, request))
+            .message("Order status updated successfully for order: " + orderId)
+            .build();
     }
 
     @PatchMapping("/cancel/{orderId}")
     public ApiResponse<OrderFullResponse> cancelOrder(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable String orderId,
-            @RequestBody UpdateOrderStatusRequest request) {
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String orderId,
+        @RequestBody UpdateOrderStatusRequest request) {
         return ApiResponse.<OrderFullResponse>builder()
-                .results(orderService.cancelOrder(orderId, request))
-                .message("Order canceled successfully for order: " + orderId)
-                .build();
+            .results(orderService.cancelOrder(orderId, request))
+            .message("Order canceled successfully for order: " + orderId)
+            .build();
     }
 
     @PatchMapping("/complete/{orderId}")
     @PostAuthorize("hasRole('USER')")
     @PreAuthorize("principal.subject == @orderService.getOrderByOrderId(#orderId).userId")
     public ApiResponse<OrderFullResponse> completeOrder(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable String orderId) {
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable String orderId) {
         return ApiResponse.<OrderFullResponse>builder()
-                .results(orderService.completeOrder(orderId))
-                .message("Order completed successfully for order: " + orderId)
-                .build();
+            .results(orderService.completeOrder(orderId))
+            .message("Order completed successfully for order: " + orderId)
+            .build();
     }
 
     @GetMapping("/summary")
     @PostAuthorize("hasRole('ADMIN')")
     public ApiResponse<SummaryResponse> getOrderSummary() {
         return ApiResponse.<SummaryResponse>builder()
-                .results(orderService.getOrderSummary())
-                .message("Fetched order summary")
-                .build();
+            .results(orderService.getOrderSummary())
+            .message("Fetched order summary")
+            .build();
     }
 
     @GetMapping("/chart")
     @PostAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<Integer>> getOrderChart() {
         return ApiResponse.<List<Integer>>builder()
-                .results(orderService.getOrderChart())
-                .message("Fetched order chart")
-                .build();
+            .results(orderService.getOrderChart())
+            .message("Fetched order chart")
+            .build();
     }
-
+    
 }
