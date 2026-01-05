@@ -1,5 +1,7 @@
 package com.example.bigfood.dto.request;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +19,6 @@ public class UpdateFoodRequest {
     String categoryId;
     String description;
     MultipartFile image;
-    double price;
     boolean available;
+    List<FoodSize> foodOptions;
 }

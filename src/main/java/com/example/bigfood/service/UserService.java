@@ -2,11 +2,14 @@ package com.example.bigfood.service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 import com.example.bigfood.repository.RoleRepository;
 import com.example.bigfood.dto.request.UserCreateRequest;
 import com.example.bigfood.dto.request.UserUpdateRequest;
+import com.example.bigfood.dto.response.PageResponse;
 import com.example.bigfood.dto.response.SummaryResponse;
 import com.example.bigfood.dto.response.UserResponse;
 
@@ -73,12 +77,21 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public List<UserResponse> getAllUser() {
+    public PageResponse<UserResponse> getAllUser(Integer page) {
+        int limit = 2 ;
+        int pageCurrent = (page > 0 && page != null) ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(pageCurrent, limit , Sort.by(Sort.Direction.DESC , "name"));
         List<String> roles = List.of(com.example.bigfood.enums.Role.USER.name(),
                                      com.example.bigfood.enums.Role.ADMIN.name());
-        List<UserResponse> users = userRepository.findByRolesIn(roles).stream()
-                .map(userMapper::toUserResponse).toList();
-        return users;
+        Page<User> users = userRepository.findByRolesIn(roles , pageable);
+
+        return PageResponse.<UserResponse>builder()
+        .items(users.getContent().stream().map(userMapper::toUserResponse).toList())
+        .total(users.getTotalElements())
+        .page(pageCurrent + 1)
+        .pageSize(limit)
+        .totalPages(users.getTotalPages())
+        .build();
     }
 
     public void deleteUser(String id) {
@@ -159,6 +172,7 @@ public class UserService {
         // Trả về kết quả
         return SummaryResponse.builder()
                 .total(totalUsers) // Tên trường nên là long thay vì int
+                .changeAmount(currentPeriodCount - previousPeriodCount)
                 .changePercentage(roundedPercentage)
                 .direction(direction)
                 .build();

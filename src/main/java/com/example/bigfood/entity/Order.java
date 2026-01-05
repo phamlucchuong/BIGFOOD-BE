@@ -97,4 +97,7 @@ public class Order {
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     Review review;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    Finance finance;
 }

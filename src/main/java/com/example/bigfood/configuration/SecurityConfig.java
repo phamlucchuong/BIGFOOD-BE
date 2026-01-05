@@ -33,7 +33,8 @@ public class SecurityConfig {
             "api/search",
             "api/restaurants/detail",
             "api/goong/geocoding",
-            "api/goong/reverse-geocoding"
+            "api/goong/reverse-geocoding",
+            "api/media"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINT = {
@@ -44,7 +45,7 @@ public class SecurityConfig {
             "api/users/verify-email/{email}",
             "api/otp/verify",
             "api/searchs/hot",
-            "/api/restaurant-categories",
+            "api/restaurant-categories",
             "api/restaurants",
     };
 
@@ -55,7 +56,6 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/webjars/**"
     };
-
 
     @Autowired
     private CustomerJwtDecoder customerJwtDecoder;
@@ -72,7 +72,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINT).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINT).permitAll()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfiguer -> jwtConfiguer.decoder(customerJwtDecoder)
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfiguer -> jwtConfiguer
+                        .decoder(customerJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return httpSecurity.build();
     }
@@ -80,7 +81,10 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "https://bigfut-*.vercel.app",
+                "https://*.vercel.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
