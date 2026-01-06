@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class RestaurantsResponseSet<T> {
     List<T> restaurants;
     long total;
+    long totalPages;
     int page;
     int pageSize;
 }

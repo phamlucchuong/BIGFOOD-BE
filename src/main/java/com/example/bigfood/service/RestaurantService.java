@@ -259,6 +259,7 @@ public class RestaurantService {
                         })
                         .toList())
                 .total(resultPage.getTotalElements())
+                .totalPages(resultPage.getTotalPages())
                 .page(page)
                 .pageSize(size)
                 .build();
