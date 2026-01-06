@@ -31,7 +31,7 @@ public class FoodOption {
     @Column(name = "price", columnDefinition = "decimal(10, 2) not null check (price >= 0)")
     double price;
 
-    @Column(name = "is_default_price", nullable = false, columnDefinition = "boolean default false")
+    @Column(name = "is_default", nullable = false, columnDefinition = "boolean default false")
     boolean defaultPrice;
 
     @ManyToOne

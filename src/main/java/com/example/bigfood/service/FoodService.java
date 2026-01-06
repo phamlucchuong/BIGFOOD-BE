@@ -108,7 +108,7 @@ public class FoodService {
         int limit = 10;
         int pageCurrent = (page != null && page > 0) ? page - 1 : 0;
 
-        Pageable pageable = PageRequest.of(pageCurrent, limit , Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(pageCurrent, limit , Sort.by(Sort.Direction.DESC, "name"));
         var pageData = foodRepository.findAllByRestaurantUserId(userId ,  pageable);
         return PageResponse.<FoodResponse>builder()
                 .items(pageData.getContent().stream()
