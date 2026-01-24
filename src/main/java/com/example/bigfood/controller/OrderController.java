@@ -57,7 +57,7 @@ public class OrderController {
 
     @GetMapping("/all")
     @PostAuthorize("hasRole('ADMIN')")
-    public ApiResponse<PageResponse<OrderResponse>> getAllOrders(Integer page) {
+    public ApiResponse<PageResponse<OrderResponse>> getAllOrders(@RequestParam(required = false) Integer page) {
         return ApiResponse.<PageResponse<OrderResponse>>builder()
             .results(orderService.getAllOrders(page))
             .message("Fetched all orders")

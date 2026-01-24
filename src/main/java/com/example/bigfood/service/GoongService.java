@@ -13,10 +13,10 @@ import com.example.bigfood.dto.response.GoongResponse.GoongLocation;
 @Service
 public class GoongService {
 
-    @Value("${goong.api.key}")
+    @Value("${goong_apiKey}")
     private String GOONG_API_KEY;
 
-    @Value("${goong.api.base-url}")
+    @Value("${goong_baseUrl}")
     private String GOONG_BASE_URL;
 
     private final WebClient webClient;

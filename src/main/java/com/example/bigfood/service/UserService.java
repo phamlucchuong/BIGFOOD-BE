@@ -115,63 +115,41 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    /**
-     * @return UserSummaryResponse chứa thông tin tổng kết người dùng, bao gồm tổng số và
-     * % thay đổi số lượng người dùng mới so với cùng kì tháng trước.
-     * 
-     * hàm lấy ngày tháng hiện tại, tính số người dùng mới trong một chu kì
-     * với một chu kì được tính từ ngày 1 tháng này đến ngày hiện tại
-     */
     public SummaryResponse getUserSummary() {
         
-        // Lấy tổng số người dùng
         long totalUsers = userRepository.count();
 
-        // Tính toán các mốc thời gian
         LocalDateTime now = LocalDateTime.now();
         
-        // --- Kì hiện tại
         LocalDateTime startTimeCurrent = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
         LocalDateTime endTimeCurrent = now.toLocalDate().atTime(LocalTime.MAX); // 23:59:59.999...
 
-        // --- Cùng kì tháng trước 
         LocalDateTime previousPeriod = now.minusMonths(1);
         LocalDateTime startTimePrevious = previousPeriod.withDayOfMonth(1).toLocalDate().atStartOfDay();
         LocalDateTime endTimePrevious = previousPeriod.toLocalDate().atTime(LocalTime.MAX);
 
-        
-        // Lấy số lượng của 2 kì
         long currentPeriodCount = userRepository.countByCreatedAtBetweenAndDeletedFalse(startTimeCurrent, endTimeCurrent);
         long previousPeriodCount = userRepository.countByCreatedAtBetweenAndDeletedFalse(startTimePrevious, endTimePrevious);
 
-        
-        // Tính toán phần trăm thay đổi (Rất quan trọng: Xử lý chia cho 0)
         double changePercentage = 0.0;
         String direction = "neutral";
 
         if (previousPeriodCount > 0) {
-            // Trường hợp thông thường (ví dụ: tháng trước 100, tháng này 110)
             changePercentage = ((double) (currentPeriodCount - previousPeriodCount) / previousPeriodCount) * 100.0;
         } else if (previousPeriodCount == 0 && currentPeriodCount > 0) {
-            // Tháng trước 0, tháng này > 0 (tăng 100%)
             changePercentage = 100.0;
         }
-        // Trường hợp (previousPeriodCount == 0 && currentPeriodCount == 0) -> changePercentage = 0.0 (giữ nguyên)
 
-        
-        //  Xác định hướng (tăng/giảm)
         if (changePercentage > 0) {
             direction = "increase";
         } else if (changePercentage < 0) {
             direction = "decrease";
         }
         
-        // Làm tròn 2 chữ số thập phân
         double roundedPercentage = Math.round(changePercentage * 100.0) / 100.0;
 
-        // Trả về kết quả
         return SummaryResponse.builder()
-                .total(totalUsers) // Tên trường nên là long thay vì int
+                .total(totalUsers)
                 .changeAmount(currentPeriodCount - previousPeriodCount)
                 .changePercentage(roundedPercentage)
                 .direction(direction)

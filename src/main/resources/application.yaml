@@ -4,6 +4,8 @@ server:
         context-path: /bigfood
 
 spring:
+    profiles:
+        include: local
     datasource:
         url: ${SPRING_DATASOURCE_URL}
         username: ${SPRING_DATASOURCE_USERNAME}
@@ -12,9 +14,9 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: validate  # ĐỔI từ update -> validate (quan trọng!)
+            ddl-auto: validate
         show-sql: true
-        defer-datasource-initialization: false  # ĐỔI thành false
+        defer-datasource-initialization: false
         database-platform: org.hibernate.dialect.MySQL8Dialect
 
     # Flyway Configuration
@@ -24,13 +26,13 @@ spring:
         locations: classpath:db/migration
         baseline-version: 0
         validate-on-migrate: true
-        clean-disabled: true  # Bảo vệ khỏi xóa data nhầm
+        clean-disabled: true
 
     mail:
-        host: smtp.gmail.com
-        port: 587
-        username: hoa25102020@gmail.com
-        password: oetowidjpwcidyet
+        host: ${mail_host}
+        port: ${mail_port}
+        username: ${mail_username}
+        password: ${mail_password}
         properties:
             mail: 
                 smtp:
@@ -38,7 +40,6 @@ spring:
                     starttls:
                         enable: true
 
-    # Tắt banner Spring Boot
     main:
         banner-mode: "off"
     
@@ -46,35 +47,12 @@ spring:
         ansi:
             enabled: ALWAYS
 
-# Cấu hình logging
 logging:
     level:
         root: WARN 
-        # Đặt mức log INFO cho mã nguồn của bạn
         "com.example.bigfood": INFO
     pattern:
         console: "%d{HH:mm:ss.SSS} %-5level %msg%n"
-
-jwt:
-    signerKey: qCkvf8aYzJEJGgIh7j2rW8V5L4pAKOWqYTf7qePD3WOy8i8JbJ7bwJ6Bt3pr20Da
-    valid-duration: 3600
-    refreshable-duration: 36000
-
-
-# Thông tin cấu hình Cloudinary
-cloudinary:
-    cloudName: dmlz8xuq1
-    apiKey: 633818322111998
-    apiSecret: a4M47qnrfndZjWCVepI1jlWBmNE
-
-goong:
-  api:
-    key: ZZk7tokzqbxJqy5jF33sHXwP5vriHomhTiwMrnih
-    base-url: https://rsapi.goong.io
-    # geocode-url: ${goong.api.base-url}/Geocode
-    # place-url: ${goong.api.base-url}/Place
-    # direction-url: ${goong.api.base-url}/Direction
-    # distance-matrix-url: ${goong.api.base-url}/DistanceMatrix
 
 # Springdoc OpenAPI Configuration
 springdoc:

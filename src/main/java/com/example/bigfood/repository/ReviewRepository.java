@@ -1,5 +1,6 @@
 package com.example.bigfood.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,4 +26,15 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
             )
             """)
     Set<Review> findAllByOrder_RestaurantAndSortReviews(Restaurant restaurant, String filter);
+
+    @Query("""
+    SELECT u.email
+    FROM Review r
+    JOIN r.order o
+    JOIN o.restaurant res
+    JOIN res.user u
+    GROUP BY res.userId, u.email
+    HAVING COUNT(r.id) > 10 AND AVG(r.rating) < 1
+    """)
+    List<String> getLowRatingEmail();
 }

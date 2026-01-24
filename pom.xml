@@ -148,6 +148,24 @@
 			<version>2.4.0</version>
 		</dependency>
 
+		<!-- Spring Boot Starter Data Redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- Lettuce (Redis client - default trong Spring Boot) -->
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Starter Cache (optional, for caching) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+
 
 		<!-- dependency cho swagger -->
 		<dependency>
@@ -156,15 +174,6 @@
 			<version>2.7.0</version> 
 		</dependency>
 
-
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
-
-		
-		
 	</dependencies>
 
 	<build>

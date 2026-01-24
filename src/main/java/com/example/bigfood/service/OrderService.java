@@ -159,7 +159,7 @@ public class OrderService {
     }
 
     public PageResponse<OrderResponse> getAllOrders(Integer page) {
-        int size = 2;
+        int size = 5;
         Integer pageCurrent = page > 0 ? page : 0;
 
         Pageable pageable = PageRequest.of(pageCurrent, size, Sort.by(Sort.Direction.DESC, "createdAt"));

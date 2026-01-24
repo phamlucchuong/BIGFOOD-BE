@@ -20,7 +20,7 @@ import com.nimbusds.jose.JOSEException;
 @Component
 public class CustomerJwtDecoder implements JwtDecoder {
 
-    @Value("${jwt.signerKey}")
+    @Value("${JWT_signerKey}")
     private String SIGN_KEY;
 
     @Autowired 

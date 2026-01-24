@@ -12,13 +12,13 @@ import com.cloudinary.Cloudinary;
 @Configuration
 public class CloudinaryConfig {
 
-    @Value("${cloudinary.cloudName}")
+    @Value("${cloudinary_cloudName}")
     private String cloudName;
 
-    @Value("${cloudinary.apiKey}")
+    @Value("${cloudinary_apiKey}")
     private String apiKey;
 
-    @Value("${cloudinary.apiSecret}")
+    @Value("${cloudinary_apiSecret}")
     private String apiSecret;
 
     @Bean
